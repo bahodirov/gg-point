@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { SeoService } from '../../shared/services/seo.service';
 
@@ -15,7 +16,7 @@ interface FAQ {
 @Component({
   selector: 'app-faq',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule, MatIconModule, TelegramButtonComponent],
+  imports: [CommonModule, MatExpansionModule, MatIconModule, TranslateModule, TelegramButtonComponent],
   template: `
     <div class="faq-page bg-gray-50 dark:bg-gray-900 min-h-screen py-12">
       <div class="container mx-auto px-4 max-w-4xl">
@@ -23,7 +24,7 @@ interface FAQ {
         <div class="text-center mb-12">
           <mat-icon class="text-6xl text-primary-600 dark:text-primary-400 mb-4">help_outline</mat-icon>
           <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Frequently Asked Questions
+            {{ 'faq.title' | translate }}
           </h1>
           <p class="text-xl text-gray-600 dark:text-gray-400">
             Find answers to commonly asked questions

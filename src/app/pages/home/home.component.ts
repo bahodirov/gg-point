@@ -194,11 +194,25 @@ export class HomeComponent implements OnInit {
 
   private updateSEO(): void {
     this.seoService.updateMetaTags({
-      title: 'GGPoint - Computer Accessories Store in Uzbekistan',
-      description: 'Find the best computer accessories and gadgets in Uzbekistan. Gaming peripherals, keyboards, mice, monitors, and more.',
-      keywords: 'computer accessories, gaming, peripherals, Uzbekistan, ggpoint',
-      type: 'website'
+      title: 'GGPoint - Computer Accessories Store in Uzbekistan | Gaming & Office Peripherals',
+      description: 'Find the best computer accessories and gadgets in Uzbekistan. Gaming peripherals, mechanical keyboards, gaming mice, monitors, and more. Fast delivery in Tashkent. Order via Telegram.',
+      keywords: 'computer accessories, gaming peripherals, mechanical keyboard, gaming mouse, monitors, Uzbekistan, Tashkent, ggpoint, компьютерные аксессуары, игровые устройства, клавиатура, мышь',
+      type: 'website',
+      canonical: 'https://ggpoint.uz/',
+      languageAlternates: [
+        { lang: 'en', url: 'https://ggpoint.uz/' },
+        { lang: 'ru', url: 'https://ggpoint.uz/' },
+        { lang: 'uz', url: 'https://ggpoint.uz/' }
+      ]
     });
+
+    // Add Organization Schema
+    const organizationSchema = this.seoService.generateOrganizationSchema();
+    this.seoService.addStructuredData(organizationSchema, 'organization-schema');
+
+    // Add WebSite Schema with search functionality
+    const websiteSchema = this.seoService.generateWebSiteSchema();
+    this.seoService.addStructuredData(websiteSchema, 'website-schema');
   }
 
   getCategoryIcon(categoryName: string): string {

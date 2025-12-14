@@ -82,7 +82,7 @@ export class TelegramButtonComponent {
 
   getTelegramLink(): string {
     const botUsername = 'Dma12r'; // Admin contact
-    let text = this.message;
+    let text: string = this.message || '';
     
     if (!text && this.productName) {
       const greeting = this.translateService.instant('contact.getInTouch');
@@ -93,7 +93,7 @@ export class TelegramButtonComponent {
     }
     
     if (!text) {
-      text = this.translateService.instant('contact.getInTouch');
+      text = this.translateService.instant('contact.getInTouch') || 'Hello';
     }
 
     return `https://t.me/${botUsername}?text=${encodeURIComponent(text)}`;

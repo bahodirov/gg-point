@@ -8,6 +8,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { ProductService } from '../../shared/services/product.service';
@@ -27,6 +28,7 @@ import { Product, ProductCategory } from '../../shared/models/product.model';
     MatCheckboxModule,
     MatButtonModule,
     MatIconModule,
+    TranslateModule,
     ProductCardComponent,
     TelegramButtonComponent
   ],
@@ -36,10 +38,10 @@ import { Product, ProductCategory } from '../../shared/models/product.model';
         <!-- Page Header -->
         <div class="mb-8">
           <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            Product Catalog
+            {{ 'catalog.title' | translate }}
           </h1>
           <p class="text-gray-600 dark:text-gray-400">
-            {{ filteredProducts().length }} Products
+            {{ filteredProducts().length }} {{ 'catalog.title' | translate }}
           </p>
         </div>
 
@@ -48,17 +50,17 @@ import { Product, ProductCategory } from '../../shared/models/product.model';
           <aside class="lg:col-span-1">
             <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md sticky top-20">
               <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                Filters
+                {{ 'catalog.filters' | translate }}
               </h2>
 
               <!-- Category Filter -->
               <div class="mb-6">
                 <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  Category
+                  {{ 'catalog.category' | translate }}
                 </label>
                 <mat-form-field appearance="outline" class="w-full">
                   <mat-select [(value)]="selectedCategory" (selectionChange)="applyFilters()">
-                    <mat-option value="">All Categories</mat-option>
+                    <mat-option value="">{{ 'catalog.allCategories' | translate }}</mat-option>
                     @for (category of categories; track category.id) {
                       <mat-option [value]="category.slug">{{ category.name }}</mat-option>
                     }
@@ -69,7 +71,7 @@ import { Product, ProductCategory } from '../../shared/models/product.model';
               <!-- Price Range -->
               <div class="mb-6">
                 <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  Price Range
+                  {{ 'catalog.priceRange' | translate }}
                 </label>
                 <div class="space-y-4">
                   <div>

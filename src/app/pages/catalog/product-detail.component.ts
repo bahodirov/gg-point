@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { ProductService } from '../../shared/services/product.service';
@@ -23,6 +24,7 @@ import { Product } from '../../shared/models/product.model';
     MatChipsModule,
     MatTabsModule,
     MatTableModule,
+    TranslateModule,
     ProductCardComponent,
     TelegramButtonComponent
   ],
@@ -33,11 +35,11 @@ import { Product } from '../../shared/models/product.model';
           <!-- Breadcrumb -->
           <nav class="mb-6 text-sm">
             <a routerLink="/" class="text-primary-600 dark:text-primary-400 hover:underline">
-              Home
+              {{ 'header.home' | translate }}
             </a>
             <span class="mx-2 text-gray-500">/</span>
             <a routerLink="/catalog" class="text-primary-600 dark:text-primary-400 hover:underline">
-              Catalog
+              {{ 'header.catalog' | translate }}
             </a>
             <span class="mx-2 text-gray-500">/</span>
             <span class="text-gray-600 dark:text-gray-400">{{ getProductName() }}</span>
@@ -274,12 +276,33 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private updateSEO(product: Product): void {
+    const currentUrl = `https://ggpoint.uz/catalog/${product.id}`;
+    
+    // Update meta tags
     this.seoService.updateMetaTags({
-      title: `${product.name} - GGPoint`,
-      description: product.description,
-      keywords: `${product.name}, ${product.category}, ${product.tags.join(', ')}`,
+      title: `${product.name} - GGPoint | Buy in Uzbekistan`,
+      description: `${product.description} Price: ${product.price.toLocaleString()} UZS. ${product.inStock ? 'In stock' : 'Out of stock'}. Order via Telegram.`,
+      keywords: `${product.name}, ${product.category}, ${product.tags.join(', ')}, buy ${product.name} Uzbekistan, ${product.name} price Tashkent, компьютерные аксессуары`,
       image: product.thumbnail,
-      type: 'product'
+      type: 'product',
+      canonical: currentUrl,
+      languageAlternates: [
+        { lang: 'en', url: currentUrl },
+        { lang: 'ru', url: currentUrl },
+        { lang: 'uz', url: currentUrl }
+      ]
     });
+
+    // Add Product Schema
+    const productSchema = this.seoService.generateProductSchema(product);
+    this.seoService.addStructuredData(productSchema, 'product-schema');
+
+    // Add Breadcrumb Schema
+    const breadcrumbSchema = this.seoService.generateBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: 'Catalog', url: '/catalog' },
+      { name: product.name }
+    ]);
+    this.seoService.addStructuredData(breadcrumbSchema, 'breadcrumb-schema');
   }
 }

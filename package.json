@@ -8,7 +8,8 @@
     "build:ssr": "ng build && ng run ggpoint:server",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:ggpoint": "node dist/ggpoint/server/server.mjs"
+    "serve:ssr:ggpoint": "node dist/ggpoint/server/server.mjs",
+    "generate:sitemap": "node scripts/generate-sitemap.js"
   },
   "prettier": {
     "printWidth": 100,

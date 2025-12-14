@@ -2,20 +2,21 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { TranslateModule } from '@ngx-translate/core';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { SeoService } from '../../shared/services/seo.service';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatCardModule, TelegramButtonComponent],
+  imports: [CommonModule, MatIconModule, MatCardModule, TranslateModule, TelegramButtonComponent],
   template: `
     <div class="about-page bg-gray-50 dark:bg-gray-900 min-h-screen py-12">
       <div class="container mx-auto px-4">
         <!-- Page Header -->
         <div class="text-center mb-12">
           <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            About Us
+            {{ 'about.title' | translate }}
           </h1>
           <div class="flex items-center justify-center space-x-2 text-3xl mb-6">
             <span class="font-bold text-primary-600 dark:text-primary-400">GG</span>
@@ -28,10 +29,10 @@ import { SeoService } from '../../shared/services/seo.service';
           <div class="max-w-3xl mx-auto text-center">
             <mat-icon class="text-6xl text-primary-600 dark:text-primary-400 mb-4">flag</mat-icon>
             <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Our Mission
+              {{ 'about.mission' | translate }}
             </h2>
             <p class="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-              To provide premium computer accessories and gaming peripherals to gamers and tech enthusiasts in Uzbekistan.
+              {{ 'about.missionText' | translate }}
             </p>
           </div>
         </section>
@@ -39,7 +40,7 @@ import { SeoService } from '../../shared/services/seo.service';
         <!-- Why Choose Us -->
         <section class="mb-12">
           <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-            Why Choose Us
+            {{ 'about.whyChooseUs' | translate }}
           </h2>
           
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -49,10 +50,10 @@ import { SeoService } from '../../shared/services/seo.service';
                 <mat-icon class="text-4xl text-primary-600 dark:text-primary-400">verified</mat-icon>
               </div>
               <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                Quality Products
+                {{ 'about.values.quality.title' | translate }}
               </h3>
               <p class="text-gray-700 dark:text-gray-300">
-                100% authentic products from official distributors with warranty
+                {{ 'about.values.quality.text' | translate }}
               </p>
             </mat-card>
 

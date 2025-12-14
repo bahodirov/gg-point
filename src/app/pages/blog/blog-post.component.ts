@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MarkdownModule } from 'ngx-markdown';
+import { TranslateModule } from '@ngx-translate/core';
 import { BlogCardComponent } from '../../shared/components/blog-card/blog-card.component';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { BlogService } from '../../shared/services/blog.service';
@@ -23,6 +24,7 @@ import { BlogPost } from '../../shared/models/blog.model';
     MatChipsModule,
     MatDividerModule,
     MarkdownModule,
+    TranslateModule,
     BlogCardComponent,
     TelegramButtonComponent
   ],
@@ -33,11 +35,11 @@ import { BlogPost } from '../../shared/models/blog.model';
           <!-- Breadcrumb -->
           <nav class="mb-6 text-sm">
             <a routerLink="/" class="text-primary-600 dark:text-primary-400 hover:underline">
-              Home
+              {{ 'header.home' | translate }}
             </a>
             <span class="mx-2 text-gray-500">/</span>
             <a routerLink="/blog" class="text-primary-600 dark:text-primary-400 hover:underline">
-              Blog
+              {{ 'header.blog' | translate }}
             </a>
             <span class="mx-2 text-gray-500">/</span>
             <span class="text-gray-600 dark:text-gray-400">{{ getPostTitle() }}</span>
@@ -257,14 +259,40 @@ export class BlogPostComponent implements OnInit {
   }
 
   private updateSEO(post: BlogPost): void {
+    const currentUrl = `https://ggpoint.uz/blog/${post.slug}`;
+    
+    // Update meta tags
     this.seoService.updateMetaTags({
-      title: `${post.title} - GGPoint Blog`,
+      title: `${post.title} - GGPoint Blog | Computer Accessories Guide`,
       description: post.excerpt,
-      keywords: post.tags.join(', '),
+      keywords: `${post.tags.join(', ')}, computer accessories, gaming guide, tech blog, GGPoint`,
       image: post.thumbnail,
       type: 'article',
       author: post.author,
+      publishDate: new Date(post.publishDate).toISOString(),
+      canonical: currentUrl,
+      languageAlternates: [
+        { lang: 'en', url: currentUrl },
+        { lang: 'ru', url: currentUrl },
+        { lang: 'uz', url: currentUrl }
+      ]
+    });
+
+    // Add Article Schema
+    const articleSchema = this.seoService.generateArticleSchema({
+      title: post.title,
+      description: post.excerpt,
+      image: post.thumbnail,
       publishDate: new Date(post.publishDate).toISOString()
     });
+    this.seoService.addStructuredData(articleSchema, 'article-schema');
+
+    // Add Breadcrumb Schema
+    const breadcrumbSchema = this.seoService.generateBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: 'Blog', url: '/blog' },
+      { name: post.title }
+    ]);
+    this.seoService.addStructuredData(breadcrumbSchema, 'breadcrumb-schema');
   }
 }

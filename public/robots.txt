@@ -1,6 +1,24 @@
 # https://www.robotstxt.org/robotstxt.html
+
+# Allow all crawlers
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
-# Sitemap location
+# Special rules for aggressive crawlers
+User-agent: Yandex
+Crawl-delay: 1
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sitemap locations
 Sitemap: https://ggpoint.uz/sitemap.xml
+
+# Host (for Yandex)
+Host: https://ggpoint.uz

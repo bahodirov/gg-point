@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { TranslateModule } from '@ngx-translate/core';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { SeoService } from '../../shared/services/seo.service';
 
@@ -20,6 +21,7 @@ import { SeoService } from '../../shared/services/seo.service';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
+    TranslateModule,
     TelegramButtonComponent
   ],
   template: `
@@ -28,10 +30,10 @@ import { SeoService } from '../../shared/services/seo.service';
         <!-- Page Header -->
         <div class="text-center mb-12">
           <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Contact Us
+            {{ 'contact.title' | translate }}
           </h1>
           <p class="text-xl text-gray-600 dark:text-gray-400">
-            Get in touch with us
+            {{ 'contact.getInTouch' | translate }}
           </p>
         </div>
 
@@ -42,21 +44,21 @@ import { SeoService } from '../../shared/services/seo.service';
               <div class="space-y-4">
                 <!-- Name -->
                 <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Name</mat-label>
+                  <mat-label>{{ 'contact.name' | translate }}</mat-label>
                   <input matInput formControlName="name" required>
                   <mat-icon matPrefix>person</mat-icon>
                   @if (contactForm.get('name')?.hasError('required') && contactForm.get('name')?.touched) {
-                    <mat-error>Name is required</mat-error>
+                    <mat-error>{{ 'contact.name' | translate }} is required</mat-error>
                   }
                 </mat-form-field>
 
                 <!-- Email -->
                 <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Email</mat-label>
+                  <mat-label>{{ 'contact.email' | translate }}</mat-label>
                   <input matInput type="email" formControlName="email" required>
                   <mat-icon matPrefix>email</mat-icon>
                   @if (contactForm.get('email')?.hasError('required') && contactForm.get('email')?.touched) {
-                    <mat-error>Email is required</mat-error>
+                    <mat-error>{{ 'contact.email' | translate }} is required</mat-error>
                   }
                   @if (contactForm.get('email')?.hasError('email') && contactForm.get('email')?.touched) {
                     <mat-error>Invalid email format</mat-error>

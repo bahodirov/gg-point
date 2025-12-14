@@ -1,39 +1,213 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Main Pages -->
   <url>
     <loc>https://ggpoint.uz/</loc>
-    <lastmod>2025-12-13</lastmod>
+    <lastmod>2025-12-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://ggpoint.uz/catalog</loc>
-    <lastmod>2025-12-13</lastmod>
+    <lastmod>2025-12-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://ggpoint.uz/blog</loc>
-    <lastmod>2025-12-13</lastmod>
+    <lastmod>2025-12-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ggpoint.uz/about</loc>
-    <lastmod>2025-12-13</lastmod>
+    <lastmod>2025-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://ggpoint.uz/contact</loc>
-    <lastmod>2025-12-13</lastmod>
+    <lastmod>2025-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://ggpoint.uz/faq</loc>
-    <lastmod>2025-12-13</lastmod>
+    <lastmod>2025-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+
+  <!-- Product Pages -->
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-001</loc>
+    <lastmod>2024-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1527814050087-3793815479db?w=800</image:loc>
+      <image:title>Logitech MX Master 3S</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-002</loc>
+    <lastmod>2024-12-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1595225476474-87563907a212?w=800</image:loc>
+      <image:title>Keychron K8 Pro</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-003</loc>
+    <lastmod>2024-12-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800</image:loc>
+      <image:title>SteelSeries Arctis Nova Pro</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-004</loc>
+    <lastmod>2024-12-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800</image:loc>
+      <image:title>LG UltraGear 27" 4K Monitor</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-005</loc>
+    <lastmod>2024-12-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1563297007-0686b7003af7?w=800</image:loc>
+      <image:title>Razer DeathAdder V3 Pro</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-006</loc>
+    <lastmod>2024-12-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=800</image:loc>
+      <image:title>Corsair K100 RGB</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-007</loc>
+    <lastmod>2024-12-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800</image:loc>
+      <image:title>Sony WH-1000XM5</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-008</loc>
+    <lastmod>2024-12-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800</image:loc>
+      <image:title>Samsung Odyssey G7 32"</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-009</loc>
+    <lastmod>2024-12-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800</image:loc>
+      <image:title>Blue Yeti USB Microphone</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-010</loc>
+    <lastmod>2024-12-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1625620615458-b8e7b2e1ba1c?w=800</image:loc>
+      <image:title>Logitech C920 Webcam</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-011</loc>
+    <lastmod>2024-12-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800</image:loc>
+      <image:title>Elgato Stream Deck</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-012</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1591488320449-011701bb6704?w=800</image:loc>
+      <image:title>NZXT Kraken Z73 RGB</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-013</loc>
+    <lastmod>2024-12-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1625948515291-69613efd103f?w=800</image:loc>
+      <image:title>Anker PowerExpand USB Hub</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-014</loc>
+    <lastmod>2024-12-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1618377385526-d3b26e33a0e7?w=800</image:loc>
+      <image:title>Secretlab TITAN Evo 2022</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/catalog/prod-015</loc>
+    <lastmod>2024-12-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=800</image:loc>
+      <image:title>BenQ ScreenBar Halo</image:title>
+    </image:image>
+  </url>
+
+  <!-- Blog Posts -->
+  <url>
+    <loc>https://ggpoint.uz/blog/top-10-gaming-peripherals-2025</loc>
+    <lastmod>2024-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/blog/choose-perfect-monitor</loc>
+    <lastmod>2024-12-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ggpoint.uz/blog/mechanical-keyboard-switches-guide</loc>
+    <lastmod>2024-12-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

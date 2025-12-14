@@ -100,46 +100,46 @@
 
 ## 6. Detailed Task List
 ### 6.1 Global Infrastructure
-- [ ] Initialize **Angular** project with `ng new --ssr` (enable SSR from the start)
-- [ ] Install and configure Tailwind CSS (`ng add @angular/material`)
-- [ ] Install **Angular Material** with `ng add @angular/material`
-- [ ] Configure custom Material theme with Tailwind integration
-- [ ] Set up language switcher (RU/UZ) using `@ngx-translate/core` with localStorage
-- [ ] Implement dark/light mode service with Angular Material theming
+- [x] Initialize **Angular** project with `ng new --ssr` (enable SSR from the start)
+- [x] Install and configure Tailwind CSS (`ng add @angular/material`)
+- [x] Install **Angular Material** with `ng add @angular/material`
+- [x] Configure custom Material theme with Tailwind integration
+- [x] Set up language switcher (RU/UZ) using `@ngx-translate/core` with localStorage
+- [x] Implement dark/light mode service with Angular Material theming
 
 ### 6.2 UI Components
-- [ ] Configure Angular Material modules: MatButton, MatCard, MatDialog, MatExpansionPanel, MatSelect, MatSidenav
-- [ ] Header component (logo, nav, language selector, theme toggle, hamburger menu with MatSidenav)
-- [ ] Footer component (links, contacts, socials, copyright)
-- [ ] ProductCard component (using MatCard, badges, buttons)
-- [ ] BlogCard component (MatCard with image, title, excerpt)
-- [ ] Telegram Floating Button component (mobile, fixed position)
+- [x] Configure Angular Material modules: MatButton, MatCard, MatDialog, MatExpansionPanel, MatSelect, MatSidenav
+- [x] Header component (logo, nav, language selector, theme toggle, hamburger menu with MatSidenav)
+- [x] Footer component (links, contacts, socials, copyright)
+- [x] ProductCard component (using MatCard, badges, buttons)
+- [x] BlogCard component (MatCard with image, title, excerpt)
+- [x] Telegram Floating Button component (mobile, fixed position)
 
 ### 6.3 Pages
-- [ ] Home: hero section, featured products, categories, blog preview
-- [ ] Catalog: product grid by category, simple filters (MatSelect, pipes)
-- [ ] Product Detail: image gallery, specs table, "Order via Telegram" button, related products
-- [ ] Blog listing: search input, category filter, pinned post
-- [ ] Blog post: TOC, share buttons, CTA banner, related posts
-- [ ] About, Contact (reactive form with validation), FAQ (MatExpansionPanel)
+- [x] Home: hero section, featured products, categories, blog preview
+- [x] Catalog: product grid by category, simple filters (MatSelect, pipes)
+- [x] Product Detail: image gallery, specs table, "Order via Telegram" button, related products
+- [x] Blog listing: search input, category filter, pinned post
+- [x] Blog post: TOC, share buttons, CTA banner, related posts
+- [x] About, Contact (reactive form with validation), FAQ (MatExpansionPanel)
 
 ### 6.4 Content & Data
-- [ ] Create 15-20 sample products (JSON)
-- [ ] Write 3 blog posts (Markdown with `ngx-markdown` or static JSON)
-- [ ] Add placeholder images (unsplash.it or local)
+- [x] Create 15-20 sample products (JSON)
+- [x] Write 3 blog posts (Markdown with `ngx-markdown` or static JSON)
+- [x] Add placeholder images (unsplash.it or local)
 
 ### 6.5 SEO & Optimization
-- [ ] Schema.org structured data for Organization, Product, BlogPosting, FAQPage
-- [ ] Open Graph & Twitter Cards using Angular Meta and Title services
-- [ ] Sitemap generation (manual or using `@angular/ssr` prerendering)
-- [ ] robots.txt in public folder (allow all)
-- [ ] Lighthouse ≥ 90 score on Mobile (SSR should help significantly)
+- [x] Schema.org structured data for Organization, Product, BlogPosting, FAQPage
+- [x] Open Graph & Twitter Cards using Angular Meta and Title services
+- [x] Sitemap generation (manual or using `@angular/ssr` prerendering)
+- [x] robots.txt in public folder (allow all)
+- [x] Lighthouse ≥ 90 score on Mobile (SSR should help significantly)
 
 ### 6.6 Testing & Release
-- [ ] Cross-browser: Chrome, Firefox, Safari, Edge
-- [ ] Responsive checks 320-1440 px
-- [ ] Telegram CTA verification (desktop/mobile)
-- [ ] Deployment guide: Build SSR with `npm run build:ssr` and deploy to Vercel/Firebase/Cloud Run/Render
+- [x] Cross-browser: Chrome, Firefox, Safari, Edge
+- [x] Responsive checks 320-1440 px
+- [x] Telegram CTA verification (desktop/mobile)
+- [x] Deployment guide: Build SSR with `npm run build:ssr` and deploy to Vercel/Firebase/Cloud Run/Render
 
 ## 7. Resources & Dependencies
 - **Angular 17+** (with SSR support via Angular Universal)

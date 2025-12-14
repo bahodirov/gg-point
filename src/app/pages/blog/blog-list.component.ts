@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 import { BlogCardComponent } from '../../shared/components/blog-card/blog-card.component';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { BlogService } from '../../shared/services/blog.service';
@@ -23,6 +24,7 @@ import { BlogPost } from '../../shared/models/blog.model';
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    TranslateModule,
     BlogCardComponent,
     TelegramButtonComponent
   ],
@@ -32,7 +34,7 @@ import { BlogPost } from '../../shared/models/blog.model';
         <!-- Page Header -->
         <div class="mb-8">
           <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Blog
+            {{ 'blog.title' | translate }}
           </h1>
         </div>
 
@@ -41,11 +43,11 @@ import { BlogPost } from '../../shared/models/blog.model';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Search -->
             <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Search</mat-label>
+              <mat-label>{{ 'blog.search' | translate }}</mat-label>
               <input matInput 
                      [(ngModel)]="searchQuery" 
                      (ngModelChange)="applyFilters()"
-                     placeholder="Search articles...">
+                     [placeholder]="'blog.search' | translate">
               <mat-icon matPrefix>search</mat-icon>
             </mat-form-field>
 
