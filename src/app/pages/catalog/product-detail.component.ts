@@ -277,12 +277,15 @@ export class ProductDetailComponent implements OnInit {
 
   private updateSEO(product: Product): void {
     const currentUrl = `https://ggpoint.uz/catalog/${product.id}`;
+    const priceFormatted = product.price.toLocaleString('en-US');
+    const availability = product.inStock ? 'In Stock - Order Now' : 'Currently Out of Stock';
+    const discountText = product.originalPrice ? ` SALE ${Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF!` : '';
     
-    // Update meta tags
+    // Enhanced meta tags with location-based keywords
     this.seoService.updateMetaTags({
-      title: `${product.name} - GGPoint | Buy in Uzbekistan`,
-      description: `${product.description} Price: ${product.price.toLocaleString()} UZS. ${product.inStock ? 'In stock' : 'Out of stock'}. Order via Telegram.`,
-      keywords: `${product.name}, ${product.category}, ${product.tags.join(', ')}, buy ${product.name} Uzbekistan, ${product.name} price Tashkent, компьютерные аксессуары`,
+      title: `Buy ${product.name} in Tashkent, Uzbekistan | ${priceFormatted} UZS${discountText} | GGPoint`,
+      description: `${product.name} - ${product.description} ⚡ Price: ${priceFormatted} UZS | ${availability} | Free delivery in Tashkent | Official warranty | Authentic ${product.category} | Order via Telegram. Best computer accessories store in Uzbekistan!`,
+      keywords: `${product.name}, ${product.name} price, ${product.name} buy online, ${product.name} Uzbekistan, ${product.name} Tashkent, ${product.category} Tashkent, ${product.category} Uzbekistan, ${product.tags.join(', ')}, buy ${product.category} online, computer accessories Tashkent, gaming peripherals Uzbekistan, купить ${product.name}, ${product.name} цена Ташкент, компьютерные аксессуары Ташкент`,
       image: product.thumbnail,
       type: 'product',
       canonical: currentUrl,

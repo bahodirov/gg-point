@@ -1,24 +1,87 @@
+# Robots.txt for GGPoint - Computer Accessories Store
 # https://www.robotstxt.org/robotstxt.html
 
-# Allow all crawlers
+# Global rules for all crawlers
 User-agent: *
 Allow: /
+Allow: /catalog
+Allow: /catalog/*
+Allow: /blog
+Allow: /blog/*
+Allow: /about
+Allow: /contact
+Allow: /faq
 Disallow: /api/
 Disallow: /admin/
+Disallow: /private/
+Disallow: /*.json$
+Disallow: /*?*search=
+Disallow: /*?*sort=
+Disallow: /*?*filter=
 
-# Special rules for aggressive crawlers
-User-agent: Yandex
-Crawl-delay: 1
-Allow: /
-
+# Google Bot - Full access with optimized crawl rate
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0.5
 
+# Google Image Bot - Allow all images
+User-agent: Googlebot-Image
+Allow: /
+Allow: /assets/images/
+Allow: /assets/products/
+
+# Yandex Bot - Popular in Uzbekistan/Russia
+User-agent: Yandex
+Allow: /
+Crawl-delay: 1
+
+# Yandex Images
+User-agent: YandexImages
+Allow: /
+Allow: /assets/images/
+Allow: /assets/products/
+
+# Bing Bot
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 1
 
-# Sitemap locations
+# Baidu Bot - Chinese search engine
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+
+# Facebook Bot (for Open Graph previews)
+User-agent: Facebot
+Allow: /
+
+# Twitter Bot (for Twitter Card previews)
+User-agent: Twitterbot
+Allow: /
+
+# Telegram Bot (for link previews)
+User-agent: TelegramBot
+Allow: /
+
+# Block bad bots and scrapers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemap locations (IMPORTANT!)
 Sitemap: https://ggpoint.uz/sitemap.xml
 
-# Host (for Yandex)
+# Host directive (preferred domain for Yandex)
 Host: https://ggpoint.uz

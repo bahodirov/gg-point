@@ -227,10 +227,51 @@ export class ContactComponent implements OnInit {
 
   private updateSEO(): void {
     this.seoService.updateMetaTags({
-      title: 'Contact Us - GGPoint',
-      description: 'Get in touch with GGPoint. Contact us for any questions about computer accessories and products.',
-      keywords: 'contact, support, ggpoint, help',
-      type: 'website'
+      title: 'Contact GGPoint - Computer Accessories Store in Tashkent | Get Support 24/7',
+      description: 'Contact GGPoint for computer accessories inquiries in Uzbekistan. Reach us via Telegram, phone +998 90 123 45 67, or email info@ggpoint.uz. Expert support available 24/7. Visit our Tashkent showroom on Amir Temur Avenue.',
+      keywords: 'contact ggpoint, computer store contact Tashkent, gaming store support Uzbekistan, ggpoint telegram, help desk, customer service, связаться с нами, контакты магазина компьютерных аксессуаров',
+      type: 'website',
+      canonical: 'https://ggpoint.uz/contact',
+      languageAlternates: [
+        { lang: 'en', url: 'https://ggpoint.uz/contact' },
+        { lang: 'ru', url: 'https://ggpoint.uz/contact' },
+        { lang: 'uz', url: 'https://ggpoint.uz/contact' }
+      ]
     });
+
+    // Add ContactPage Schema
+    const contactPageSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'ContactPage',
+      'name': 'Contact GGPoint',
+      'description': 'Get in touch with GGPoint for computer accessories inquiries',
+      'url': 'https://ggpoint.uz/contact',
+      'mainEntity': {
+        '@type': 'LocalBusiness',
+        'name': 'GGPoint',
+        'telephone': '+998-90-123-45-67',
+        'email': 'info@ggpoint.uz',
+        'address': {
+          '@type': 'PostalAddress',
+          'streetAddress': 'Amir Temur Avenue',
+          'addressLocality': 'Tashkent',
+          'addressCountry': 'UZ'
+        },
+        'openingHoursSpecification': {
+          '@type': 'OpeningHoursSpecification',
+          'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          'opens': '09:00',
+          'closes': '20:00'
+        }
+      }
+    };
+    this.seoService.addStructuredData(contactPageSchema, 'contact-page-schema');
+
+    // Add Breadcrumb Schema
+    const breadcrumbSchema = this.seoService.generateBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: 'Contact Us' }
+    ]);
+    this.seoService.addStructuredData(breadcrumbSchema, 'breadcrumb-schema');
   }
 }

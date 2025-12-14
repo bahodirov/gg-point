@@ -213,6 +213,10 @@ export class HomeComponent implements OnInit {
     // Add WebSite Schema with search functionality
     const websiteSchema = this.seoService.generateWebSiteSchema();
     this.seoService.addStructuredData(websiteSchema, 'website-schema');
+
+    // Add LocalBusiness Schema for better local SEO
+    const localBusinessSchema = this.seoService.generateLocalBusinessSchema();
+    this.seoService.addStructuredData(localBusinessSchema, 'localbusiness-schema');
   }
 
   getCategoryIcon(categoryName: string): string {

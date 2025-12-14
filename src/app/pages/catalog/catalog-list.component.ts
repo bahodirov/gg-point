@@ -243,10 +243,49 @@ export class CatalogListComponent implements OnInit {
 
   private updateSEO(): void {
     this.seoService.updateMetaTags({
-      title: 'Catalog - GGPoint Computer Accessories',
-      description: 'Browse our wide selection of computer accessories, gaming peripherals, and gadgets.',
-      keywords: 'catalog, products, computer accessories, gaming',
-      type: 'website'
+      title: 'Computer Accessories Catalog - Buy Gaming & Office Peripherals in Uzbekistan | GGPoint',
+      description: 'Shop premium computer accessories in Uzbekistan: gaming mice, mechanical keyboards, monitors, headsets & more. Free delivery in Tashkent. In-stock items. Order via Telegram. Best prices guaranteed!',
+      keywords: 'computer accessories catalog, gaming peripherals Uzbekistan, buy gaming mouse Tashkent, mechanical keyboard Uzbekistan, gaming headset, monitors, компьютерные аксессуары каталог, игровые устройства, купить игровую мышь Ташкент, механическая клавиатура',
+      type: 'website',
+      canonical: 'https://ggpoint.uz/catalog',
+      languageAlternates: [
+        { lang: 'en', url: 'https://ggpoint.uz/catalog' },
+        { lang: 'ru', url: 'https://ggpoint.uz/catalog' },
+        { lang: 'uz', url: 'https://ggpoint.uz/catalog' }
+      ]
     });
+
+    // Add ItemList Schema for product catalog
+    const itemListSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      'name': 'GGPoint Computer Accessories Catalog',
+      'description': 'Browse our complete catalog of computer accessories and gaming peripherals',
+      'numberOfItems': this.allProducts.length,
+      'itemListElement': this.allProducts.slice(0, 10).map((product, index) => ({
+        '@type': 'ListItem',
+        'position': index + 1,
+        'item': {
+          '@type': 'Product',
+          'name': product.name,
+          'url': `https://ggpoint.uz/catalog/${product.id}`,
+          'image': product.thumbnail,
+          'offers': {
+            '@type': 'Offer',
+            'price': product.price,
+            'priceCurrency': 'UZS',
+            'availability': product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+          }
+        }
+      }))
+    };
+    this.seoService.addStructuredData(itemListSchema, 'catalog-itemlist-schema');
+
+    // Add Breadcrumb Schema
+    const breadcrumbSchema = this.seoService.generateBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: 'Catalog' }
+    ]);
+    this.seoService.addStructuredData(breadcrumbSchema, 'breadcrumb-schema');
   }
 }

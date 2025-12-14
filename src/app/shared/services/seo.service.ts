@@ -196,7 +196,8 @@ export class SeoService {
       address: {
         '@type': 'PostalAddress',
         addressCountry: 'UZ',
-        addressRegion: 'Tashkent'
+        addressRegion: 'Tashkent',
+        addressLocality: 'Tashkent'
       },
       contactPoint: {
         '@type': 'ContactPoint',
@@ -206,6 +207,68 @@ export class SeoService {
       sameAs: [
         'https://t.me/ggpoint_bot'
       ]
+    };
+  }
+
+  generateLocalBusinessSchema(): any {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Store',
+      name: 'GGPoint',
+      description: 'Premium computer accessories and gaming peripherals store in Tashkent, Uzbekistan',
+      url: 'https://ggpoint.uz',
+      telephone: '+998-XX-XXX-XXXX',
+      email: 'info@ggpoint.uz',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Tashkent',
+        addressLocality: 'Tashkent',
+        addressRegion: 'Tashkent',
+        addressCountry: 'UZ'
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: 41.2995,
+        longitude: 69.2401
+      },
+      priceRange: '$$',
+      openingHoursSpecification: [
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          opens: '09:00',
+          closes: '21:00'
+        }
+      ],
+      paymentAccepted: 'Cash, Credit Card, Online Payment',
+      currenciesAccepted: 'UZS',
+      areaServed: {
+        '@type': 'City',
+        name: 'Tashkent'
+      },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Computer Accessories',
+        itemListElement: [
+          {
+            '@type': 'OfferCatalog',
+            name: 'Gaming Peripherals',
+            itemListElement: [
+              { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Gaming Mice' } },
+              { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Gaming Keyboards' } },
+              { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Gaming Headsets' } }
+            ]
+          },
+          {
+            '@type': 'OfferCatalog',
+            name: 'Monitors',
+            itemListElement: [
+              { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Gaming Monitors' } },
+              { '@type': 'Offer', itemOffered: { '@type': 'Product', name: '4K Monitors' } }
+            ]
+          }
+        ]
+      }
     };
   }
 

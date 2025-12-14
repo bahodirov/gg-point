@@ -157,10 +157,40 @@ export class FaqComponent implements OnInit {
 
   private updateSEO(): void {
     this.seoService.updateMetaTags({
-      title: 'FAQ - GGPoint',
-      description: 'Frequently asked questions about GGPoint products, ordering, delivery, and warranty.',
-      keywords: 'faq, questions, help, support, ggpoint',
-      type: 'website'
+      title: 'FAQ - Frequently Asked Questions | GGPoint Computer Accessories Store Uzbekistan',
+      description: 'Find answers to common questions about GGPoint: How to order computer accessories in Uzbekistan, payment methods, delivery to Tashkent, warranty policy, authentic products, and return policy. Get instant support 24/7!',
+      keywords: 'faq computer accessories, how to order gaming peripherals Uzbekistan, delivery Tashkent, warranty policy, return policy, authentic products, часто задаваемые вопросы, доставка Ташкент, гарантия',
+      type: 'website',
+      canonical: 'https://ggpoint.uz/faq',
+      languageAlternates: [
+        { lang: 'en', url: 'https://ggpoint.uz/faq' },
+        { lang: 'ru', url: 'https://ggpoint.uz/faq' },
+        { lang: 'uz', url: 'https://ggpoint.uz/faq' }
+      ]
     });
+
+    // Add FAQPage Schema
+    const faqPageSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'name': 'Frequently Asked Questions - GGPoint',
+      'description': 'Common questions about ordering, delivery, warranty, and products at GGPoint',
+      'mainEntity': this.faqs.map(faq => ({
+        '@type': 'Question',
+        'name': faq.question,
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': faq.answer
+        }
+      }))
+    };
+    this.seoService.addStructuredData(faqPageSchema, 'faq-page-schema');
+
+    // Add Breadcrumb Schema
+    const breadcrumbSchema = this.seoService.generateBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: 'FAQ' }
+    ]);
+    this.seoService.addStructuredData(breadcrumbSchema, 'breadcrumb-schema');
   }
 }

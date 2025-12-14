@@ -146,10 +146,49 @@ export class AboutComponent implements OnInit {
 
   private updateSEO(): void {
     this.seoService.updateMetaTags({
-      title: 'About Us - GGPoint',
-      description: 'Learn more about GGPoint, your trusted computer accessories store in Uzbekistan.',
-      keywords: 'about, company, ggpoint, computer accessories, Uzbekistan',
-      type: 'website'
+      title: 'About GGPoint - Leading Computer Accessories Store in Tashkent, Uzbekistan',
+      description: 'GGPoint is Uzbekistan\'s premier computer accessories store in Tashkent. We offer authentic gaming peripherals, office equipment, and tech products with expert support, competitive prices, and 24/7 service. 500+ happy customers trust us!',
+      keywords: 'about ggpoint, computer store Tashkent, gaming store Uzbekistan, authentic computer accessories, tech store Tashkent, о компании, компьютерный магазин Ташкент, магазин игровых устройств',
+      type: 'website',
+      canonical: 'https://ggpoint.uz/about',
+      languageAlternates: [
+        { lang: 'en', url: 'https://ggpoint.uz/about' },
+        { lang: 'ru', url: 'https://ggpoint.uz/about' },
+        { lang: 'uz', url: 'https://ggpoint.uz/about' }
+      ]
     });
+
+    // Add AboutPage Schema
+    const aboutPageSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      'name': 'About GGPoint',
+      'description': 'Learn about GGPoint - your trusted computer accessories store in Uzbekistan',
+      'url': 'https://ggpoint.uz/about',
+      'mainEntity': {
+        '@type': 'Organization',
+        'name': 'GGPoint',
+        'url': 'https://ggpoint.uz',
+        'logo': 'https://ggpoint.uz/assets/images/logo.png',
+        'description': 'Premium computer accessories and gaming peripherals store in Tashkent, Uzbekistan',
+        'foundingDate': '2023',
+        'numberOfEmployees': {
+          '@type': 'QuantitativeValue',
+          'value': '10-20'
+        },
+        'areaServed': {
+          '@type': 'Country',
+          'name': 'Uzbekistan'
+        }
+      }
+    };
+    this.seoService.addStructuredData(aboutPageSchema, 'about-page-schema');
+
+    // Add Breadcrumb Schema
+    const breadcrumbSchema = this.seoService.generateBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: 'About Us' }
+    ]);
+    this.seoService.addStructuredData(breadcrumbSchema, 'breadcrumb-schema');
   }
 }
