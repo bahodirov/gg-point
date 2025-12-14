@@ -1,0 +1,110 @@
+{
+  "header": {
+    "home": "Bosh sahifa",
+    "catalog": "Katalog",
+    "blog": "Blog",
+    "about": "Biz haqimizda",
+    "contact": "Aloqa",
+    "faq": "Savol-javob",
+    "language": "Til"
+  },
+  "footer": {
+    "about": "Kompaniya haqida",
+    "aboutText": "GGPoint - O'zbekistonda kompyuter aksessuarlari va gadjetlar dunyosida ishonchli hamkoringiz.",
+    "quickLinks": "Tez havolalar",
+    "categories": "Kategoriyalar",
+    "followUs": "Bizni kuzatib boring",
+    "copyright": "© 2025 GGPoint. Barcha huquqlar himoyalangan."
+  },
+  "home": {
+    "hero": {
+      "title": "Zamonaviy kompyuter aksessuarlari",
+      "subtitle": "O'zingiz uchun eng yaxshi jihozlarni toping",
+      "cta": "Katalogni ko'rish"
+    },
+    "featured": "Mashhur mahsulotlar",
+    "categories": "Kategoriyalar",
+    "latestBlog": "So'nggi maqolalar",
+    "viewAll": "Barchasini ko'rish"
+  },
+  "catalog": {
+    "title": "Katalog",
+    "filters": "Filtrlar",
+    "category": "Kategoriya",
+    "allCategories": "Barcha kategoriyalar",
+    "priceRange": "Narx oralig'i",
+    "inStock": "Mavjud",
+    "sortBy": "Tartiblash",
+    "sortOptions": {
+      "default": "Standart",
+      "priceLow": "Narx: o'sish bo'yicha",
+      "priceHigh": "Narx: kamayish bo'yicha",
+      "newest": "Yangilar"
+    },
+    "noProducts": "Mahsulotlar topilmadi"
+  },
+  "product": {
+    "price": "Narx",
+    "inStock": "Mavjud",
+    "outOfStock": "Mavjud emas",
+    "orderViaTelegram": "Telegram orqali buyurtma",
+    "specifications": "Xususiyatlari",
+    "description": "Tavsif",
+    "relatedProducts": "O'xshash mahsulotlar",
+    "features": "Xususiyatlari"
+  },
+  "blog": {
+    "title": "Blog",
+    "readMore": "Ko'proq o'qish",
+    "readTime": "daqiqa o'qish",
+    "category": "Kategoriya",
+    "search": "Maqolalarni qidirish...",
+    "noResults": "Maqolalar topilmadi",
+    "relatedPosts": "O'xshash maqolalar",
+    "sharePost": "Ulashish"
+  },
+  "about": {
+    "title": "Biz haqimizda",
+    "mission": "Bizning maqsadimiz",
+    "missionText": "O'zbekistonda mijozlarimizga sifatli kompyuter aksessuarlari va a'lo darajadagi xizmat ko'rsatish.",
+    "whyChooseUs": "Nima uchun biz?",
+    "values": {
+      "quality": {
+        "title": "Sifat",
+        "text": "Faqat ishonchli ishlab chiqaruvchilardan asl mahsulotlar"
+      },
+      "service": {
+        "title": "Xizmat",
+        "text": "Tez yetkazib berish va professional maslahat"
+      },
+      "prices": {
+        "title": "Narxlar",
+        "text": "Raqobatbardosh narxlar va muntazam aksiyalar"
+      }
+    }
+  },
+  "contact": {
+    "title": "Aloqa",
+    "getInTouch": "Biz bilan bog'laning",
+    "name": "Ism",
+    "email": "Email",
+    "message": "Xabar",
+    "send": "Yuborish",
+    "phone": "Telefon",
+    "address": "Manzil",
+    "hours": "Ish vaqti",
+    "success": "Xabar yuborildi!",
+    "error": "Xatolik yuz berdi. Keyinroq urinib ko'ring."
+  },
+  "faq": {
+    "title": "Ko'p so'raladigan savollar"
+  },
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik yuz berdi",
+    "close": "Yopish",
+    "viewMore": "Ko'proq ko'rsatish",
+    "backToTop": "Yuqoriga",
+    "currency": "so'm"
+  }
+}

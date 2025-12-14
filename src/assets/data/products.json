@@ -1,0 +1,370 @@
+{
+  "products": [
+    {
+      "id": "prod-001",
+      "name": "Logitech MX Master 3S",
+      "nameUz": "Logitech MX Master 3S",
+      "category": "Mice",
+      "price": 1250000,
+      "originalPrice": 1450000,
+      "currency": "UZS",
+      "description": "Advanced wireless mouse with ultra-fast scrolling and quiet clicks. Ergonomic design for all-day comfort.",
+      "descriptionUz": "Ultra tez aylanma va jimgina kliklar bilan ilg'or simsiz sichqoncha. Kun bo'yi qulaylik uchun ergonomik dizayn.",
+      "specifications": [
+        { "key": "Sensor", "value": "8000 DPI", "keyUz": "Sensor", "valueUz": "8000 DPI" },
+        { "key": "Connectivity", "value": "Bluetooth, USB-C", "keyUz": "Ulanish", "valueUz": "Bluetooth, USB-C" },
+        { "key": "Battery", "value": "70 days", "keyUz": "Batareya", "valueUz": "70 kun" },
+        { "key": "Weight", "value": "141g", "keyUz": "Og'irligi", "valueUz": "141g" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1527814050087-3793815479db?w=800",
+        "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400",
+      "inStock": true,
+      "featured": true,
+      "tags": ["wireless", "productivity", "ergonomic"],
+      "createdAt": "2024-12-01T00:00:00Z"
+    },
+    {
+      "id": "prod-002",
+      "name": "Keychron K8 Pro",
+      "nameUz": "Keychron K8 Pro",
+      "category": "Keyboards",
+      "price": 2100000,
+      "currency": "UZS",
+      "description": "Wireless mechanical keyboard with hot-swappable switches and RGB backlight. Perfect for both gaming and productivity.",
+      "descriptionUz": "Simsiz mexanik klaviatura o'zgartirilishi mumkin bo'lgan tugmalar va RGB yorug'lik bilan. O'yin va ish uchun ideal.",
+      "specifications": [
+        { "key": "Layout", "value": "TKL (80%)", "keyUz": "Layout", "valueUz": "TKL (80%)" },
+        { "key": "Switches", "value": "Hot-swappable", "keyUz": "Tugmalar", "valueUz": "O'zgartirilishi mumkin" },
+        { "key": "Connectivity", "value": "Bluetooth 5.1, USB-C", "keyUz": "Ulanish", "valueUz": "Bluetooth 5.1, USB-C" },
+        { "key": "Battery", "value": "4000mAh", "keyUz": "Batareya", "valueUz": "4000mAh" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800",
+        "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1595225476474-87563907a212?w=400",
+      "inStock": true,
+      "featured": true,
+      "tags": ["mechanical", "wireless", "rgb", "gaming"],
+      "createdAt": "2024-12-02T00:00:00Z"
+    },
+    {
+      "id": "prod-003",
+      "name": "SteelSeries Arctis Nova Pro",
+      "nameUz": "SteelSeries Arctis Nova Pro",
+      "category": "Headsets",
+      "price": 4500000,
+      "originalPrice": 5200000,
+      "currency": "UZS",
+      "description": "Premium gaming headset with active noise cancellation and Hi-Res audio. Ultimate immersive experience.",
+      "descriptionUz": "Aktiv shovqinni yo'q qilish va yuqori sifatli audio bilan premium gaming quloqchin. Eng yaxshi tajriba.",
+      "specifications": [
+        { "key": "Driver", "value": "40mm Neodymium", "keyUz": "Drayveri", "valueUz": "40mm Neodymium" },
+        { "key": "Frequency", "value": "10-40,000 Hz", "keyUz": "Chastota", "valueUz": "10-40,000 Hz" },
+        { "key": "Connectivity", "value": "USB-C, 3.5mm", "keyUz": "Ulanish", "valueUz": "USB-C, 3.5mm" },
+        { "key": "Features", "value": "ANC, Hi-Res Audio", "keyUz": "Xususiyatlar", "valueUz": "ANC, Hi-Res Audio" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800",
+        "https://images.unsplash.com/photo-1599669454699-248893623440?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400",
+      "inStock": true,
+      "featured": true,
+      "tags": ["gaming", "premium", "anc", "wireless"],
+      "createdAt": "2024-12-03T00:00:00Z"
+    },
+    {
+      "id": "prod-004",
+      "name": "LG UltraGear 27\" 4K Monitor",
+      "nameUz": "LG UltraGear 27\" 4K Monitor",
+      "category": "Monitors",
+      "price": 6800000,
+      "currency": "UZS",
+      "description": "27-inch 4K UHD gaming monitor with 144Hz refresh rate and 1ms response time. G-Sync compatible.",
+      "descriptionUz": "27-dyuymli 4K UHD gaming monitor 144Hz yangilanish tezligi va 1ms javob vaqti bilan. G-Sync mos.",
+      "specifications": [
+        { "key": "Resolution", "value": "3840x2160 (4K)", "keyUz": "Ruxsat", "valueUz": "3840x2160 (4K)" },
+        { "key": "Refresh Rate", "value": "144Hz", "keyUz": "Yangilanish", "valueUz": "144Hz" },
+        { "key": "Response Time", "value": "1ms", "keyUz": "Javob vaqti", "valueUz": "1ms" },
+        { "key": "Panel Type", "value": "IPS", "keyUz": "Panel turi", "valueUz": "IPS" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800",
+        "https://images.unsplash.com/photo-1585792180666-f7347c490ee2?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400",
+      "inStock": true,
+      "featured": true,
+      "tags": ["4k", "gaming", "144hz", "monitor"],
+      "createdAt": "2024-12-04T00:00:00Z"
+    },
+    {
+      "id": "prod-005",
+      "name": "Razer DeathAdder V3 Pro",
+      "nameUz": "Razer DeathAdder V3 Pro",
+      "category": "Mice",
+      "price": 1850000,
+      "currency": "UZS",
+      "description": "Ultra-lightweight wireless gaming mouse with Focus Pro 30K sensor. Designed for competitive gaming.",
+      "descriptionUz": "Focus Pro 30K sensor bilan juda engil simsiz gaming sichqoncha. Raqobat o'yinlari uchun mo'ljallangan.",
+      "specifications": [
+        { "key": "Sensor", "value": "Focus Pro 30K", "keyUz": "Sensor", "valueUz": "Focus Pro 30K" },
+        { "key": "DPI", "value": "Up to 30,000", "keyUz": "DPI", "valueUz": "30,000 gacha" },
+        { "key": "Weight", "value": "63g", "keyUz": "Og'irligi", "valueUz": "63g" },
+        { "key": "Battery", "value": "90 hours", "keyUz": "Batareya", "valueUz": "90 soat" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1563297007-0686b7003af7?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1563297007-0686b7003af7?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["gaming", "wireless", "lightweight"],
+      "createdAt": "2024-12-05T00:00:00Z"
+    },
+    {
+      "id": "prod-006",
+      "name": "Corsair K100 RGB",
+      "nameUz": "Corsair K100 RGB",
+      "category": "Keyboards",
+      "price": 3200000,
+      "currency": "UZS",
+      "description": "Premium mechanical gaming keyboard with optical switches and per-key RGB lighting. Aluminum frame construction.",
+      "descriptionUz": "Optik tugmalar va har bir tugmada RGB yorug'lik bilan premium mexanik gaming klaviatura. Alyuminiy ramka.",
+      "specifications": [
+        { "key": "Switches", "value": "Optical-Mechanical", "keyUz": "Tugmalar", "valueUz": "Optik-Mexanik" },
+        { "key": "Layout", "value": "Full-size (100%)", "keyUz": "Layout", "valueUz": "To'liq hajmda (100%)" },
+        { "key": "Backlighting", "value": "Per-key RGB", "keyUz": "Yorug'lik", "valueUz": "Har bir tugmada RGB" },
+        { "key": "Frame", "value": "Aluminum", "keyUz": "Ramka", "valueUz": "Alyuminiy" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["mechanical", "gaming", "rgb", "premium"],
+      "createdAt": "2024-12-06T00:00:00Z"
+    },
+    {
+      "id": "prod-007",
+      "name": "Sony WH-1000XM5",
+      "nameUz": "Sony WH-1000XM5",
+      "category": "Headsets",
+      "price": 3800000,
+      "currency": "UZS",
+      "description": "Industry-leading noise cancellation with exceptional sound quality. Perfect for work and travel.",
+      "descriptionUz": "Ajoyib ovoz sifati bilan sanoatdagi eng yaxshi shovqinni yo'q qilish. Ish va sayohat uchun ideal.",
+      "specifications": [
+        { "key": "Driver", "value": "30mm", "keyUz": "Drayveri", "valueUz": "30mm" },
+        { "key": "Battery", "value": "30 hours", "keyUz": "Batareya", "valueUz": "30 soat" },
+        { "key": "Connectivity", "value": "Bluetooth 5.2, USB-C", "keyUz": "Ulanish", "valueUz": "Bluetooth 5.2, USB-C" },
+        { "key": "Features", "value": "ANC, LDAC, Multipoint", "keyUz": "Xususiyatlar", "valueUz": "ANC, LDAC, Multipoint" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["wireless", "anc", "premium", "bluetooth"],
+      "createdAt": "2024-12-07T00:00:00Z"
+    },
+    {
+      "id": "prod-008",
+      "name": "Samsung Odyssey G7 32\"",
+      "nameUz": "Samsung Odyssey G7 32\"",
+      "category": "Monitors",
+      "price": 5500000,
+      "currency": "UZS",
+      "description": "32-inch curved gaming monitor with 240Hz refresh rate and 1ms response time. QLED technology.",
+      "descriptionUz": "32-dyuymli egri gaming monitor 240Hz yangilanish tezligi va 1ms javob vaqti bilan. QLED texnologiyasi.",
+      "specifications": [
+        { "key": "Resolution", "value": "2560x1440 (QHD)", "keyUz": "Ruxsat", "valueUz": "2560x1440 (QHD)" },
+        { "key": "Refresh Rate", "value": "240Hz", "keyUz": "Yangilanish", "valueUz": "240Hz" },
+        { "key": "Curvature", "value": "1000R", "keyUz": "Egrilik", "valueUz": "1000R" },
+        { "key": "Panel Type", "value": "QLED VA", "keyUz": "Panel turi", "valueUz": "QLED VA" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["gaming", "curved", "240hz", "qled"],
+      "createdAt": "2024-12-08T00:00:00Z"
+    },
+    {
+      "id": "prod-009",
+      "name": "Blue Yeti USB Microphone",
+      "nameUz": "Blue Yeti USB Mikrofon",
+      "category": "Accessories",
+      "price": 1650000,
+      "currency": "UZS",
+      "description": "Professional USB microphone with multiple pattern modes. Perfect for streaming, podcasting, and recording.",
+      "descriptionUz": "Ko'p naqshli rejimlar bilan professional USB mikrofon. Striming, podkast va yozish uchun ideal.",
+      "specifications": [
+        { "key": "Polar Patterns", "value": "4 modes", "keyUz": "Rejimlar", "valueUz": "4 ta rejim" },
+        { "key": "Sample Rate", "value": "48kHz", "keyUz": "Namunaviy tezlik", "valueUz": "48kHz" },
+        { "key": "Connectivity", "value": "USB", "keyUz": "Ulanish", "valueUz": "USB" },
+        { "key": "Mute Button", "value": "Yes", "keyUz": "Mute tugmasi", "valueUz": "Ha" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["microphone", "usb", "streaming", "recording"],
+      "createdAt": "2024-12-09T00:00:00Z"
+    },
+    {
+      "id": "prod-010",
+      "name": "Logitech C920 Webcam",
+      "nameUz": "Logitech C920 Veb-kamera",
+      "category": "Accessories",
+      "price": 850000,
+      "currency": "UZS",
+      "description": "Full HD 1080p webcam with auto-focus and dual stereo mics. Ideal for video calls and streaming.",
+      "descriptionUz": "Avto-fokus va ikki stereo mikrofon bilan Full HD 1080p veb-kamera. Video qo'ng'iroqlar va striming uchun ideal.",
+      "specifications": [
+        { "key": "Resolution", "value": "1920x1080 (1080p)", "keyUz": "Ruxsat", "valueUz": "1920x1080 (1080p)" },
+        { "key": "Frame Rate", "value": "30fps", "keyUz": "Kadr tezligi", "valueUz": "30fps" },
+        { "key": "Focus", "value": "Auto-focus", "keyUz": "Fokus", "valueUz": "Avto-fokus" },
+        { "key": "Microphones", "value": "Dual stereo", "keyUz": "Mikrofonlar", "valueUz": "Ikki stereo" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1625620615458-b8e7b2e1ba1c?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1625620615458-b8e7b2e1ba1c?w=400",
+      "inStock": true,
+      "featured": true,
+      "tags": ["webcam", "1080p", "streaming", "video-calls"],
+      "createdAt": "2024-12-10T00:00:00Z"
+    },
+    {
+      "id": "prod-011",
+      "name": "Elgato Stream Deck",
+      "nameUz": "Elgato Stream Deck",
+      "category": "Accessories",
+      "price": 1950000,
+      "currency": "UZS",
+      "description": "15-key LCD control panel for streamers. Customize keys with icons and control your stream with one touch.",
+      "descriptionUz": "Strimerlar uchun 15 tugmali LCD boshqaruv paneli. Tugmalarni belgilar bilan sozlang va bir bosish bilan strimingizni boshqaring.",
+      "specifications": [
+        { "key": "Keys", "value": "15 LCD keys", "keyUz": "Tugmalar", "valueUz": "15 LCD tugma" },
+        { "key": "Connectivity", "value": "USB-C", "keyUz": "Ulanish", "valueUz": "USB-C" },
+        { "key": "Display", "value": "72x72px per key", "keyUz": "Displey", "valueUz": "Har tugmada 72x72px" },
+        { "key": "Software", "value": "Stream Deck App", "keyUz": "Dastur", "valueUz": "Stream Deck Ilova" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["streaming", "control", "productivity"],
+      "createdAt": "2024-12-11T00:00:00Z"
+    },
+    {
+      "id": "prod-012",
+      "name": "NZXT Kraken Z73 RGB",
+      "nameUz": "NZXT Kraken Z73 RGB",
+      "category": "Cooling",
+      "price": 4200000,
+      "currency": "UZS",
+      "description": "360mm AIO liquid cooler with customizable LCD display. Keep your CPU cool while displaying custom images or system stats.",
+      "descriptionUz": "Sozlanadigan LCD displey bilan 360mm AIO suyuqlik sovutgich. Protsessoringizni sovuq saqlang va maxsus tasvirlar yoki tizim statistikasini ko'rsating.",
+      "specifications": [
+        { "key": "Radiator Size", "value": "360mm", "keyUz": "Radiator hajmi", "valueUz": "360mm" },
+        { "key": "Display", "value": "2.36\" LCD", "keyUz": "Displey", "valueUz": "2.36\" LCD" },
+        { "key": "Fans", "value": "3x 120mm RGB", "keyUz": "Fanatlar", "valueUz": "3x 120mm RGB" },
+        { "key": "TDP", "value": "Up to 280W", "keyUz": "TDP", "valueUz": "280W gacha" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["cooling", "aio", "rgb", "liquid"],
+      "createdAt": "2024-12-12T00:00:00Z"
+    },
+    {
+      "id": "prod-013",
+      "name": "Anker PowerExpand USB Hub",
+      "nameUz": "Anker PowerExpand USB Hub",
+      "category": "Accessories",
+      "price": 650000,
+      "currency": "UZS",
+      "description": "7-in-1 USB-C hub with HDMI, USB-A, SD card reader, and power delivery. Expand your laptop connectivity.",
+      "descriptionUz": "HDMI, USB-A, SD karta o'quvchi va quvvat etkazib berish bilan 7-da-1 USB-C hub. Noutbuk ulanishini kengaytiring.",
+      "specifications": [
+        { "key": "Ports", "value": "7-in-1", "keyUz": "Portlar", "valueUz": "7-da-1" },
+        { "key": "HDMI", "value": "4K@30Hz", "keyUz": "HDMI", "valueUz": "4K@30Hz" },
+        { "key": "USB Ports", "value": "3x USB 3.0", "keyUz": "USB Portlar", "valueUz": "3x USB 3.0" },
+        { "key": "Power Delivery", "value": "100W", "keyUz": "Quvvat", "valueUz": "100W" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["usb-hub", "usb-c", "connectivity", "adapter"],
+      "createdAt": "2024-12-13T00:00:00Z"
+    },
+    {
+      "id": "prod-014",
+      "name": "Secretlab TITAN Evo 2022",
+      "nameUz": "Secretlab TITAN Evo 2022",
+      "category": "Furniture",
+      "price": 5800000,
+      "currency": "UZS",
+      "description": "Premium gaming chair with magnetic memory foam head pillow and 4-way adaptive armrests. Ultimate comfort for long gaming sessions.",
+      "descriptionUz": "Magnit xotira ko'pigi bosh yostig'i va 4 yo'nalishli moslashuvchan qo'l tayanchlari bilan premium gaming stul. Uzoq o'yin sessiyalari uchun eng yaxshi qulaylik.",
+      "specifications": [
+        { "key": "Material", "value": "NEO Hybrid Leatherette", "keyUz": "Material", "valueUz": "NEO Gibrid Teri" },
+        { "key": "Recline", "value": "85° to 165°", "keyUz": "Orqaga yotish", "valueUz": "85° dan 165° gacha" },
+        { "key": "Weight Capacity", "value": "130kg", "keyUz": "Og'irlik sig'imi", "valueUz": "130kg" },
+        { "key": "Warranty", "value": "5 years", "keyUz": "Kafolat", "valueUz": "5 yil" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1618377385526-d3b26e33a0e7?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1618377385526-d3b26e33a0e7?w=400",
+      "inStock": true,
+      "featured": false,
+      "tags": ["gaming-chair", "furniture", "ergonomic", "premium"],
+      "createdAt": "2024-12-14T00:00:00Z"
+    },
+    {
+      "id": "prod-015",
+      "name": "BenQ ScreenBar Halo",
+      "nameUz": "BenQ ScreenBar Halo",
+      "category": "Accessories",
+      "price": 1450000,
+      "currency": "UZS",
+      "description": "Monitor light bar with auto-dimming and wireless controller. Reduce eye strain during late-night work sessions.",
+      "descriptionUz": "Avto-xiralik va simsiz boshqaruvchi bilan monitor yorug'lik paneli. Kechki ish sessiyalarida ko'z charchoqini kamaytiring.",
+      "specifications": [
+        { "key": "Length", "value": "47cm", "keyUz": "Uzunligi", "valueUz": "47cm" },
+        { "key": "Color Temp", "value": "2700K-6500K", "keyUz": "Rang harorati", "valueUz": "2700K-6500K" },
+        { "key": "Brightness", "value": "Auto-dimming", "keyUz": "Yorug'lik", "valueUz": "Avto-xiralik" },
+        { "key": "Control", "value": "Wireless controller", "keyUz": "Boshqarish", "valueUz": "Simsiz boshqaruvchi" }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=800"
+      ],
+      "thumbnail": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=400",
+      "inStock": true,
+      "featured": true,
+      "tags": ["lighting", "monitor", "eye-care", "productivity"],
+      "createdAt": "2024-12-15T00:00:00Z"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+/* You can add global styles to this file, and also import other style files */
+
+// Import Angular Material theme (must come before @tailwind directives)
+@use './styles/material-theme' as theme;
+
+// Import Tailwind CSS
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Global styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// Smooth scrolling
+html {
+  scroll-behavior: smooth;
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+// Dark mode scrollbar
+.dark ::-webkit-scrollbar-track {
+  background: #2d3748;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4a5568;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+// Fix for Angular Material input fields
+// Ensure proper padding for text in input fields with prefixes and borders
+
+// Fix for input elements to prevent text overlap with borders and icons
+.mat-mdc-input-element {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+// Fix for form fields with prefix icons
+.mat-mdc-form-field-icon-prefix {
+  padding-right: 4px !important;
+  
+  + .mat-mdc-form-field-text-infix {
+    padding-left: 4px !important;
+  }
+}
+
+// Ensure text area has proper padding
+.mat-mdc-form-field-textarea-control {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+// Fix for outlined appearance form fields
+.mdc-text-field--outlined {
+  .mat-mdc-form-field-infix {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    min-height: 56px;
+  }
+  
+  // Additional padding for input when there's a prefix
+  &.mdc-text-field--with-leading-icon {
+    .mat-mdc-input-element {
+      padding-left: 8px !important;
+    }
+  }
+}
+
+// Fix for select fields
+.mat-mdc-select {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+// Ensure proper spacing between prefix icon and input text
+.mat-mdc-form-field-icon-prefix ~ .mat-mdc-form-field-text-infix {
+  .mat-mdc-input-element {
+    padding-left: 8px !important;
+  }
+}
+
+// Fix for slider labels
+.mat-mdc-slider {
+  .mdc-slider__track {
+    height: 4px;
+  }
+}
+
+// Additional fix for dark mode form fields
+.dark {
+  .mat-mdc-input-element,
+  .mat-mdc-select,
+  .mat-mdc-form-field-textarea-control {
+    color: #ffffff !important;
+  }
+  
+  .mat-mdc-form-field-icon-prefix,
+  .mat-mdc-form-field-icon-suffix {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
