@@ -19,7 +19,7 @@ const path = require('path');
 
 // Configuration
 const CONFIG = {
-  domain: 'https://ggpoint.uz',
+  domain: 'https://gg-point.uz',
   productsPath: path.join(__dirname, '../src/assets/data/products.json'),
   blogPostsPath: path.join(__dirname, '../src/assets/data/blog-posts.json'),
   outputPath: path.join(__dirname, '../public/sitemap.xml'),
