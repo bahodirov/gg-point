@@ -259,7 +259,7 @@ export class BlogPostComponent implements OnInit {
   }
 
   private updateSEO(post: BlogPost): void {
-    const currentUrl = `https://ggpoint.uz/blog/${post.slug}`;
+    const currentUrl = `https://gg-point.uz/blog/${post.slug}`;
     
     // Update meta tags
     this.seoService.updateMetaTags({

@@ -96,7 +96,7 @@ import { TranslateModule } from '@ngx-translate/core';
               </li>
               <li class="flex items-start">
                 <mat-icon class="mr-2 text-primary-400">email</mat-icon>
-                <span class="text-sm">info&#64;ggpoint.uz</span>
+                <span class="text-sm">info&#64;gg-point.uz</span>
               </li>
               <li class="flex items-start">
                 <mat-icon class="mr-2 text-primary-400">location_on</mat-icon>

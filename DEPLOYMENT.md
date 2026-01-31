@@ -426,7 +426,7 @@ npm run build:ssr
 ---
 
 **Need Help?**  
-Contact: info@ggpoint.uz  
+Contact: info@gg-point.uz  
 Telegram: @ggpoint_bot
 
 **Last Updated**: December 13, 2025

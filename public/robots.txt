@@ -81,7 +81,7 @@ User-agent: DotBot
 Disallow: /
 
 # Sitemap locations (IMPORTANT!)
-Sitemap: https://ggpoint.uz/sitemap.xml
+Sitemap: https://gg-point.uz/sitemap.xml
 
 # Host directive (preferred domain for Yandex)
-Host: https://ggpoint.uz
+Host: https://gg-point.uz

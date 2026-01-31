@@ -198,11 +198,11 @@ export class HomeComponent implements OnInit {
       description: 'Find the best computer accessories and gadgets in Uzbekistan. Gaming peripherals, mechanical keyboards, gaming mice, monitors, and more. Fast delivery in Tashkent. Order via Telegram.',
       keywords: 'computer accessories, gaming peripherals, mechanical keyboard, gaming mouse, monitors, Uzbekistan, Tashkent, ggpoint, компьютерные аксессуары, игровые устройства, клавиатура, мышь',
       type: 'website',
-      canonical: 'https://ggpoint.uz/',
+      canonical: 'https://gg-point.uz/',
       languageAlternates: [
-        { lang: 'en', url: 'https://ggpoint.uz/' },
-        { lang: 'ru', url: 'https://ggpoint.uz/' },
-        { lang: 'uz', url: 'https://ggpoint.uz/' }
+        { lang: 'en', url: 'https://gg-point.uz/' },
+        { lang: 'ru', url: 'https://gg-point.uz/' },
+        { lang: 'uz', url: 'https://gg-point.uz/' }
       ]
     });
 

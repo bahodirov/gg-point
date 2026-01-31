@@ -161,11 +161,11 @@ export class FaqComponent implements OnInit {
       description: 'Find answers to common questions about GGPoint: How to order computer accessories in Uzbekistan, payment methods, delivery to Tashkent, warranty policy, authentic products, and return policy. Get instant support 24/7!',
       keywords: 'faq computer accessories, how to order gaming peripherals Uzbekistan, delivery Tashkent, warranty policy, return policy, authentic products, часто задаваемые вопросы, доставка Ташкент, гарантия',
       type: 'website',
-      canonical: 'https://ggpoint.uz/faq',
+      canonical: 'https://gg-point.uz/faq',
       languageAlternates: [
-        { lang: 'en', url: 'https://ggpoint.uz/faq' },
-        { lang: 'ru', url: 'https://ggpoint.uz/faq' },
-        { lang: 'uz', url: 'https://ggpoint.uz/faq' }
+        { lang: 'en', url: 'https://gg-point.uz/faq' },
+        { lang: 'ru', url: 'https://gg-point.uz/faq' },
+        { lang: 'uz', url: 'https://gg-point.uz/faq' }
       ]
     });
 

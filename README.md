@@ -251,7 +251,7 @@ Developed by the GGPoint team.
 
 ## 📞 Support
 
-For support, email info@ggpoint.uz or join our Telegram channel.
+For support, email info@gg-point.uz or join our Telegram channel.
 
 ---
 

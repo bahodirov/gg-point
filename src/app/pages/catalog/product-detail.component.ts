@@ -276,7 +276,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private updateSEO(product: Product): void {
-    const currentUrl = `https://ggpoint.uz/catalog/${product.id}`;
+    const currentUrl = `https://gg-point.uz/catalog/${product.id}`;
     const priceFormatted = product.price.toLocaleString('en-US');
     const availability = product.inStock ? 'In Stock - Order Now' : 'Currently Out of Stock';
     const discountText = product.originalPrice ? ` SALE ${Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF!` : '';

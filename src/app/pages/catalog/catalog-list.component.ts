@@ -247,11 +247,11 @@ export class CatalogListComponent implements OnInit {
       description: 'Shop premium computer accessories in Uzbekistan: gaming mice, mechanical keyboards, monitors, headsets & more. Free delivery in Tashkent. In-stock items. Order via Telegram. Best prices guaranteed!',
       keywords: 'computer accessories catalog, gaming peripherals Uzbekistan, buy gaming mouse Tashkent, mechanical keyboard Uzbekistan, gaming headset, monitors, компьютерные аксессуары каталог, игровые устройства, купить игровую мышь Ташкент, механическая клавиатура',
       type: 'website',
-      canonical: 'https://ggpoint.uz/catalog',
+      canonical: 'https://gg-point.uz/catalog',
       languageAlternates: [
-        { lang: 'en', url: 'https://ggpoint.uz/catalog' },
-        { lang: 'ru', url: 'https://ggpoint.uz/catalog' },
-        { lang: 'uz', url: 'https://ggpoint.uz/catalog' }
+        { lang: 'en', url: 'https://gg-point.uz/catalog' },
+        { lang: 'ru', url: 'https://gg-point.uz/catalog' },
+        { lang: 'uz', url: 'https://gg-point.uz/catalog' }
       ]
     });
 
@@ -268,7 +268,7 @@ export class CatalogListComponent implements OnInit {
         'item': {
           '@type': 'Product',
           'name': product.name,
-          'url': `https://ggpoint.uz/catalog/${product.id}`,
+          'url': `https://gg-point.uz/catalog/${product.id}`,
           'image': product.thumbnail,
           'offers': {
             '@type': 'Offer',

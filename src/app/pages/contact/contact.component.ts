@@ -136,8 +136,8 @@ import { SeoService } from '../../shared/services/seo.service';
                   <mat-icon class="mr-3 text-primary-600 dark:text-primary-400">email</mat-icon>
                   <div>
                     <div class="font-medium text-gray-900 dark:text-white">Email</div>
-                    <a href="mailto:info@ggpoint.uz" class="text-primary-600 dark:text-primary-400 hover:underline">
-                      info&#64;ggpoint.uz
+                    <a href="mailto:info@gg-point.uz" class="text-primary-600 dark:text-primary-400 hover:underline">
+                      info&#64;gg-point.uz
                     </a>
                   </div>
                 </div>
@@ -228,14 +228,14 @@ export class ContactComponent implements OnInit {
   private updateSEO(): void {
     this.seoService.updateMetaTags({
       title: 'Contact GGPoint - Computer Accessories Store in Tashkent | Get Support 24/7',
-      description: 'Contact GGPoint for computer accessories inquiries in Uzbekistan. Reach us via Telegram, phone +998 90 123 45 67, or email info@ggpoint.uz. Expert support available 24/7. Visit our Tashkent showroom on Amir Temur Avenue.',
+      description: 'Contact GGPoint for computer accessories inquiries in Uzbekistan. Reach us via Telegram, phone +998 90 123 45 67, or email info@gg-point.uz. Expert support available 24/7. Visit our Tashkent showroom on Amir Temur Avenue.',
       keywords: 'contact ggpoint, computer store contact Tashkent, gaming store support Uzbekistan, ggpoint telegram, help desk, customer service, связаться с нами, контакты магазина компьютерных аксессуаров',
       type: 'website',
-      canonical: 'https://ggpoint.uz/contact',
+      canonical: 'https://gg-point.uz/contact',
       languageAlternates: [
-        { lang: 'en', url: 'https://ggpoint.uz/contact' },
-        { lang: 'ru', url: 'https://ggpoint.uz/contact' },
-        { lang: 'uz', url: 'https://ggpoint.uz/contact' }
+        { lang: 'en', url: 'https://gg-point.uz/contact' },
+        { lang: 'ru', url: 'https://gg-point.uz/contact' },
+        { lang: 'uz', url: 'https://gg-point.uz/contact' }
       ]
     });
 
@@ -245,12 +245,12 @@ export class ContactComponent implements OnInit {
       '@type': 'ContactPage',
       'name': 'Contact GGPoint',
       'description': 'Get in touch with GGPoint for computer accessories inquiries',
-      'url': 'https://ggpoint.uz/contact',
+      'url': 'https://gg-point.uz/contact',
       'mainEntity': {
         '@type': 'LocalBusiness',
         'name': 'GGPoint',
         'telephone': '+998-90-123-45-67',
-        'email': 'info@ggpoint.uz',
+        'email': 'info@gg-point.uz',
         'address': {
           '@type': 'PostalAddress',
           'streetAddress': 'Amir Temur Avenue',

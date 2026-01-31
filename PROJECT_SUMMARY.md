@@ -214,7 +214,7 @@ src/
 ## 📞 Support
 
 For questions or issues:
-- Email: info@ggpoint.uz
+- Email: info@gg-point.uz
 - Telegram: @ggpoint_bot
 
 ---

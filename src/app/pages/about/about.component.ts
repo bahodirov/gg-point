@@ -150,11 +150,11 @@ export class AboutComponent implements OnInit {
       description: 'GGPoint is Uzbekistan\'s premier computer accessories store in Tashkent. We offer authentic gaming peripherals, office equipment, and tech products with expert support, competitive prices, and 24/7 service. 500+ happy customers trust us!',
       keywords: 'about ggpoint, computer store Tashkent, gaming store Uzbekistan, authentic computer accessories, tech store Tashkent, о компании, компьютерный магазин Ташкент, магазин игровых устройств',
       type: 'website',
-      canonical: 'https://ggpoint.uz/about',
+      canonical: 'https://gg-point.uz/about',
       languageAlternates: [
-        { lang: 'en', url: 'https://ggpoint.uz/about' },
-        { lang: 'ru', url: 'https://ggpoint.uz/about' },
-        { lang: 'uz', url: 'https://ggpoint.uz/about' }
+        { lang: 'en', url: 'https://gg-point.uz/about' },
+        { lang: 'ru', url: 'https://gg-point.uz/about' },
+        { lang: 'uz', url: 'https://gg-point.uz/about' }
       ]
     });
 
@@ -164,12 +164,12 @@ export class AboutComponent implements OnInit {
       '@type': 'AboutPage',
       'name': 'About GGPoint',
       'description': 'Learn about GGPoint - your trusted computer accessories store in Uzbekistan',
-      'url': 'https://ggpoint.uz/about',
+      'url': 'https://gg-point.uz/about',
       'mainEntity': {
         '@type': 'Organization',
         'name': 'GGPoint',
-        'url': 'https://ggpoint.uz',
-        'logo': 'https://ggpoint.uz/assets/images/logo.png',
+        'url': 'https://gg-point.uz',
+        'logo': 'https://gg-point.uz/assets/images/logo.png',
         'description': 'Premium computer accessories and gaming peripherals store in Tashkent, Uzbekistan',
         'foundingDate': '2023',
         'numberOfEmployees': {

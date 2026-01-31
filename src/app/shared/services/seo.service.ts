@@ -33,7 +33,7 @@ export class SeoService {
     title: 'GGPoint - Computer Accessories Store',
     description: 'Modern computer accessories and gadgets store in Uzbekistan. Find the best quality products for your setup.',
     keywords: 'computer, accessories, gadgets, Uzbekistan, gaming, peripherals, компьютерные аксессуары, игровые устройства',
-    image: 'https://ggpoint.uz/assets/images/og-image.png',
+    image: 'https://gg-point.uz/assets/images/og-image.png',
     type: 'website',
     robots: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
   };
@@ -44,7 +44,7 @@ export class SeoService {
 
   updateMetaTags(config: SEOConfig): void {
     const seoConfig = { ...this.defaultConfig, ...config };
-    const url = seoConfig.canonical || seoConfig.url || `https://ggpoint.uz${this.router.url}`;
+    const url = seoConfig.canonical || seoConfig.url || `https://gg-point.uz${this.router.url}`;
 
     // Set title
     this.title.setTitle(seoConfig.title!);
@@ -168,7 +168,7 @@ export class SeoService {
       },
       offers: {
         '@type': 'Offer',
-        url: `https://ggpoint.uz/catalog/${product.id}`,
+        url: `https://gg-point.uz/catalog/${product.id}`,
         priceCurrency: 'UZS',
         price: product.price.toString(),
         priceValidUntil: '2026-12-31',
@@ -190,8 +190,8 @@ export class SeoService {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'GGPoint',
-      url: 'https://ggpoint.uz',
-      logo: 'https://ggpoint.uz/assets/images/logo.png',
+      url: 'https://gg-point.uz',
+      logo: 'https://gg-point.uz/assets/images/logo.png',
       description: 'Modern computer accessories and gadgets store in Uzbekistan',
       address: {
         '@type': 'PostalAddress',
@@ -216,9 +216,9 @@ export class SeoService {
       '@type': 'Store',
       name: 'GGPoint',
       description: 'Premium computer accessories and gaming peripherals store in Tashkent, Uzbekistan',
-      url: 'https://ggpoint.uz',
+      url: 'https://gg-point.uz',
       telephone: '+998-XX-XXX-XXXX',
-      email: 'info@ggpoint.uz',
+      email: 'info@gg-point.uz',
       address: {
         '@type': 'PostalAddress',
         streetAddress: 'Tashkent',
@@ -277,12 +277,12 @@ export class SeoService {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: 'GGPoint',
-      url: 'https://ggpoint.uz',
+      url: 'https://gg-point.uz',
       potentialAction: {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: 'https://ggpoint.uz/catalog?search={search_term_string}'
+          urlTemplate: 'https://gg-point.uz/catalog?search={search_term_string}'
         },
         'query-input': 'required name=search_term_string'
       }
@@ -297,7 +297,7 @@ export class SeoService {
         '@type': 'ListItem',
         position: index + 1,
         name: item.name,
-        item: item.url ? `https://ggpoint.uz${item.url}` : undefined
+        item: item.url ? `https://gg-point.uz${item.url}` : undefined
       }))
     };
   }
@@ -318,7 +318,7 @@ export class SeoService {
         name: 'GGPoint',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://ggpoint.uz/assets/images/logo.png'
+          url: 'https://gg-point.uz/assets/images/logo.png'
         }
       },
       datePublished: article.publishDate,
