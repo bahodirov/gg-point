@@ -4,7 +4,8 @@ import {
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
+import cookieParser from 'cookie-parser';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -12,17 +13,56 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+// Middleware
+app.use(express.json());
+app.use(cookieParser());
+
+// Track if API is initialized
+let apiInitialized = false;
+let apiRouter: express.Router | null = null;
+
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Lazy-load API routes only when needed (to avoid loading native modules during build)
  */
+async function initializeApi(): Promise<express.Router> {
+  if (apiRouter) {
+    return apiRouter;
+  }
+
+  const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }] = await Promise.all([
+    import('./server/db/database'),
+    import('./server/db/migrate'),
+    import('./server/routes/auth.routes'),
+    import('./server/routes/products.routes'),
+  ]);
+
+  // Initialize database and migrate data
+  initializeDatabase();
+  await migrateData();
+
+  // Create API router
+  apiRouter = express.Router();
+  apiRouter.use('/auth', authRoutes);
+  apiRouter.use('/products', productsRoutes);
+
+  apiInitialized = true;
+  console.log('API initialized successfully');
+  
+  return apiRouter;
+}
+
+/**
+ * API Routes - lazily loaded
+ */
+app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const router = await initializeApi();
+    router(req, res, next);
+  } catch (error) {
+    console.error('Failed to initialize API:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 /**
  * Serve static files from /browser
