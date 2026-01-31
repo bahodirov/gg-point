@@ -13,17 +13,20 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  // Wait for auth check to complete
-  if (authService.isLoading()) {
-    // Return true initially, the component will handle the loading state
-    return true;
-  }
-
+  // If already authenticated, allow access
   if (authService.isAuthenticated()) {
     return true;
   }
 
-  // Redirect to login
+  // If still loading, deny access (the component will show loading state)
+  // Once loaded, the user will either be authenticated or redirected
+  if (authService.isLoading()) {
+    // Redirect to login - the login page will redirect back if already authenticated
+    router.navigate(['/login']);
+    return false;
+  }
+
+  // Not authenticated, redirect to login
   router.navigate(['/login']);
   return false;
 };

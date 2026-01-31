@@ -11,6 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../auth/services/auth.service';
 
+const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
+
 @Component({
   selector: 'app-change-password',
   standalone: true,
@@ -222,7 +224,7 @@ export class ChangePasswordComponent {
         // Redirect after a short delay
         setTimeout(() => {
           this.router.navigate(['/admin/dashboard']);
-        }, 2000);
+        }, PASSWORD_CHANGE_REDIRECT_DELAY_MS);
       },
       error: (error) => {
         this.isLoading.set(false);

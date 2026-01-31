@@ -7,6 +7,9 @@ const router = Router();
 /**
  * POST /api/auth/login
  * Login with username and password
+ * 
+ * NOTE: For production use, implement rate limiting to prevent brute force attacks.
+ * Consider using express-rate-limit or a similar middleware with Redis backing.
  */
 router.post('/login', async (req: Request, res: Response) => {
   try {

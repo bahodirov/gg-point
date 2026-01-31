@@ -179,7 +179,9 @@ export class ProductsService {
     };
 
     db.products.insert(product);
-    return this.getProductById(id)!;
+    
+    // Return the product we just created (convert from row format)
+    return rowToProduct(product);
   }
 
   /**
