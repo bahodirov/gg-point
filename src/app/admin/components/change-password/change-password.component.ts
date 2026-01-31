@@ -1,0 +1,233 @@
+import { Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { AuthService } from '../../../auth/services/auth.service';
+
+@Component({
+  selector: 'app-change-password',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+  ],
+  template: `
+    <div class="change-password">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Change Password</mat-card-title>
+          <mat-card-subtitle>Update your account password</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            @if (errorMessage()) {
+              <div class="error-message">
+                <mat-icon>error</mat-icon>
+                {{ errorMessage() }}
+              </div>
+            }
+
+            @if (successMessage()) {
+              <div class="success-message">
+                <mat-icon>check_circle</mat-icon>
+                {{ successMessage() }}
+              </div>
+            }
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Current Password</mat-label>
+              <input matInput 
+                     [type]="hideCurrentPassword() ? 'password' : 'text'" 
+                     formControlName="currentPassword">
+              <button mat-icon-button matSuffix (click)="toggleCurrentPasswordVisibility()" type="button">
+                <mat-icon>{{ hideCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (form.get('currentPassword')?.hasError('required')) {
+                <mat-error>Current password is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>New Password</mat-label>
+              <input matInput 
+                     [type]="hideNewPassword() ? 'password' : 'text'" 
+                     formControlName="newPassword">
+              <button mat-icon-button matSuffix (click)="toggleNewPasswordVisibility()" type="button">
+                <mat-icon>{{ hideNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (form.get('newPassword')?.hasError('required')) {
+                <mat-error>New password is required</mat-error>
+              }
+              @if (form.get('newPassword')?.hasError('minlength')) {
+                <mat-error>Password must be at least 8 characters</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm New Password</mat-label>
+              <input matInput 
+                     [type]="hideConfirmPassword() ? 'password' : 'text'" 
+                     formControlName="confirmPassword">
+              <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()" type="button">
+                <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (form.get('confirmPassword')?.hasError('required')) {
+                <mat-error>Please confirm your password</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-button type="button" routerLink="/admin/dashboard">Cancel</button>
+              <button mat-raised-button color="primary" type="submit" [disabled]="isLoading() || form.invalid">
+                @if (isLoading()) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                } @else {
+                  Change Password
+                }
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  `,
+  styles: [`
+    .change-password {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    mat-card {
+      padding: 1rem;
+    }
+
+    mat-card-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    mat-form-field {
+      margin-bottom: 0.5rem;
+    }
+
+    .error-message {
+      background-color: #ffebee;
+      color: #c62828;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .success-message {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .form-actions button mat-spinner {
+      display: inline-block;
+    }
+  `]
+})
+export class ChangePasswordComponent {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
+
+  form: FormGroup;
+  isLoading = signal(false);
+  errorMessage = signal('');
+  successMessage = signal('');
+  hideCurrentPassword = signal(true);
+  hideNewPassword = signal(true);
+  hideConfirmPassword = signal(true);
+
+  constructor() {
+    this.form = this.fb.group({
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required]
+    });
+  }
+
+  toggleCurrentPasswordVisibility(): void {
+    this.hideCurrentPassword.update(v => !v);
+  }
+
+  toggleNewPasswordVisibility(): void {
+    this.hideNewPassword.update(v => !v);
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.hideConfirmPassword.update(v => !v);
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      return;
+    }
+
+    const { currentPassword, newPassword, confirmPassword } = this.form.value;
+
+    if (newPassword !== confirmPassword) {
+      this.errorMessage.set('New passwords do not match');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    this.authService.changePassword(currentPassword, newPassword).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.successMessage.set('Password changed successfully');
+        this.form.reset();
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          this.router.navigate(['/admin/dashboard']);
+        }, 2000);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(error.error?.error || 'Failed to change password');
+      }
+    });
+  }
+}
