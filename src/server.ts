@@ -13,7 +13,29 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-// Middleware
+// Security middleware - load dynamically to avoid build issues
+let securityInitialized = false;
+async function initializeSecurity() {
+  if (securityInitialized) return;
+  
+  try {
+    const { helmetConfig, requestLogger, errorHandler, corsMiddleware, sanitizeInput } = await import('./server/middleware/security.middleware');
+    const { sanitizeInput: validationSanitize } = await import('./server/middleware/validation.middleware');
+    
+    // Apply security middleware
+    app.use(helmetConfig);
+    app.use(corsMiddleware);
+    app.use(requestLogger);
+    app.use(validationSanitize);
+    
+    securityInitialized = true;
+    console.log('Security middleware initialized');
+  } catch (error) {
+    console.error('Failed to initialize security middleware:', error);
+  }
+}
+
+// Basic middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -29,11 +51,12 @@ async function initializeApi(): Promise<express.Router> {
     return apiRouter;
   }
 
-  const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }] = await Promise.all([
+  const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }, { default: adminRoutes }] = await Promise.all([
     import('./server/db/database'),
     import('./server/db/migrate'),
     import('./server/routes/auth.routes'),
     import('./server/routes/products.routes'),
+    import('./server/routes/admin.routes'),
   ]);
 
   // Initialize database and migrate data
@@ -44,6 +67,7 @@ async function initializeApi(): Promise<express.Router> {
   apiRouter = express.Router();
   apiRouter.use('/auth', authRoutes);
   apiRouter.use('/products', productsRoutes);
+  apiRouter.use('/admin', adminRoutes);
 
   apiInitialized = true;
   console.log('API initialized successfully');
@@ -56,6 +80,9 @@ async function initializeApi(): Promise<express.Router> {
  */
 app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Initialize security middleware first
+    await initializeSecurity();
+    
     const router = await initializeApi();
     router(req, res, next);
   } catch (error) {

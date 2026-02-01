@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { productsService, CreateProductDto, UpdateProductDto } from '../services/products.service';
 import { requireAuth } from '../middleware/auth.middleware';
+import { productValidation, uuidValidation, searchValidation, validateRequest } from '../middleware/validation.middleware';
 
 const router = Router();
 
@@ -10,7 +11,7 @@ const router = Router();
  * GET /api/products
  * Get all products (public)
  */
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', searchValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { category, search, featured } = req.query;
 
@@ -80,7 +81,7 @@ router.get('/:idOrSlug', async (req: Request, res: Response) => {
  * POST /api/products
  * Create a new product (admin only)
  */
-router.post('/', requireAuth, async (req: Request, res: Response) => {
+router.post('/', requireAuth, productValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const data: CreateProductDto = req.body;
 
