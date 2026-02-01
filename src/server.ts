@@ -31,7 +31,11 @@ async function initializeSecurity() {
     securityInitialized = true;
     console.log('Security middleware initialized');
   } catch (error) {
-    console.error('Failed to initialize security middleware:', error);
+    console.error('FATAL: Failed to initialize security middleware:', error);
+    console.error('Application cannot start without security protections.');
+    console.error('Please check that all security middleware modules are available.');
+    // Fail fast: do not start the application without security middleware
+    throw error;
   }
 }
 

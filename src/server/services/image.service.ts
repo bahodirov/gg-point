@@ -81,6 +81,8 @@ export class ImageService {
           await unlink(inputPath);
         } catch (error) {
           console.error('Failed to delete original file:', error);
+          console.error('File path:', inputPath);
+          console.error('Consider monitoring disk space and setting up alerts for cleanup failures');
         }
       }
 
@@ -243,6 +245,15 @@ export class ImageService {
 
   /**
    * Check if image is used in any products
+   * 
+   * Performance note: Uses LIKE on JSONB cast to text, which performs full table scan.
+   * For better performance with large product catalogs (1000+ products), consider:
+   * - Using PostgreSQL JSONB operators (@>, ?, ?|) with proper queries
+   * - Adding a GIN index: CREATE INDEX idx_products_images ON products USING GIN (images);
+   * - Using jsonb_array_elements to query array elements directly
+   * Example optimized query:
+   *   SELECT EXISTS(SELECT 1 FROM products WHERE images @> $1::jsonb)
+   *   with parameter: JSON.stringify([imageUrl])
    */
   async isImageUsedInProducts(imageUrl: string): Promise<boolean> {
     if (isUsingPostgreSQL()) {

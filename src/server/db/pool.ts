@@ -26,6 +26,13 @@ function getPoolConfig(): PoolConfig | null {
         : true
       : undefined;
     
+    // Warn if SSL verification is disabled in production
+    if (process.env['NODE_ENV'] === 'production' && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
+      console.warn('WARNING: SSL certificate verification is disabled (DB_SSL_REJECT_UNAUTHORIZED=false).');
+      console.warn('This makes the connection vulnerable to man-in-the-middle attacks.');
+      console.warn('Use proper SSL certificates in production or keep this setting only for development with self-signed certificates.');
+    }
+    
     return {
       connectionString: process.env['DATABASE_URL'],
       ssl: sslConfig,
@@ -42,6 +49,13 @@ function getPoolConfig(): PoolConfig | null {
         ? { rejectUnauthorized: false }
         : true
       : undefined;
+    
+    // Warn if SSL verification is disabled in production
+    if (process.env['NODE_ENV'] === 'production' && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
+      console.warn('WARNING: SSL certificate verification is disabled (DB_SSL_REJECT_UNAUTHORIZED=false).');
+      console.warn('This makes the connection vulnerable to man-in-the-middle attacks.');
+      console.warn('Use proper SSL certificates in production or keep this setting only for development with self-signed certificates.');
+    }
     
     return {
       host: process.env['DB_HOST'] || 'localhost',

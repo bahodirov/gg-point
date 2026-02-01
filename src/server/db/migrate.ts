@@ -11,8 +11,15 @@ const DEFAULT_ADMIN_PASSWORD = 'admin123';
 export async function migrateData(): Promise<void> {
   // If using PostgreSQL, use the dedicated migration script
   if (isUsingPostgreSQL()) {
-    await migrateToPostgreSQL();
-    return;
+    try {
+      await migrateToPostgreSQL();
+      return;
+    } catch (error) {
+      console.error('PostgreSQL migration failed:', error);
+      console.error('Falling back to JSON file storage...');
+      console.error('To use PostgreSQL, fix the migration errors and restart the application.');
+      // Continue with JSON file migration as fallback
+    }
   }
   
   // Otherwise, use JSON file migration (for backward compatibility)

@@ -179,6 +179,19 @@ export const searchValidation = [
 
 /**
  * Sanitize user input to prevent XSS
+ * 
+ * NOTE: This is a basic XSS prevention approach using regex patterns.
+ * It handles common XSS vectors like <script> tags, inline event handlers, 
+ * and javascript: protocol. For more comprehensive XSS protection in
+ * high-security applications, consider using dedicated libraries like:
+ * - DOMPurify (for HTML sanitization)
+ * - validator.js escape() (for text escaping)
+ * - express-validator's escape() (already included)
+ * 
+ * Current limitations:
+ * - May not catch sophisticated encoding-based XSS attacks
+ * - Does not handle SVG-based XSS vectors
+ * - Does not sanitize CSS expressions
  */
 export function sanitizeInput(req: Request, res: Response, next: NextFunction): void {
   // Recursively sanitize objects

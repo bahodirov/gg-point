@@ -12,7 +12,11 @@ export const helmetConfig = helmet({
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:', 'https:'],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval needed for Angular
+      // NOTE: 'unsafe-inline' and 'unsafe-eval' significantly weaken XSS protection
+      // Angular production builds don't require 'unsafe-eval'
+      // Consider migrating to nonce-based or hash-based CSP for inline scripts
+      // and removing 'unsafe-eval' entirely for production builds
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       connectSrc: ["'self'"],
     },
   },
@@ -91,11 +95,11 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction):
   if (process.env['NODE_ENV'] === 'production') {
     if (!origin || !allowedOrigins.includes(origin)) {
       res.status(403).json({ error: 'Origin not allowed' });
-      return;
+      return; // Stop processing, don't set CORS headers or call next()
     }
   }
   
-  // Set CORS headers
+  // Set CORS headers only for valid origins
   res.setHeader('Access-Control-Allow-Origin', origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
