@@ -64,7 +64,7 @@ GRANT ALL PRIVILEGES ON DATABASE ggpoint TO ggpoint_user;
   ```bash
   # If using PM2
   pm2 stop ggpoint
-  
+
   # Or if running directly
   # Press Ctrl+C to stop the server
   ```
@@ -85,7 +85,7 @@ GRANT ALL PRIVILEGES ON DATABASE ggpoint TO ggpoint_user;
   ```env
   # Option 1: Connection string (recommended)
   DATABASE_URL=postgresql://ggpoint_user:your_secure_password@localhost:5432/ggpoint
-  
+
   # Option 2: Individual settings
   # DB_HOST=localhost
   # DB_PORT=5432

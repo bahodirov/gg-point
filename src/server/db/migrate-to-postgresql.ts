@@ -1,9 +1,14 @@
 import { getPool, isPostgreSQLConfigured, testConnection } from './pool';
 import { db as jsonDb } from './database-json';
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
+
+// Get current directory for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Default admin credentials
 const DEFAULT_ADMIN_USERNAME = 'admin';
@@ -39,10 +44,19 @@ export async function migrateToPostgreSQL(): Promise<void> {
 
     // Step 1: Initialize schema
     console.log('\nStep 1: Initializing database schema...');
-    const schemaPath = join(import.meta.dirname, 'schema.sql');
-    const schema = readFileSync(schemaPath, 'utf-8');
-    await pool.query(schema);
-    console.log('✓ Schema initialized');
+    try {
+      const schemaPath = join(__dirname, 'schema.sql');
+      const schema = readFileSync(schemaPath, 'utf-8');
+      await pool.query(schema);
+      console.log('✓ Schema initialized');
+    } catch (error: any) {
+      if (error.code === '42710' || error.code === '42P07') {
+        // Trigger or table already exists, skip
+        console.log('✓ Schema already initialized (skipped)');
+      } else {
+        throw error;
+      }
+    }
 
     // Step 2: Migrate users
     console.log('\nStep 2: Migrating users...');
@@ -84,7 +98,7 @@ async function migrateUsers(pool: any): Promise<void> {
 
     // Get users from JSON
     const jsonUsers = jsonDb.users.all();
-    
+
     if (jsonUsers.length === 0) {
       // Create default admin user if no users exist
       console.log('  No users in JSON. Creating default admin user...');
@@ -97,7 +111,7 @@ async function migrateUsers(pool: any): Promise<void> {
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [userId, DEFAULT_ADMIN_USERNAME, passwordHash, null, 'admin', now, now]
       );
-      
+
       console.log(`  ✓ Created default admin user (username: ${DEFAULT_ADMIN_USERNAME}, password: ${DEFAULT_ADMIN_PASSWORD})`);
       console.log('  WARNING: Change the default password immediately!');
       return;
@@ -145,16 +159,16 @@ async function migrateProducts(pool: any): Promise<void> {
 
     // Try to get products from JSON
     let jsonProducts = jsonDb.products.all();
-    
+
     // If no products in database JSON, try to import from data/products.ts
     if (jsonProducts.length === 0) {
       try {
         const rawProductsModule = await import('../../../data/products');
         const rawProductsData = rawProductsModule.default || rawProductsModule;
-        
+
         if (Array.isArray(rawProductsData) && rawProductsData.length > 0) {
           console.log(`  Found ${rawProductsData.length} products in data/products.ts`);
-          
+
           const now = new Date().toISOString();
           jsonProducts = rawProductsData.map(p => ({
             id: p.id,
@@ -196,12 +210,17 @@ async function migrateProducts(pool: any): Promise<void> {
       const featured = product.featured === 1;
       const isNew = product.is_new === 1;
 
+      // Generate UUID if the ID is not already a UUID
+      const productId = product.id && product.id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+        ? product.id
+        : uuidv4();
+
       await client.query(
         `INSERT INTO products (id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images, specs, in_stock, featured, is_new, related_products, created_at, updated_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12, $13, $14, $15::jsonb, $16, $17)
          ON CONFLICT (slug) DO NOTHING`,
         [
-          product.id,
+          productId,
           product.slug,
           product.name_ru,
           product.name_uz,

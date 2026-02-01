@@ -6,7 +6,7 @@ import { Request, Response, NextFunction } from 'express';
  */
 export function validateRequest(req: Request, res: Response, next: NextFunction): void {
   const errors = validationResult(req);
-  
+
   if (!errors.isEmpty()) {
     res.status(400).json({
       error: 'Validation failed',
@@ -14,7 +14,7 @@ export function validateRequest(req: Request, res: Response, next: NextFunction)
     });
     return;
   }
-  
+
   next();
 }
 
@@ -179,15 +179,15 @@ export const searchValidation = [
 
 /**
  * Sanitize user input to prevent XSS
- * 
+ *
  * NOTE: This is a basic XSS prevention approach using regex patterns.
- * It handles common XSS vectors like <script> tags, inline event handlers, 
+ * It handles common XSS vectors like <script> tags, inline event handlers,
  * and javascript: protocol. For more comprehensive XSS protection in
  * high-security applications, consider using dedicated libraries like:
  * - DOMPurify (for HTML sanitization)
  * - validator.js escape() (for text escaping)
  * - express-validator's escape() (already included)
- * 
+ *
  * Current limitations:
  * - May not catch sophisticated encoding-based XSS attacks
  * - Does not handle SVG-based XSS vectors
@@ -203,11 +203,11 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
         .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
         .replace(/javascript:/gi, '');
     }
-    
+
     if (Array.isArray(obj)) {
       return obj.map(sanitize);
     }
-    
+
     if (obj !== null && typeof obj === 'object') {
       const sanitized: any = {};
       for (const key in obj) {
@@ -215,16 +215,20 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
       }
       return sanitized;
     }
-    
+
     return obj;
   };
 
   if (req.body) {
-    req.body = sanitize(req.body);
+    const sanitizedBody = sanitize(req.body);
+    Object.keys(req.body).forEach(key => delete req.body[key]);
+    Object.assign(req.body, sanitizedBody);
   }
-  
+
   if (req.query) {
-    req.query = sanitize(req.query);
+    const sanitizedQuery = sanitize(req.query);
+    Object.keys(req.query).forEach(key => delete (req.query as any)[key]);
+    Object.assign(req.query, sanitizedQuery);
   }
 
   next();
