@@ -4,6 +4,7 @@ A modern, lightweight ecommerce catalog website built with Angular 20 featuring 
 
 ## 🚀 Features
 
+### Frontend Features
 - **Server-Side Rendering (SSR)** - Optimal SEO and fast initial page load
 - **Bilingual Support** - Russian and Uzbek translations with easy language switching
 - **Dark/Light Theme** - User preference with system detection
@@ -13,6 +14,27 @@ A modern, lightweight ecommerce catalog website built with Angular 20 featuring 
 - **Blog System** - Markdown-based blog with categories and tags
 - **Telegram Integration** - Quick order placement via Telegram bot
 - **SEO Optimized** - Schema.org markup, OG tags, sitemap, robots.txt
+
+### Admin Panel Features
+- **Product Management** - Create, edit, delete products with rich editor
+- **Image Upload & Optimization** - Automatic WebP conversion and thumbnail generation
+- **User Authentication** - Secure login with session management
+- **Dashboard** - Overview of products and statistics
+- **Responsive Admin UI** - Mobile-friendly admin interface
+
+### Security Features
+- **Rate Limiting** - Prevents brute force attacks (10 attempts/15min for auth)
+- **Input Validation** - Server-side validation for all endpoints
+- **XSS Protection** - Input sanitization and security headers
+- **Password Requirements** - Strong password policy (12+ chars, mixed case, numbers, special chars)
+- **CSRF Protection** - Secure session cookies with httpOnly and sameSite flags
+- **SQL Injection Prevention** - Parameterized queries for all database operations
+- **Security Headers** - Helmet.js for Content Security Policy, HSTS, etc.
+- **Audit Logging** - Track all admin actions and security events
+
+### Database Options
+- **PostgreSQL** - Production-ready with connection pooling, transactions, and migrations
+- **JSON Files** - Simple fallback for development (automatic)
 
 ## 📋 Tech Stack
 
@@ -76,6 +98,67 @@ npm run serve:ssr:ggpoint
 
 The application will be available at `http://localhost:4000/`
 
+### Database Configuration
+
+The application supports two storage options:
+1. **JSON Files** (default, no setup required)
+2. **PostgreSQL** (recommended for production)
+
+#### Using PostgreSQL (Recommended for Production)
+
+1. **Install PostgreSQL**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt install postgresql postgresql-contrib
+   
+   # macOS
+   brew install postgresql@15
+   ```
+
+2. **Create Database**
+   ```bash
+   sudo -u postgres psql
+   ```
+   ```sql
+   CREATE DATABASE ggpoint;
+   CREATE USER ggpoint_user WITH ENCRYPTED PASSWORD 'your_password';
+   GRANT ALL PRIVILEGES ON DATABASE ggpoint TO ggpoint_user;
+   \q
+   ```
+
+3. **Configure Environment Variables**
+   
+   Create a `.env` file in the project root (copy from `.env.example`):
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env`:
+   ```env
+   # Database
+   DATABASE_URL=postgresql://ggpoint_user:your_password@localhost:5432/ggpoint
+   
+   # Session secret (generate a random string)
+   SESSION_SECRET=your-super-secret-32-character-string
+   
+   # Environment
+   NODE_ENV=production
+   PORT=4000
+   ```
+
+4. **Run Migration**
+   
+   The database schema and data will be automatically created when you start the server:
+   ```bash
+   npm run serve:ssr:ggpoint
+   ```
+   
+   For detailed migration instructions, see [DATABASE_MIGRATION.md](./DATABASE_MIGRATION.md)
+
+#### Using JSON Files (Development)
+
+No configuration required. The application will automatically use JSON file storage if PostgreSQL is not configured. Data is stored in the `data/` directory.
+
 ### Deploy to Production
 
 #### Option 1: Vercel (Recommended)
@@ -128,6 +211,89 @@ ggpoint/
 │   └── sitemap.xml                # SEO sitemap
 └── tailwind.config.js             # Tailwind configuration
 ```
+
+## 👤 Admin Panel
+
+### Access the Admin Panel
+
+1. Navigate to `/admin` or `/admin/login`
+2. Default credentials (change immediately!):
+   - Username: `admin`
+   - Password: `admin123`
+
+### Features
+
+- **Product Management**
+  - Create, edit, and delete products
+  - Upload and manage product images
+  - Set prices, categories, and specifications
+  - Featured and new product flags
+  - Stock management
+
+- **Image Management**
+  - Upload product images (JPEG, PNG, WebP)
+  - Automatic image optimization (WebP conversion)
+  - Thumbnail generation
+  - View all uploaded images
+  - Delete unused images
+
+- **Security**
+  - Secure authentication with session management
+  - Password change functionality
+  - Rate limiting on login attempts
+  - Automatic session expiration
+
+### API Endpoints
+
+#### Authentication
+- `POST /api/auth/login` - Login with username and password
+- `POST /api/auth/logout` - Logout current session
+- `GET /api/auth/session` - Check current session
+- `POST /api/auth/change-password` - Change password
+
+#### Products (Public)
+- `GET /api/products` - List all products
+- `GET /api/products/:id` - Get single product
+- `GET /api/products/categories` - List categories
+
+#### Products (Admin)
+- `POST /api/products` - Create product
+- `PUT /api/products/:id` - Update product
+- `DELETE /api/products/:id` - Delete product
+
+#### Images (Admin, PostgreSQL only)
+- `POST /api/admin/upload-image` - Upload and optimize image
+- `GET /api/admin/images` - List all images with pagination
+- `GET /api/admin/images/:id` - Get image details
+- `DELETE /api/admin/images/:id` - Delete image
+
+### Security Best Practices
+
+1. **Change default admin password immediately:**
+   ```bash
+   # Login to admin panel and navigate to settings
+   # Or use API:
+   curl -X POST http://localhost:4000/api/auth/change-password \
+     -H "Content-Type: application/json" \
+     -d '{"currentPassword":"admin123","newPassword":"YourStrongPassword123!"}'
+   ```
+
+2. **Use strong passwords:** Minimum 12 characters with uppercase, lowercase, numbers, and special characters
+
+3. **Enable PostgreSQL in production:** JSON files are not suitable for production use
+
+4. **Use HTTPS in production:** Set up SSL/TLS certificates
+
+5. **Configure environment variables:**
+   ```env
+   NODE_ENV=production
+   SESSION_SECRET=<generate-random-32-char-string>
+   DATABASE_URL=<your-postgresql-url>
+   ```
+
+6. **Set up firewall rules:** Restrict access to admin panel by IP if possible
+
+7. **Regular backups:** Backup your PostgreSQL database regularly
 
 ## 🎨 Customization
 
