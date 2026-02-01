@@ -1,19 +1,11 @@
-import { join } from 'node:path';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { getPool, isPostgreSQLConfigured } from './pool';
+import { Pool } from 'pg';
 
-// Data directory
-const dataDir = join(process.cwd(), 'data');
-if (!existsSync(dataDir)) {
-  mkdirSync(dataDir, { recursive: true });
-}
-
-// File paths
-const usersFile = join(dataDir, 'users.json');
-const productsFile = join(dataDir, 'products-db.json');
-const sessionsFile = join(dataDir, 'sessions.json');
+// Import JSON fallback
+import { db as jsonDb, initializeDatabase as initJsonDb } from './database-json';
 
 // Type definitions
-interface UserData {
+export interface UserData {
   id: string;
   username: string;
   password_hash: string;
@@ -23,7 +15,7 @@ interface UserData {
   updated_at: string;
 }
 
-interface ProductData {
+export interface ProductData {
   id: string;
   slug: string;
   name_ru: string;
@@ -33,151 +25,529 @@ interface ProductData {
   price: number;
   old_price: number | null;
   category: string;
-  images: string;
-  specs: string;
-  in_stock: number;
-  featured: number;
-  is_new: number;
-  related_products: string | null;
+  images: string; // JSON string for compatibility
+  specs: string; // JSON string for compatibility
+  in_stock: number; // 0 or 1 for compatibility
+  featured: number; // 0 or 1 for compatibility
+  is_new: number; // 0 or 1 for compatibility
+  related_products: string | null; // JSON string for compatibility
   created_at: string;
   updated_at: string;
 }
 
-interface SessionData {
+export interface SessionData {
   sid: string;
   user_id: string;
   created_at: string;
   expires_at: string;
 }
 
-interface DataStore {
-  users: UserData[];
-  products: ProductData[];
-  sessions: SessionData[];
+export interface UploadedImageData {
+  id: string;
+  filename: string;
+  original_name: string;
+  mime_type: string;
+  size_bytes: number;
+  path: string;
+  url: string;
+  uploaded_by: string | null;
+  created_at: string;
 }
 
-// Initialize data files if they don't exist
-function initFile<T>(filePath: string, defaultData: T): void {
-  if (!existsSync(filePath)) {
-    writeFileSync(filePath, JSON.stringify(defaultData, null, 2));
+// Check if using PostgreSQL
+let usePostgreSQL = false;
+let pool: Pool | null = null;
+
+function initializePostgreSQL(): void {
+  if (isPostgreSQLConfigured()) {
+    pool = getPool();
+    usePostgreSQL = pool !== null;
+    if (usePostgreSQL) {
+      console.log('Using PostgreSQL database');
+    }
+  }
+  
+  if (!usePostgreSQL) {
+    console.log('Using JSON file storage (fallback)');
   }
 }
 
-// Read JSON file
-function readJson<T>(filePath: string, defaultData: T): T {
-  if (!existsSync(filePath)) {
-    return defaultData;
+// Initialize on module load
+initializePostgreSQL();
+
+// Helper to convert PostgreSQL boolean/integer to 0/1
+function boolToInt(value: boolean | number): number {
+  if (typeof value === 'boolean') {
+    return value ? 1 : 0;
   }
-  try {
-    return JSON.parse(readFileSync(filePath, 'utf-8'));
-  } catch {
-    return defaultData;
-  }
+  return value;
 }
 
-// Write JSON file
-function writeJson<T>(filePath: string, data: T): void {
-  writeFileSync(filePath, JSON.stringify(data, null, 2));
+// Helper to convert integer to boolean
+function intToBool(value: number): boolean {
+  return value === 1;
 }
 
-// Database-like interface
-export const db = {
+// PostgreSQL implementations
+const pgDb = {
   users: {
-    all: (): UserData[] => readJson<UserData[]>(usersFile, []),
-    find: (predicate: (u: UserData) => boolean): UserData | undefined => 
-      readJson<UserData[]>(usersFile, []).find(predicate),
-    insert: (user: UserData): void => {
-      const users = readJson<UserData[]>(usersFile, []);
-      users.push(user);
-      writeJson(usersFile, users);
+    all: async (): Promise<UserData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT * FROM users ORDER BY created_at DESC'
+      );
+      return result.rows;
     },
-    update: (id: string, updates: Partial<UserData>): void => {
-      const users = readJson<UserData[]>(usersFile, []);
-      const index = users.findIndex(u => u.id === id);
-      if (index !== -1) {
-        users[index] = { ...users[index], ...updates };
-        writeJson(usersFile, users);
-      }
+    find: async (predicate: (u: UserData) => boolean): Promise<UserData | undefined> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      // For performance, we support common predicates directly
+      // This is a simplified version - in production, you'd parse the predicate
+      const allUsers = await pgDb.users.all();
+      return allUsers.find(predicate);
     },
-    count: (): number => readJson<UserData[]>(usersFile, []).length,
+    findByUsername: async (username: string): Promise<UserData | null> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT * FROM users WHERE username = $1',
+        [username]
+      );
+      return result.rows[0] || null;
+    },
+    findById: async (id: string): Promise<UserData | null> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT * FROM users WHERE id = $1',
+        [id]
+      );
+      return result.rows[0] || null;
+    },
+    insert: async (user: UserData): Promise<void> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      await pool.query(
+        `INSERT INTO users (id, username, password_hash, email, role, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [user.id, user.username, user.password_hash, user.email, user.role, user.created_at, user.updated_at]
+      );
+    },
+    update: async (id: string, updates: Partial<UserData>): Promise<void> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const fields: string[] = [];
+      const values: any[] = [];
+      let paramCount = 1;
+
+      Object.entries(updates).forEach(([key, value]) => {
+        if (key !== 'id') {
+          fields.push(`${key} = $${paramCount}`);
+          values.push(value);
+          paramCount++;
+        }
+      });
+
+      if (fields.length === 0) return;
+
+      values.push(id);
+      await pool.query(
+        `UPDATE users SET ${fields.join(', ')} WHERE id = $${paramCount}`,
+        values
+      );
+    },
+    count: async (): Promise<number> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query('SELECT COUNT(*) as count FROM users');
+      return parseInt(result.rows[0].count, 10);
+    },
   },
   products: {
-    all: (): ProductData[] => readJson<ProductData[]>(productsFile, []),
-    find: (predicate: (p: ProductData) => boolean): ProductData | undefined =>
-      readJson<ProductData[]>(productsFile, []).find(predicate),
-    filter: (predicate: (p: ProductData) => boolean): ProductData[] =>
-      readJson<ProductData[]>(productsFile, []).filter(predicate),
-    insert: (product: ProductData): void => {
-      const products = readJson<ProductData[]>(productsFile, []);
-      products.push(product);
-      writeJson(productsFile, products);
+    all: async (): Promise<ProductData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products ORDER BY created_at DESC'
+      );
+      return result.rows.map(row => ({
+        ...row,
+        in_stock: boolToInt(row.in_stock),
+        featured: boolToInt(row.featured),
+        is_new: boolToInt(row.is_new),
+      }));
     },
-    insertMany: (newProducts: ProductData[]): void => {
-      const products = readJson<ProductData[]>(productsFile, []);
-      products.push(...newProducts);
-      writeJson(productsFile, products);
+    find: async (predicate: (p: ProductData) => boolean): Promise<ProductData | undefined> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const allProducts = await pgDb.products.all();
+      return allProducts.find(predicate);
     },
-    update: (id: string, updates: Partial<ProductData>): void => {
-      const products = readJson<ProductData[]>(productsFile, []);
-      const index = products.findIndex(p => p.id === id);
-      if (index !== -1) {
-        products[index] = { ...products[index], ...updates };
-        writeJson(productsFile, products);
+    findById: async (id: string): Promise<ProductData | null> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products WHERE id = $1',
+        [id]
+      );
+      if (result.rows.length === 0) return null;
+      const row = result.rows[0];
+      return {
+        ...row,
+        in_stock: boolToInt(row.in_stock),
+        featured: boolToInt(row.featured),
+        is_new: boolToInt(row.is_new),
+      };
+    },
+    findBySlug: async (slug: string): Promise<ProductData | null> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products WHERE slug = $1',
+        [slug]
+      );
+      if (result.rows.length === 0) return null;
+      const row = result.rows[0];
+      return {
+        ...row,
+        in_stock: boolToInt(row.in_stock),
+        featured: boolToInt(row.featured),
+        is_new: boolToInt(row.is_new),
+      };
+    },
+    filter: async (predicate: (p: ProductData) => boolean): Promise<ProductData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const allProducts = await pgDb.products.all();
+      return allProducts.filter(predicate);
+    },
+    filterByCategory: async (category: string): Promise<ProductData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products WHERE LOWER(category) = LOWER($1) ORDER BY created_at DESC',
+        [category]
+      );
+      return result.rows.map(row => ({
+        ...row,
+        in_stock: boolToInt(row.in_stock),
+        featured: boolToInt(row.featured),
+        is_new: boolToInt(row.is_new),
+      }));
+    },
+    insert: async (product: ProductData): Promise<void> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      await pool.query(
+        `INSERT INTO products (id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images, specs, in_stock, featured, is_new, related_products, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12, $13, $14, $15::jsonb, $16, $17)`,
+        [
+          product.id,
+          product.slug,
+          product.name_ru,
+          product.name_uz,
+          product.description_ru,
+          product.description_uz,
+          product.price,
+          product.old_price,
+          product.category,
+          product.images,
+          product.specs,
+          intToBool(product.in_stock),
+          intToBool(product.featured),
+          intToBool(product.is_new),
+          product.related_products,
+          product.created_at,
+          product.updated_at,
+        ]
+      );
+    },
+    insertMany: async (products: ProductData[]): Promise<void> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        for (const product of products) {
+          await client.query(
+            `INSERT INTO products (id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images, specs, in_stock, featured, is_new, related_products, created_at, updated_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12, $13, $14, $15::jsonb, $16, $17)`,
+            [
+              product.id,
+              product.slug,
+              product.name_ru,
+              product.name_uz,
+              product.description_ru,
+              product.description_uz,
+              product.price,
+              product.old_price,
+              product.category,
+              product.images,
+              product.specs,
+              intToBool(product.in_stock),
+              intToBool(product.featured),
+              intToBool(product.is_new),
+              product.related_products,
+              product.created_at,
+              product.updated_at,
+            ]
+          );
+        }
+        await client.query('COMMIT');
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
       }
     },
-    delete: (id: string): boolean => {
-      const products = readJson<ProductData[]>(productsFile, []);
-      const index = products.findIndex(p => p.id === id);
-      if (index !== -1) {
-        products.splice(index, 1);
-        writeJson(productsFile, products);
-        return true;
-      }
-      return false;
+    update: async (id: string, updates: Partial<ProductData>): Promise<void> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const fields: string[] = [];
+      const values: any[] = [];
+      let paramCount = 1;
+
+      Object.entries(updates).forEach(([key, value]) => {
+        if (key !== 'id') {
+          // Handle boolean fields
+          if (key === 'in_stock' || key === 'featured' || key === 'is_new') {
+            fields.push(`${key} = $${paramCount}`);
+            values.push(intToBool(value as number));
+          } else if (key === 'images' || key === 'specs' || key === 'related_products') {
+            fields.push(`${key} = $${paramCount}::jsonb`);
+            values.push(value);
+          } else {
+            fields.push(`${key} = $${paramCount}`);
+            values.push(value);
+          }
+          paramCount++;
+        }
+      });
+
+      if (fields.length === 0) return;
+
+      values.push(id);
+      await pool.query(
+        `UPDATE products SET ${fields.join(', ')} WHERE id = $${paramCount}`,
+        values
+      );
     },
-    count: (): number => readJson<ProductData[]>(productsFile, []).length,
+    delete: async (id: string): Promise<boolean> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query('DELETE FROM products WHERE id = $1', [id]);
+      return result.rowCount !== null && result.rowCount > 0;
+    },
+    count: async (): Promise<number> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query('SELECT COUNT(*) as count FROM products');
+      return parseInt(result.rows[0].count, 10);
+    },
   },
   sessions: {
-    all: (): SessionData[] => readJson<SessionData[]>(sessionsFile, []),
-    find: (predicate: (s: SessionData) => boolean): SessionData | undefined =>
-      readJson<SessionData[]>(sessionsFile, []).find(predicate),
-    insert: (session: SessionData): void => {
-      const sessions = readJson<SessionData[]>(sessionsFile, []);
-      sessions.push(session);
-      writeJson(sessionsFile, sessions);
+    all: async (): Promise<SessionData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT * FROM sessions ORDER BY created_at DESC'
+      );
+      return result.rows;
     },
-    delete: (sid: string): boolean => {
-      const sessions = readJson<SessionData[]>(sessionsFile, []);
-      const index = sessions.findIndex(s => s.sid === sid);
-      if (index !== -1) {
-        sessions.splice(index, 1);
-        writeJson(sessionsFile, sessions);
-        return true;
-      }
-      return false;
+    find: async (predicate: (s: SessionData) => boolean): Promise<SessionData | undefined> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const allSessions = await pgDb.sessions.all();
+      return allSessions.find(predicate);
     },
-    deleteExpired: (): number => {
-      const sessions = readJson<SessionData[]>(sessionsFile, []);
-      const now = new Date().toISOString();
-      const validSessions = sessions.filter(s => s.expires_at > now);
-      const deleted = sessions.length - validSessions.length;
-      writeJson(sessionsFile, validSessions);
-      return deleted;
+    findBySid: async (sid: string): Promise<SessionData | null> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT * FROM sessions WHERE sid = $1 AND expires_at > NOW()',
+        [sid]
+      );
+      return result.rows[0] || null;
+    },
+    insert: async (session: SessionData): Promise<void> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      await pool.query(
+        `INSERT INTO sessions (sid, user_id, created_at, expires_at)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (sid) DO UPDATE SET
+           user_id = EXCLUDED.user_id,
+           created_at = EXCLUDED.created_at,
+           expires_at = EXCLUDED.expires_at`,
+        [session.sid, session.user_id, session.created_at, session.expires_at]
+      );
+    },
+    delete: async (sid: string): Promise<boolean> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query('DELETE FROM sessions WHERE sid = $1', [sid]);
+      return result.rowCount !== null && result.rowCount > 0;
+    },
+    deleteExpired: async (): Promise<number> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query('DELETE FROM sessions WHERE expires_at <= NOW()');
+      return result.rowCount || 0;
+    },
+  },
+  uploadedImages: {
+    all: async (limit?: number, offset?: number): Promise<UploadedImageData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const query = limit
+        ? 'SELECT * FROM uploaded_images ORDER BY created_at DESC LIMIT $1 OFFSET $2'
+        : 'SELECT * FROM uploaded_images ORDER BY created_at DESC';
+      const params = limit ? [limit, offset || 0] : [];
+      const result = await pool.query(query, params);
+      return result.rows;
+    },
+    findById: async (id: string): Promise<UploadedImageData | null> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT * FROM uploaded_images WHERE id = $1',
+        [id]
+      );
+      return result.rows[0] || null;
+    },
+    insert: async (image: UploadedImageData): Promise<void> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      await pool.query(
+        `INSERT INTO uploaded_images (id, filename, original_name, mime_type, size_bytes, path, url, uploaded_by, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [
+          image.id,
+          image.filename,
+          image.original_name,
+          image.mime_type,
+          image.size_bytes,
+          image.path,
+          image.url,
+          image.uploaded_by,
+          image.created_at,
+        ]
+      );
+    },
+    delete: async (id: string): Promise<boolean> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query('DELETE FROM uploaded_images WHERE id = $1', [id]);
+      return result.rowCount !== null && result.rowCount > 0;
+    },
+    count: async (): Promise<number> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query('SELECT COUNT(*) as count FROM uploaded_images');
+      return parseInt(result.rows[0].count, 10);
     },
   },
 };
 
-// Initialize schema (create files if they don't exist)
-export function initializeDatabase(): void {
-  initFile(usersFile, []);
-  initFile(productsFile, []);
-  initFile(sessionsFile, []);
-  console.log('Database initialized successfully');
+// Database interface that auto-selects PostgreSQL or JSON
+export const db = {
+  users: {
+    all: (): UserData[] | Promise<UserData[]> => {
+      return usePostgreSQL ? pgDb.users.all() : jsonDb.users.all();
+    },
+    find: (predicate: (u: UserData) => boolean): UserData | undefined | Promise<UserData | undefined> => {
+      return usePostgreSQL ? pgDb.users.find(predicate) : jsonDb.users.find(predicate);
+    },
+    insert: (user: UserData): void | Promise<void> => {
+      return usePostgreSQL ? pgDb.users.insert(user) : jsonDb.users.insert(user);
+    },
+    update: (id: string, updates: Partial<UserData>): void | Promise<void> => {
+      return usePostgreSQL ? pgDb.users.update(id, updates) : jsonDb.users.update(id, updates);
+    },
+    count: (): number | Promise<number> => {
+      return usePostgreSQL ? pgDb.users.count() : jsonDb.users.count();
+    },
+  },
+  products: {
+    all: (): ProductData[] | Promise<ProductData[]> => {
+      return usePostgreSQL ? pgDb.products.all() : jsonDb.products.all();
+    },
+    find: (predicate: (p: ProductData) => boolean): ProductData | undefined | Promise<ProductData | undefined> => {
+      return usePostgreSQL ? pgDb.products.find(predicate) : jsonDb.products.find(predicate);
+    },
+    filter: (predicate: (p: ProductData) => boolean): ProductData[] | Promise<ProductData[]> => {
+      return usePostgreSQL ? pgDb.products.filter(predicate) : jsonDb.products.filter(predicate);
+    },
+    insert: (product: ProductData): void | Promise<void> => {
+      return usePostgreSQL ? pgDb.products.insert(product) : jsonDb.products.insert(product);
+    },
+    insertMany: (products: ProductData[]): void | Promise<void> => {
+      return usePostgreSQL ? pgDb.products.insertMany(products) : jsonDb.products.insertMany(products);
+    },
+    update: (id: string, updates: Partial<ProductData>): void | Promise<void> => {
+      return usePostgreSQL ? pgDb.products.update(id, updates) : jsonDb.products.update(id, updates);
+    },
+    delete: (id: string): boolean | Promise<boolean> => {
+      return usePostgreSQL ? pgDb.products.delete(id) : jsonDb.products.delete(id);
+    },
+    count: (): number | Promise<number> => {
+      return usePostgreSQL ? pgDb.products.count() : jsonDb.products.count();
+    },
+  },
+  sessions: {
+    all: (): SessionData[] | Promise<SessionData[]> => {
+      return usePostgreSQL ? pgDb.sessions.all() : jsonDb.sessions.all();
+    },
+    find: (predicate: (s: SessionData) => boolean): SessionData | undefined | Promise<SessionData | undefined> => {
+      return usePostgreSQL ? pgDb.sessions.find(predicate) : jsonDb.sessions.find(predicate);
+    },
+    insert: (session: SessionData): void | Promise<void> => {
+      return usePostgreSQL ? pgDb.sessions.insert(session) : jsonDb.sessions.insert(session);
+    },
+    delete: (sid: string): boolean | Promise<boolean> => {
+      return usePostgreSQL ? pgDb.sessions.delete(sid) : jsonDb.sessions.delete(sid);
+    },
+    deleteExpired: (): number | Promise<number> => {
+      return usePostgreSQL ? pgDb.sessions.deleteExpired() : jsonDb.sessions.deleteExpired();
+    },
+  },
+  uploadedImages: {
+    all: (limit?: number, offset?: number): Promise<UploadedImageData[]> => {
+      if (!usePostgreSQL) {
+        throw new Error('Image upload feature requires PostgreSQL');
+      }
+      return pgDb.uploadedImages.all(limit, offset);
+    },
+    findById: (id: string): Promise<UploadedImageData | null> => {
+      if (!usePostgreSQL) {
+        throw new Error('Image upload feature requires PostgreSQL');
+      }
+      return pgDb.uploadedImages.findById(id);
+    },
+    insert: (image: UploadedImageData): Promise<void> => {
+      if (!usePostgreSQL) {
+        throw new Error('Image upload feature requires PostgreSQL');
+      }
+      return pgDb.uploadedImages.insert(image);
+    },
+    delete: (id: string): Promise<boolean> => {
+      if (!usePostgreSQL) {
+        throw new Error('Image upload feature requires PostgreSQL');
+      }
+      return pgDb.uploadedImages.delete(id);
+    },
+    count: (): Promise<number> => {
+      if (!usePostgreSQL) {
+        throw new Error('Image upload feature requires PostgreSQL');
+      }
+      return pgDb.uploadedImages.count();
+    },
+  },
+};
+
+// Initialize schema (create tables if they don't exist)
+export async function initializeDatabase(): Promise<void> {
+  if (usePostgreSQL && pool) {
+    try {
+      // Read and execute schema file
+      const { readFileSync } = await import('node:fs');
+      const { join } = await import('node:path');
+      const schemaPath = join(import.meta.dirname, 'schema.sql');
+      const schema = readFileSync(schemaPath, 'utf-8');
+      
+      await pool.query(schema);
+      console.log('PostgreSQL schema initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize PostgreSQL schema:', error);
+      throw error;
+    }
+  } else {
+    // Fall back to JSON
+    initJsonDb();
+  }
 }
 
 // For compatibility with existing code
 export function getDb() {
   return db;
+}
+
+// Check if PostgreSQL is being used
+export function isUsingPostgreSQL(): boolean {
+  return usePostgreSQL;
 }
 
 export default db;

@@ -25,7 +25,7 @@ export class AuthService {
    * Authenticate user with username and password
    */
   async login(username: string, password: string): Promise<{ user: User; sessionId: string } | null> {
-    const userRow = db.users.find(u => u.username === username);
+    const userRow = await db.users.find(u => u.username === username);
 
     if (!userRow) {
       return null;
@@ -41,7 +41,7 @@ export class AuthService {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + SESSION_DURATION_MS).toISOString();
 
-    db.sessions.insert({
+    await db.sessions.insert({
       sid: sessionId,
       user_id: userRow.id,
       created_at: now.toISOString(),
@@ -56,15 +56,15 @@ export class AuthService {
   /**
    * Validate session and return user if valid
    */
-  validateSession(sessionId: string): User | null {
+  async validateSession(sessionId: string): Promise<User | null> {
     const now = new Date().toISOString();
-    const session = db.sessions.find(s => s.sid === sessionId && s.expires_at > now);
+    const session = await db.sessions.find(s => s.sid === sessionId && s.expires_at > now);
 
     if (!session) {
       return null;
     }
 
-    const userRow = db.users.find(u => u.id === session.user_id);
+    const userRow = await db.users.find(u => u.id === session.user_id);
     if (!userRow) {
       return null;
     }
@@ -76,15 +76,15 @@ export class AuthService {
   /**
    * Logout - remove session
    */
-  logout(sessionId: string): boolean {
-    return db.sessions.delete(sessionId);
+  async logout(sessionId: string): Promise<boolean> {
+    return await db.sessions.delete(sessionId);
   }
 
   /**
    * Change user password
    */
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<boolean> {
-    const userRow = db.users.find(u => u.id === userId);
+    const userRow = await db.users.find(u => u.id === userId);
 
     if (!userRow) {
       return false;
@@ -96,7 +96,7 @@ export class AuthService {
     }
 
     const newPasswordHash = await bcrypt.hash(newPassword, 12);
-    db.users.update(userId, {
+    await db.users.update(userId, {
       password_hash: newPasswordHash,
       updated_at: new Date().toISOString(),
     });
@@ -107,8 +107,8 @@ export class AuthService {
   /**
    * Clean up expired sessions
    */
-  cleanExpiredSessions(): number {
-    return db.sessions.deleteExpired();
+  async cleanExpiredSessions(): Promise<number> {
+    return await db.sessions.deleteExpired();
   }
 }
 

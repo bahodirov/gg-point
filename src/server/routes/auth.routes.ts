@@ -39,10 +39,10 @@ router.post('/login', async (req: Request, res: Response) => {
  * POST /api/auth/logout
  * Logout current user
  */
-router.post('/logout', requireAuth, (req: Request, res: Response) => {
+router.post('/logout', requireAuth, async (req: Request, res: Response) => {
   try {
     if (req.sessionId) {
-      authService.logout(req.sessionId);
+      await authService.logout(req.sessionId);
     }
     clearSessionCookie(res);
     res.json({ success: true });
@@ -56,7 +56,7 @@ router.post('/logout', requireAuth, (req: Request, res: Response) => {
  * GET /api/auth/session
  * Check current session status
  */
-router.get('/session', (req: Request, res: Response) => {
+router.get('/session', async (req: Request, res: Response) => {
   try {
     const sessionId = req.cookies?.['ggpoint_session'];
 
@@ -65,7 +65,7 @@ router.get('/session', (req: Request, res: Response) => {
       return;
     }
 
-    const user = authService.validateSession(sessionId);
+    const user = await authService.validateSession(sessionId);
 
     if (!user) {
       clearSessionCookie(res);

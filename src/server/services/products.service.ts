@@ -94,8 +94,8 @@ export class ProductsService {
   /**
    * Get all products
    */
-  getAllProducts(): Product[] {
-    const rows = db.products.all();
+  async getAllProducts(): Promise<Product[]> {
+    const rows = await db.products.all();
     // Sort by created_at descending
     rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return rows.map(rowToProduct);
@@ -104,24 +104,24 @@ export class ProductsService {
   /**
    * Get product by ID
    */
-  getProductById(id: string): Product | null {
-    const row = db.products.find(p => p.id === id);
+  async getProductById(id: string): Promise<Product | null> {
+    const row = await db.products.find(p => p.id === id);
     return row ? rowToProduct(row) : null;
   }
 
   /**
    * Get product by slug
    */
-  getProductBySlug(slug: string): Product | null {
-    const row = db.products.find(p => p.slug === slug);
+  async getProductBySlug(slug: string): Promise<Product | null> {
+    const row = await db.products.find(p => p.slug === slug);
     return row ? rowToProduct(row) : null;
   }
 
   /**
    * Get products by category
    */
-  getProductsByCategory(category: string): Product[] {
-    const rows = db.products.filter(p => p.category.toLowerCase() === category.toLowerCase());
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    const rows = await db.products.filter(p => p.category.toLowerCase() === category.toLowerCase());
     rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return rows.map(rowToProduct);
   }
@@ -129,8 +129,8 @@ export class ProductsService {
   /**
    * Get featured products
    */
-  getFeaturedProducts(limit: number = 6): Product[] {
-    const rows = db.products.filter(p => p.featured === 1);
+  async getFeaturedProducts(limit: number = 6): Promise<Product[]> {
+    const rows = await db.products.filter(p => p.featured === 1);
     rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return rows.slice(0, limit).map(rowToProduct);
   }
@@ -138,9 +138,9 @@ export class ProductsService {
   /**
    * Search products
    */
-  searchProducts(query: string): Product[] {
+  async searchProducts(query: string): Promise<Product[]> {
     const lowerQuery = query.toLowerCase();
-    const rows = db.products.filter(p => {
+    const rows = await db.products.filter(p => {
       const matchName = p.name_ru.toLowerCase().includes(lowerQuery);
       const matchNameUz = p.name_uz ? p.name_uz.toLowerCase().includes(lowerQuery) : false;
       const matchDesc = p.description_ru ? p.description_ru.toLowerCase().includes(lowerQuery) : false;
@@ -154,7 +154,7 @@ export class ProductsService {
   /**
    * Create a new product
    */
-  createProduct(data: CreateProductDto): Product {
+  async createProduct(data: CreateProductDto): Promise<Product> {
     const id = uuidv4();
     const now = new Date().toISOString();
     
@@ -178,7 +178,7 @@ export class ProductsService {
       updated_at: now,
     };
 
-    db.products.insert(product);
+    await db.products.insert(product);
     
     // Return the product we just created (convert from row format)
     return rowToProduct(product);
@@ -187,8 +187,8 @@ export class ProductsService {
   /**
    * Update a product
    */
-  updateProduct(id: string, data: UpdateProductDto): Product | null {
-    const existing = db.products.find(p => p.id === id);
+  async updateProduct(id: string, data: UpdateProductDto): Promise<Product | null> {
+    const existing = await db.products.find(p => p.id === id);
     if (!existing) {
       return null;
     }
@@ -212,22 +212,22 @@ export class ProductsService {
     if (data.is_new !== undefined) updates.is_new = data.is_new ? 1 : 0;
     if (data.related_products !== undefined) updates.related_products = JSON.stringify(data.related_products);
 
-    db.products.update(id, updates);
-    return this.getProductById(id);
+    await db.products.update(id, updates);
+    return await this.getProductById(id);
   }
 
   /**
    * Delete a product
    */
-  deleteProduct(id: string): boolean {
-    return db.products.delete(id);
+  async deleteProduct(id: string): Promise<boolean> {
+    return await db.products.delete(id);
   }
 
   /**
    * Get all categories with product counts
    */
-  getCategories(): { category: string; count: number }[] {
-    const products = db.products.all();
+  async getCategories(): Promise<{ category: string; count: number }[]> {
+    const products = await db.products.all();
     const categoryMap = new Map<string, number>();
     
     products.forEach(p => {
@@ -243,8 +243,8 @@ export class ProductsService {
   /**
    * Check if slug is unique
    */
-  isSlugUnique(slug: string, excludeId?: string): boolean {
-    const existing = db.products.find(p => p.slug === slug);
+  async isSlugUnique(slug: string, excludeId?: string): Promise<boolean> {
+    const existing = await db.products.find(p => p.slug === slug);
     if (!existing) return true;
     if (excludeId && existing.id === excludeId) return true;
     return false;
