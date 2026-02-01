@@ -1,17 +1,16 @@
 import { Router, Request, Response } from 'express';
 import { authService } from '../services/auth.service';
 import { requireAuth, setSessionCookie, clearSessionCookie } from '../middleware/auth.middleware';
+import { loginValidation, changePasswordValidation, validateRequest } from '../middleware/validation.middleware';
+import { authLimiter } from '../middleware/security.middleware';
 
 const router = Router();
 
 /**
  * POST /api/auth/login
  * Login with username and password
- * 
- * NOTE: For production use, implement rate limiting to prevent brute force attacks.
- * Consider using express-rate-limit or a similar middleware with Redis backing.
  */
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', authLimiter, loginValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
 
@@ -39,10 +38,10 @@ router.post('/login', async (req: Request, res: Response) => {
  * POST /api/auth/logout
  * Logout current user
  */
-router.post('/logout', requireAuth, (req: Request, res: Response) => {
+router.post('/logout', requireAuth, async (req: Request, res: Response) => {
   try {
     if (req.sessionId) {
-      authService.logout(req.sessionId);
+      await authService.logout(req.sessionId);
     }
     clearSessionCookie(res);
     res.json({ success: true });
@@ -56,7 +55,7 @@ router.post('/logout', requireAuth, (req: Request, res: Response) => {
  * GET /api/auth/session
  * Check current session status
  */
-router.get('/session', (req: Request, res: Response) => {
+router.get('/session', async (req: Request, res: Response) => {
   try {
     const sessionId = req.cookies?.['ggpoint_session'];
 
@@ -65,7 +64,7 @@ router.get('/session', (req: Request, res: Response) => {
       return;
     }
 
-    const user = authService.validateSession(sessionId);
+    const user = await authService.validateSession(sessionId);
 
     if (!user) {
       clearSessionCookie(res);
@@ -84,17 +83,12 @@ router.get('/session', (req: Request, res: Response) => {
  * POST /api/auth/change-password
  * Change current user's password
  */
-router.post('/change-password', requireAuth, async (req: Request, res: Response) => {
+router.post('/change-password', requireAuth, changePasswordValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
       res.status(400).json({ error: 'Current password and new password are required' });
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      res.status(400).json({ error: 'New password must be at least 8 characters' });
       return;
     }
 

@@ -1,11 +1,12 @@
 # Deployment Guide - GGPoint
 
-This guide will help you deploy your Angular SSR application to various hosting platforms.
+This guide will help you deploy your Angular SSR application with PostgreSQL database to various hosting platforms.
 
 ## 🔧 Pre-Deployment Checklist
 
 Before deploying, ensure:
 
+### Application
 - [ ] All environment variables are set
 - [ ] Telegram bot username is configured
 - [ ] Meta tags and SEO settings are correct
@@ -14,11 +15,26 @@ Before deploying, ensure:
 - [ ] All images are optimized
 - [ ] Test the production build locally
 
+### Database & Security
+- [ ] PostgreSQL database is set up
+- [ ] Database credentials are secured
+- [ ] Strong SESSION_SECRET is generated
+- [ ] Default admin password is changed
+- [ ] SSL/TLS certificates are obtained
+- [ ] Firewall rules are configured
+- [ ] Database backups are configured
+- [ ] Rate limiting is tested
+- [ ] Security headers are verified
+
 ## 🏗️ Build for Production
 
 ```bash
 # Install dependencies
 npm install --legacy-peer-deps
+
+# Create .env file with production settings
+cp .env.example .env
+# Edit .env with your production values
 
 # Build SSR application
 npm run build:ssr
@@ -28,6 +44,40 @@ npm run serve:ssr:ggpoint
 ```
 
 Visit `http://localhost:4000` to verify the build works correctly.
+
+## 🗄️ Database Setup
+
+### PostgreSQL Installation
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+```
+
+**Create Database:**
+```bash
+sudo -u postgres psql
+```
+```sql
+CREATE DATABASE ggpoint;
+CREATE USER ggpoint_user WITH ENCRYPTED PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE ggpoint TO ggpoint_user;
+\q
+```
+
+**Configure Environment:**
+```env
+DATABASE_URL=postgresql://ggpoint_user:your_secure_password@localhost:5432/ggpoint
+SESSION_SECRET=your-random-32-character-secret
+NODE_ENV=production
+PORT=4000
+```
+
+**Run Migration:**
+
+The database schema and data migration will run automatically when you start the server. For detailed migration instructions, see [DATABASE_MIGRATION.md](./DATABASE_MIGRATION.md).
 
 ## 🚀 Deployment Options
 
@@ -177,80 +227,359 @@ Heroku supports Node.js applications with easy deployments.
 
 ---
 
-### Option 5: VPS (Ubuntu/Debian)
+### Option 5: VPS (Ubuntu/Debian) - Complete Production Setup
 
-Deploy to your own Virtual Private Server.
+Deploy to your own Virtual Private Server with PostgreSQL and full security configuration.
+
+#### Prerequisites
+- Ubuntu 20.04+ or Debian 11+
+- Root or sudo access
+- Domain name configured to point to your server
 
 #### Steps:
 
-1. **Connect to Server**
-   ```bash
-   ssh user@your-server-ip
-   ```
+**1. Connect to Server**
+```bash
+ssh user@your-server-ip
+```
 
-2. **Install Node.js**
-   ```bash
-   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-   sudo apt-get install -y nodejs
-   ```
+**2. Update System**
+```bash
+sudo apt update && sudo apt upgrade -y
+```
 
-3. **Install PM2** (Process Manager)
-   ```bash
-   sudo npm install -g pm2
-   ```
+**3. Install Node.js**
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
 
-4. **Clone Repository**
-   ```bash
-   git clone <your-repo-url> /var/www/ggpoint
-   cd /var/www/ggpoint
-   ```
+**4. Install PostgreSQL**
+```bash
+sudo apt install postgresql postgresql-contrib -y
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+```
 
-5. **Install Dependencies & Build**
-   ```bash
-   npm install --legacy-peer-deps
-   npm run build:ssr
-   ```
+**5. Configure PostgreSQL**
+```bash
+# Switch to postgres user
+sudo -u postgres psql
 
-6. **Start with PM2**
-   ```bash
-   pm2 start npm --name "ggpoint" -- run serve:ssr:ggpoint
-   pm2 save
-   pm2 startup
-   ```
+# Create database and user
+CREATE DATABASE ggpoint;
+CREATE USER ggpoint_user WITH ENCRYPTED PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE ggpoint TO ggpoint_user;
+\q
+```
 
-7. **Configure Nginx** (create `/etc/nginx/sites-available/ggpoint`)
-   ```nginx
-   server {
-       listen 80;
-       server_name ggpoint.uz www.ggpoint.uz;
+**6. Configure PostgreSQL for Remote Access** (if needed)
 
-       location / {
-           proxy_pass http://localhost:4000;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection 'upgrade';
-           proxy_set_header Host $host;
-           proxy_cache_bypass $http_upgrade;
-       }
-   }
-   ```
+Edit `/etc/postgresql/14/main/postgresql.conf`:
+```
+listen_addresses = 'localhost'  # Only local for security
+```
 
-8. **Enable Site**
-   ```bash
-   sudo ln -s /etc/nginx/sites-available/ggpoint /etc/nginx/sites-enabled/
-   sudo nginx -t
-   sudo systemctl restart nginx
-   ```
+Edit `/etc/postgresql/14/main/pg_hba.conf`:
+```
+# Allow local connections
+local   all             all                                     peer
+host    ggpoint         ggpoint_user    127.0.0.1/32           md5
+```
 
-9. **Setup SSL with Let's Encrypt**
-   ```bash
-   sudo apt-get install certbot python3-certbot-nginx
-   sudo certbot --nginx -d ggpoint.uz -d www.ggpoint.uz
-   ```
+Restart PostgreSQL:
+```bash
+sudo systemctl restart postgresql
+```
+
+**7. Install PM2** (Process Manager)
+```bash
+sudo npm install -g pm2
+```
+
+**8. Clone Repository**
+```bash
+sudo mkdir -p /var/www
+sudo chown -R $USER:$USER /var/www
+git clone <your-repo-url> /var/www/ggpoint
+cd /var/www/ggpoint
+```
+
+**9. Configure Environment**
+```bash
+cp .env.example .env
+nano .env
+```
+
+Add your production settings:
+```env
+# Database
+DATABASE_URL=postgresql://ggpoint_user:your_secure_password@localhost:5432/ggpoint
+
+# Security
+SESSION_SECRET=generate-a-random-32-character-string
+NODE_ENV=production
+
+# Application
+PORT=4000
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+AUTH_RATE_LIMIT_MAX=10
+UPLOAD_RATE_LIMIT_MAX=20
+
+# Upload
+UPLOAD_DIR=public/uploads
+MAX_FILE_SIZE=5242880
+MAX_IMAGE_WIDTH=1920
+THUMBNAIL_WIDTH=300
+```
+
+**10. Install Dependencies & Build**
+```bash
+npm install --legacy-peer-deps
+npm run build:ssr
+```
+
+**11. Create PM2 Ecosystem File**
+
+Create `ecosystem.config.js`:
+```javascript
+module.exports = {
+  apps: [{
+    name: 'ggpoint',
+    script: 'npm',
+    args: 'run serve:ssr:ggpoint',
+    instances: 'max',
+    exec_mode: 'cluster',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 4000
+    },
+    error_file: '/var/log/pm2/ggpoint-error.log',
+    out_file: '/var/log/pm2/ggpoint-out.log',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss Z'
+  }]
+};
+```
+
+**12. Start with PM2**
+```bash
+# Create log directory
+sudo mkdir -p /var/log/pm2
+sudo chown -R $USER:$USER /var/log/pm2
+
+# Start application
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
+```
+
+**13. Install and Configure Nginx**
+```bash
+sudo apt install nginx -y
+```
+
+Create `/etc/nginx/sites-available/ggpoint`:
+```nginx
+# HTTP redirect to HTTPS
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ggpoint.uz www.ggpoint.uz;
+    return 301 https://$server_name$request_uri;
+}
+
+# HTTPS configuration
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name ggpoint.uz www.ggpoint.uz;
+
+    # SSL certificates (will be added by Certbot)
+    ssl_certificate /etc/letsencrypt/live/ggpoint.uz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ggpoint.uz/privkey.pem;
+    
+    # SSL configuration
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Logs
+    access_log /var/log/nginx/ggpoint-access.log;
+    error_log /var/log/nginx/ggpoint-error.log;
+
+    # Static files
+    location /uploads/ {
+        alias /var/www/ggpoint/public/uploads/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Proxy to Node.js application
+    location / {
+        proxy_pass http://localhost:4000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 90;
+    }
+}
+```
+
+**14. Enable Site**
+```bash
+sudo ln -s /etc/nginx/sites-available/ggpoint /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+**15. Setup SSL with Let's Encrypt**
+```bash
+sudo apt-get install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d ggpoint.uz -d www.ggpoint.uz
+```
+
+**16. Configure Firewall**
+```bash
+# Install UFW if not already installed
+sudo apt install ufw -y
+
+# Allow SSH (important! do this first)
+sudo ufw allow 22/tcp
+
+# Allow HTTP and HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Allow PostgreSQL only from localhost (secure)
+# If you need remote access, replace 'localhost' with specific IP
+sudo ufw allow from 127.0.0.1 to any port 5432
+
+# Enable firewall
+sudo ufw enable
+
+# Check status
+sudo ufw status
+```
+
+**17. Set Up Database Backups**
+
+Create backup script `/usr/local/bin/backup-ggpoint.sh`:
+```bash
+#!/bin/bash
+BACKUP_DIR="/var/backups/ggpoint"
+DATE=$(date +%Y%m%d-%H%M%S)
+
+mkdir -p $BACKUP_DIR
+
+# Backup database
+pg_dump -U ggpoint_user ggpoint > $BACKUP_DIR/db-$DATE.sql
+
+# Compress
+gzip $BACKUP_DIR/db-$DATE.sql
+
+# Keep only last 7 days of backups
+find $BACKUP_DIR -name "db-*.sql.gz" -mtime +7 -delete
+
+echo "Backup completed: db-$DATE.sql.gz"
+```
+
+Make executable and add to crontab:
+```bash
+sudo chmod +x /usr/local/bin/backup-ggpoint.sh
+sudo crontab -e
+```
+
+Add daily backup at 2 AM:
+```
+0 2 * * * /usr/local/bin/backup-ggpoint.sh
+```
+
+**18. Set Up Monitoring**
+
+```bash
+# Install monitoring tools
+sudo apt install htop iotop nethogs -y
+
+# View PM2 logs
+pm2 logs ggpoint
+
+# Monitor PM2 processes
+pm2 monit
+
+# View Nginx logs
+sudo tail -f /var/log/nginx/ggpoint-access.log
+sudo tail -f /var/log/nginx/ggpoint-error.log
+
+# View PostgreSQL logs
+sudo tail -f /var/log/postgresql/postgresql-14-main.log
+```
+
+**19. Post-Deployment Security Checklist**
+
+- [ ] Change default admin password immediately
+- [ ] Verify HTTPS is working (visit https://yourdomain.com)
+- [ ] Test rate limiting (try multiple failed logins)
+- [ ] Check security headers: https://securityheaders.com/
+- [ ] Verify database backups are running
+- [ ] Test image upload functionality
+- [ ] Review firewall rules
+- [ ] Monitor application logs for errors
+- [ ] Test admin panel functionality
+- [ ] Verify API endpoints are working
+
+**20. Maintenance Commands**
+
+```bash
+# Update application
+cd /var/www/ggpoint
+git pull
+npm install --legacy-peer-deps
+npm run build:ssr
+pm2 restart ggpoint
+
+# View application logs
+pm2 logs ggpoint --lines 100
+
+# Monitor application
+pm2 monit
+
+# Database maintenance
+sudo -u postgres psql -d ggpoint -c "VACUUM ANALYZE;"
+
+# Restart services
+pm2 restart ggpoint
+sudo systemctl restart nginx
+sudo systemctl restart postgresql
+
+# Check disk space
+df -h
+
+# Check memory usage
+free -h
+
+# Check running processes
+pm2 list
+```
 
 ---
 
-### Option 6: Docker
+### Option 6: Docker (with PostgreSQL)
 
 Containerize your application for any cloud provider.
 

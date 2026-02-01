@@ -1,4 +1,5 @@
-import { db } from './database';
+import { db, isUsingPostgreSQL } from './database';
+import { migrateToPostgreSQL } from './migrate-to-postgresql';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import rawProductsData from '../../../data/products';
@@ -8,8 +9,24 @@ const DEFAULT_ADMIN_USERNAME = 'admin';
 const DEFAULT_ADMIN_PASSWORD = 'admin123';
 
 export async function migrateData(): Promise<void> {
+  // If using PostgreSQL, use the dedicated migration script
+  if (isUsingPostgreSQL()) {
+    try {
+      await migrateToPostgreSQL();
+      return;
+    } catch (error) {
+      console.error('PostgreSQL migration failed:', error);
+      console.error('Falling back to JSON file storage...');
+      console.error('To use PostgreSQL, fix the migration errors and restart the application.');
+      // Continue with JSON file migration as fallback
+    }
+  }
+  
+  // Otherwise, use JSON file migration (for backward compatibility)
+  console.log('Migrating data to JSON files...');
+  
   // Check if users already exist
-  const userCount = db.users.count();
+  const userCount = await db.users.count();
   
   if (userCount === 0) {
     // Create default admin user
@@ -17,7 +34,7 @@ export async function migrateData(): Promise<void> {
     const userId = uuidv4();
     const now = new Date().toISOString();
     
-    db.users.insert({
+    await db.users.insert({
       id: userId,
       username: DEFAULT_ADMIN_USERNAME,
       password_hash: passwordHash,
@@ -31,7 +48,7 @@ export async function migrateData(): Promise<void> {
   }
 
   // Check if products already exist
-  const productCount = db.products.count();
+  const productCount = await db.products.count();
   
   if (productCount === 0 && rawProductsData.length > 0) {
     console.log(`Migrating ${rawProductsData.length} products to database...`);
@@ -57,7 +74,7 @@ export async function migrateData(): Promise<void> {
       updated_at: now,
     }));
 
-    db.products.insertMany(products);
+    await db.products.insertMany(products);
     console.log('Products migrated successfully');
   }
 }

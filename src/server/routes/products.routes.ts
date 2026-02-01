@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { productsService, CreateProductDto, UpdateProductDto } from '../services/products.service';
 import { requireAuth } from '../middleware/auth.middleware';
+import { productValidation, searchValidation, validateRequest } from '../middleware/validation.middleware';
 
 const router = Router();
 
@@ -10,21 +11,21 @@ const router = Router();
  * GET /api/products
  * Get all products (public)
  */
-router.get('/', (req: Request, res: Response) => {
+router.get('/', searchValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { category, search, featured } = req.query;
 
     let products;
 
     if (search) {
-      products = productsService.searchProducts(String(search));
+      products = await productsService.searchProducts(String(search));
     } else if (category) {
-      products = productsService.getProductsByCategory(String(category));
+      products = await productsService.getProductsByCategory(String(category));
     } else if (featured === 'true') {
       const limit = req.query['limit'] ? parseInt(String(req.query['limit']), 10) : 6;
-      products = productsService.getFeaturedProducts(limit);
+      products = await productsService.getFeaturedProducts(limit);
     } else {
-      products = productsService.getAllProducts();
+      products = await productsService.getAllProducts();
     }
 
     res.json(products);
@@ -38,9 +39,9 @@ router.get('/', (req: Request, res: Response) => {
  * GET /api/products/categories
  * Get all categories with counts (public)
  */
-router.get('/categories', (req: Request, res: Response) => {
+router.get('/categories', async (req: Request, res: Response) => {
   try {
-    const categories = productsService.getCategories();
+    const categories = await productsService.getCategories();
     res.json(categories);
   } catch (error) {
     console.error('Get categories error:', error);
@@ -52,14 +53,14 @@ router.get('/categories', (req: Request, res: Response) => {
  * GET /api/products/:idOrSlug
  * Get single product by ID or slug (public)
  */
-router.get('/:idOrSlug', (req: Request, res: Response) => {
+router.get('/:idOrSlug', async (req: Request, res: Response) => {
   try {
     const { idOrSlug } = req.params;
     
     // Try to find by ID first, then by slug
-    let product = productsService.getProductById(idOrSlug);
+    let product = await productsService.getProductById(idOrSlug);
     if (!product) {
-      product = productsService.getProductBySlug(idOrSlug);
+      product = await productsService.getProductBySlug(idOrSlug);
     }
 
     if (!product) {
@@ -80,7 +81,7 @@ router.get('/:idOrSlug', (req: Request, res: Response) => {
  * POST /api/products
  * Create a new product (admin only)
  */
-router.post('/', requireAuth, (req: Request, res: Response) => {
+router.post('/', requireAuth, productValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const data: CreateProductDto = req.body;
 
@@ -91,12 +92,12 @@ router.post('/', requireAuth, (req: Request, res: Response) => {
     }
 
     // Check slug uniqueness
-    if (!productsService.isSlugUnique(data.slug)) {
+    if (!(await productsService.isSlugUnique(data.slug))) {
       res.status(400).json({ error: 'Product with this slug already exists' });
       return;
     }
 
-    const product = productsService.createProduct(data);
+    const product = await productsService.createProduct(data);
     res.status(201).json(product);
   } catch (error) {
     console.error('Create product error:', error);
@@ -108,25 +109,25 @@ router.post('/', requireAuth, (req: Request, res: Response) => {
  * PUT /api/products/:id
  * Update a product (admin only)
  */
-router.put('/:id', requireAuth, (req: Request, res: Response) => {
+router.put('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data: UpdateProductDto = req.body;
 
     // Check if product exists
-    const existing = productsService.getProductById(id);
+    const existing = await productsService.getProductById(id);
     if (!existing) {
       res.status(404).json({ error: 'Product not found' });
       return;
     }
 
     // Check slug uniqueness if changing slug
-    if (data.slug && !productsService.isSlugUnique(data.slug, id)) {
+    if (data.slug && !(await productsService.isSlugUnique(data.slug, id))) {
       res.status(400).json({ error: 'Product with this slug already exists' });
       return;
     }
 
-    const product = productsService.updateProduct(id, data);
+    const product = await productsService.updateProduct(id, data);
     res.json(product);
   } catch (error) {
     console.error('Update product error:', error);
@@ -138,18 +139,18 @@ router.put('/:id', requireAuth, (req: Request, res: Response) => {
  * DELETE /api/products/:id
  * Delete a product (admin only)
  */
-router.delete('/:id', requireAuth, (req: Request, res: Response) => {
+router.delete('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
     // Check if product exists
-    const existing = productsService.getProductById(id);
+    const existing = await productsService.getProductById(id);
     if (!existing) {
       res.status(404).json({ error: 'Product not found' });
       return;
     }
 
-    productsService.deleteProduct(id);
+    await productsService.deleteProduct(id);
     res.json({ success: true });
   } catch (error) {
     console.error('Delete product error:', error);

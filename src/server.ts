@@ -13,7 +13,36 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-// Middleware
+// Security middleware - load dynamically to avoid build issues
+let securityInitialized = false;
+async function initializeSecurity() {
+  if (securityInitialized) return;
+  
+  try {
+    const { helmetConfig, requestLogger, corsMiddleware } = await import('./server/middleware/security.middleware');
+    const { sanitizeInput } = await import('./server/middleware/validation.middleware');
+    
+    // Apply security middleware
+    app.use(helmetConfig);
+    app.use(corsMiddleware);
+    app.use(requestLogger);
+    app.use(sanitizeInput);
+    
+    securityInitialized = true;
+    console.log('Security middleware initialized');
+  } catch (error) {
+    console.error('FATAL: Failed to initialize security middleware:', error);
+    console.error('Application cannot start without security protections.');
+    console.error('Please check that all security middleware modules are available.');
+    // Fail fast: do not start the application without security middleware
+    throw error;
+  }
+}
+
+// Initialize security middleware immediately on startup
+await initializeSecurity();
+
+// Basic middleware - applied after security middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -29,11 +58,12 @@ async function initializeApi(): Promise<express.Router> {
     return apiRouter;
   }
 
-  const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }] = await Promise.all([
+  const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }, { default: adminRoutes }] = await Promise.all([
     import('./server/db/database'),
     import('./server/db/migrate'),
     import('./server/routes/auth.routes'),
     import('./server/routes/products.routes'),
+    import('./server/routes/admin.routes'),
   ]);
 
   // Initialize database and migrate data
@@ -44,6 +74,7 @@ async function initializeApi(): Promise<express.Router> {
   apiRouter = express.Router();
   apiRouter.use('/auth', authRoutes);
   apiRouter.use('/products', productsRoutes);
+  apiRouter.use('/admin', adminRoutes);
 
   apiInitialized = true;
   console.log('API initialized successfully');

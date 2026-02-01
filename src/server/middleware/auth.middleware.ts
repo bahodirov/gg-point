@@ -16,7 +16,7 @@ const SESSION_COOKIE_NAME = 'ggpoint_session';
 /**
  * Middleware to check if user is authenticated
  */
-export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const sessionId = req.cookies?.[SESSION_COOKIE_NAME];
   
   if (!sessionId) {
@@ -24,7 +24,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     return;
   }
 
-  const user = authService.validateSession(sessionId);
+  const user = await authService.validateSession(sessionId);
   
   if (!user) {
     res.clearCookie(SESSION_COOKIE_NAME);
@@ -40,11 +40,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
 /**
  * Middleware to optionally load user if authenticated (but don't require it)
  */
-export function optionalAuth(req: Request, res: Response, next: NextFunction): void {
+export async function optionalAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const sessionId = req.cookies?.[SESSION_COOKIE_NAME];
   
   if (sessionId) {
-    const user = authService.validateSession(sessionId);
+    const user = await authService.validateSession(sessionId);
     if (user) {
       req.user = user;
       req.sessionId = sessionId;
