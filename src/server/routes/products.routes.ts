@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { productsService, CreateProductDto, UpdateProductDto } from '../services/products.service';
 import { requireAuth } from '../middleware/auth.middleware';
-import { productValidation, uuidValidation, searchValidation, validateRequest } from '../middleware/validation.middleware';
+import { productValidation, searchValidation, validateRequest } from '../middleware/validation.middleware';
 
 const router = Router();
 

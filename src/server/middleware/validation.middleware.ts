@@ -57,12 +57,17 @@ export const changePasswordValidation = [
   body('currentPassword')
     .notEmpty()
     .withMessage('Current password is required'),
-  ...passwordValidation.map(v => {
-    // Apply to newPassword instead of password
-    const newV = body('newPassword');
-    // Copy validators from password to newPassword
-    return (v as any)._context ? newV : v;
-  }),
+  body('newPassword')
+    .isLength({ min: 12 })
+    .withMessage('New password must be at least 12 characters long')
+    .matches(/[A-Z]/)
+    .withMessage('New password must contain at least one uppercase letter')
+    .matches(/[a-z]/)
+    .withMessage('New password must contain at least one lowercase letter')
+    .matches(/[0-9]/)
+    .withMessage('New password must contain at least one number')
+    .matches(/[!@#$%^&*(),.?":{}|<>]/)
+    .withMessage('New password must contain at least one special character'),
 ];
 
 /**

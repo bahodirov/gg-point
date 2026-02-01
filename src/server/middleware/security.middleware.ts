@@ -1,6 +1,6 @@
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 /**
  * Helmet configuration for security headers
@@ -87,12 +87,19 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction):
 
   const origin = req.headers.origin;
   
-  if (!origin || allowedOrigins.includes(origin) || process.env['NODE_ENV'] !== 'production') {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  // In production, validate origin against allowed list
+  if (process.env['NODE_ENV'] === 'production') {
+    if (!origin || !allowedOrigins.includes(origin)) {
+      res.status(403).json({ error: 'Origin not allowed' });
+      return;
+    }
   }
+  
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);

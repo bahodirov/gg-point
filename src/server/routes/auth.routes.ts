@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authService } from '../services/auth.service';
 import { requireAuth, setSessionCookie, clearSessionCookie } from '../middleware/auth.middleware';
-import { loginValidation, changePasswordValidation, validateRequest, passwordValidation } from '../middleware/validation.middleware';
+import { loginValidation, changePasswordValidation, validateRequest } from '../middleware/validation.middleware';
 import { authLimiter } from '../middleware/security.middleware';
 
 const router = Router();
@@ -89,11 +89,6 @@ router.post('/change-password', requireAuth, changePasswordValidation, validateR
 
     if (!currentPassword || !newPassword) {
       res.status(400).json({ error: 'Current password and new password are required' });
-      return;
-    }
-
-    if (newPassword.length < 12) {
-      res.status(400).json({ error: 'New password must be at least 12 characters' });
       return;
     }
 

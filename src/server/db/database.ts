@@ -100,8 +100,8 @@ const pgDb = {
     },
     find: async (predicate: (u: UserData) => boolean): Promise<UserData | undefined> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
-      // For performance, we support common predicates directly
-      // This is a simplified version - in production, you'd parse the predicate
+      // Note: This loads all users and filters in memory
+      // For production, use specific methods like findByUsername or findById
       const allUsers = await pgDb.users.all();
       return allUsers.find(predicate);
     },
@@ -207,8 +207,63 @@ const pgDb = {
     },
     filter: async (predicate: (p: ProductData) => boolean): Promise<ProductData[]> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
+      // Note: This is a simplified filter that loads all products
+      // For production with large datasets, use specific query methods like filterByCategory
       const allProducts = await pgDb.products.all();
       return allProducts.filter(predicate);
+    },
+    filterByOptions: async (options: {
+      category?: string;
+      inStock?: boolean;
+      featured?: boolean;
+      isNew?: boolean;
+    }): Promise<ProductData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+
+      const conditions: string[] = [];
+      const values: any[] = [];
+
+      if (options.category !== undefined) {
+        values.push(options.category);
+        conditions.push(`LOWER(category) = LOWER($${values.length})`);
+      }
+
+      if (options.inStock !== undefined) {
+        values.push(options.inStock);
+        conditions.push(`in_stock = $${values.length}`);
+      }
+
+      if (options.featured !== undefined) {
+        values.push(options.featured);
+        conditions.push(`featured = $${values.length}`);
+      }
+
+      if (options.isNew !== undefined) {
+        values.push(options.isNew);
+        conditions.push(`is_new = $${values.length}`);
+      }
+
+      const whereClause =
+        conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+      const query = `
+        SELECT id, slug, name_ru, name_uz, description_ru, description_uz,
+               price, old_price, category, images::text, specs::text,
+               in_stock, featured, is_new, related_products::text,
+               created_at, updated_at
+        FROM products
+        ${whereClause}
+        ORDER BY created_at DESC
+      `;
+
+      const result = await pool.query(query, values);
+
+      return result.rows.map(row => ({
+        ...row,
+        in_stock: boolToInt(row.in_stock),
+        featured: boolToInt(row.featured),
+        is_new: boolToInt(row.is_new),
+      }));
     },
     filterByCategory: async (category: string): Promise<ProductData[]> => {
       if (!pool) throw new Error('PostgreSQL not initialized');

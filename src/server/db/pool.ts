@@ -20,9 +20,15 @@ function getPoolConfig(): PoolConfig | null {
 
   // Option 1: Use DATABASE_URL
   if (process.env['DATABASE_URL']) {
+    const sslConfig = process.env['NODE_ENV'] === 'production'
+      ? process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false'
+        ? { rejectUnauthorized: false }
+        : true
+      : undefined;
+    
     return {
       connectionString: process.env['DATABASE_URL'],
-      ssl: process.env['NODE_ENV'] === 'production' ? { rejectUnauthorized: false } : undefined,
+      ssl: sslConfig,
       max: 20, // Maximum number of clients in the pool
       idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
       connectionTimeoutMillis: 10000, // Return an error after 10 seconds if connection cannot be established
@@ -31,13 +37,19 @@ function getPoolConfig(): PoolConfig | null {
 
   // Option 2: Use individual settings
   if (process.env['DB_NAME']) {
+    const sslConfig = process.env['NODE_ENV'] === 'production'
+      ? process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false'
+        ? { rejectUnauthorized: false }
+        : true
+      : undefined;
+    
     return {
       host: process.env['DB_HOST'] || 'localhost',
       port: parseInt(process.env['DB_PORT'] || '5432', 10),
       database: process.env['DB_NAME'],
       user: process.env['DB_USER'] || 'postgres',
       password: process.env['DB_PASSWORD'],
-      ssl: process.env['NODE_ENV'] === 'production' ? { rejectUnauthorized: false } : undefined,
+      ssl: sslConfig,
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,

@@ -19,14 +19,14 @@ async function initializeSecurity() {
   if (securityInitialized) return;
   
   try {
-    const { helmetConfig, requestLogger, errorHandler, corsMiddleware, sanitizeInput } = await import('./server/middleware/security.middleware');
-    const { sanitizeInput: validationSanitize } = await import('./server/middleware/validation.middleware');
+    const { helmetConfig, requestLogger, corsMiddleware } = await import('./server/middleware/security.middleware');
+    const { sanitizeInput } = await import('./server/middleware/validation.middleware');
     
     // Apply security middleware
     app.use(helmetConfig);
     app.use(corsMiddleware);
     app.use(requestLogger);
-    app.use(validationSanitize);
+    app.use(sanitizeInput);
     
     securityInitialized = true;
     console.log('Security middleware initialized');
@@ -35,7 +35,10 @@ async function initializeSecurity() {
   }
 }
 
-// Basic middleware
+// Initialize security middleware immediately on startup
+await initializeSecurity();
+
+// Basic middleware - applied after security middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -80,9 +83,6 @@ async function initializeApi(): Promise<express.Router> {
  */
 app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Initialize security middleware first
-    await initializeSecurity();
-    
     const router = await initializeApi();
     router(req, res, next);
   } catch (error) {

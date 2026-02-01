@@ -52,50 +52,70 @@ export class ImageService {
     const optimizedPath = join(baseDir, optimizedFilename);
     const optimizedUrl = `/uploads/products/${optimizedFilename}`;
 
-    const optimizedInfo = await sharp(inputPath)
-      .resize(MAX_IMAGE_WIDTH, null, {
-        fit: 'inside',
-        withoutEnlargement: true,
-      })
-      .webp({ quality: 85 })
-      .toFile(optimizedPath);
-
     // Generate thumbnail
     const thumbnailFilename = `${timestamp}-${uuid}-thumb.webp`;
     const thumbnailPath = join(baseDir, thumbnailFilename);
     const thumbnailUrl = `/uploads/products/${thumbnailFilename}`;
 
-    const thumbnailInfo = await sharp(inputPath)
-      .resize(THUMBNAIL_WIDTH, null, {
-        fit: 'inside',
-        withoutEnlargement: true,
-      })
-      .webp({ quality: 80 })
-      .toFile(thumbnailPath);
+    try {
+      // Create optimized image and thumbnail first
+      const optimizedInfo = await sharp(inputPath)
+        .resize(MAX_IMAGE_WIDTH, null, {
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .webp({ quality: 85 })
+        .toFile(optimizedPath);
 
-    // Delete original unoptimized file if it exists
-    if (existsSync(inputPath) && inputPath !== optimizedPath) {
-      try {
-        await unlink(inputPath);
-      } catch (error) {
-        console.error('Failed to delete original file:', error);
+      const thumbnailInfo = await sharp(inputPath)
+        .resize(THUMBNAIL_WIDTH, null, {
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .webp({ quality: 80 })
+        .toFile(thumbnailPath);
+
+      // Only delete original after successful optimization
+      if (existsSync(inputPath) && inputPath !== optimizedPath) {
+        try {
+          await unlink(inputPath);
+        } catch (error) {
+          console.error('Failed to delete original file:', error);
+        }
       }
-    }
 
-    return {
-      original: {
-        filename: optimizedFilename,
-        path: optimizedPath,
-        url: optimizedUrl,
-        sizeBytes: optimizedInfo.size,
-      },
-      thumbnail: {
-        filename: thumbnailFilename,
-        path: thumbnailPath,
-        url: thumbnailUrl,
-        sizeBytes: thumbnailInfo.size,
-      },
-    };
+      return {
+        original: {
+          filename: optimizedFilename,
+          path: optimizedPath,
+          url: optimizedUrl,
+          sizeBytes: optimizedInfo.size,
+        },
+        thumbnail: {
+          filename: thumbnailFilename,
+          path: thumbnailPath,
+          url: thumbnailUrl,
+          sizeBytes: thumbnailInfo.size,
+        },
+      };
+    } catch (error) {
+      // Clean up any partially created files on error
+      if (existsSync(optimizedPath)) {
+        try {
+          await unlink(optimizedPath);
+        } catch (cleanupError) {
+          console.error('Failed to cleanup optimized file:', cleanupError);
+        }
+      }
+      if (existsSync(thumbnailPath)) {
+        try {
+          await unlink(thumbnailPath);
+        } catch (cleanupError) {
+          console.error('Failed to cleanup thumbnail file:', cleanupError);
+        }
+      }
+      throw error;
+    }
   }
 
   /**
@@ -225,6 +245,26 @@ export class ImageService {
    * Check if image is used in any products
    */
   async isImageUsedInProducts(imageUrl: string): Promise<boolean> {
+    if (isUsingPostgreSQL()) {
+      // Use a database-level EXISTS query for scalability on large product tables
+      const { getPool } = await import('../db/pool');
+      const pool = getPool();
+      
+      if (pool) {
+        const result = await pool.query(
+          `SELECT EXISTS(
+            SELECT 1
+            FROM products
+            WHERE images::text LIKE '%' || $1 || '%'
+          ) AS exists`,
+          [imageUrl]
+        );
+        
+        return result.rows[0]?.exists === true;
+      }
+    }
+
+    // Fallback for non-PostgreSQL databases: preserve existing in-memory behavior
     const allProducts = await db.products.all();
     
     for (const product of allProducts) {
