@@ -24,15 +24,15 @@ import { TranslateModule } from '@ngx-translate/core';
             </p>
             <!-- Social Links -->
             <div class="flex space-x-2">
-              <a href="https://t.me/GGPointUz" target="_blank" rel="noopener" 
+              <a href="https://t.me/GGPointUz" target="_blank" rel="noopener"
                  class="social-link" aria-label="Telegram">
                 <mat-icon>telegram</mat-icon>
               </a>
-              <a href="https://instagram.com/ggpoint" target="_blank" rel="noopener" 
+              <a href="https://instagram.com/ggpoint" target="_blank" rel="noopener"
                  class="social-link" aria-label="Instagram">
                 <mat-icon>photo_camera</mat-icon>
               </a>
-              <a href="https://facebook.com/ggpoint" target="_blank" rel="noopener" 
+              <a href="https://facebook.com/ggpoint" target="_blank" rel="noopener"
                  class="social-link" aria-label="Facebook">
                 <mat-icon>facebook</mat-icon>
               </a>
@@ -107,6 +107,13 @@ import { TranslateModule } from '@ngx-translate/core';
                 <span class="text-sm">9:00 - 20:00</span>
               </li>
             </ul>
+            <!-- Admin Panel Button -->
+            <div class="mt-6">
+              <a routerLink="/login" class="admin-button">
+                <mat-icon class="mr-2">admin_panel_settings</mat-icon>
+                <span>Admin Panel</span>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -152,6 +159,32 @@ import { TranslateModule } from '@ngx-translate/core';
       font-size: 20px;
       width: 20px;
       height: 20px;
+    }
+
+    .admin-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(14, 165, 233, 0.2);
+    }
+
+    .admin-button:hover {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    .admin-button mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
   `]
 })
