@@ -1,4 +1,4 @@
-import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { Component, inject, PLATFORM_ID, signal, OnInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -8,7 +8,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../auth/services/auth.service';
+
+interface DatabaseHealth {
+  healthy: boolean;
+  warning: string | null;
+  database: string;
+}
 
 @Component({
   selector: 'app-admin-layout',
@@ -38,13 +45,20 @@ import { AuthService } from '../../../auth/services/auth.service';
       </div>
     } @else {
       <div class="admin-layout">
+        @if (dbHealth() && !dbHealth()?.healthy) {
+          <div class="database-warning">
+            <mat-icon>warning</mat-icon>
+            <span>{{ dbHealth()?.warning }}</span>
+            <span class="db-status">({{ dbHealth()?.database }})</span>
+          </div>
+        }
         <mat-toolbar color="primary" class="admin-toolbar">
           <button mat-icon-button (click)="toggleSidenav()">
             <mat-icon>menu</mat-icon>
           </button>
           <span class="toolbar-title">GGPoint Admin</span>
           <span class="spacer"></span>
-          
+
           <button mat-button [matMenuTriggerFor]="userMenu">
             <mat-icon>account_circle</mat-icon>
             {{ authService.currentUser()?.username }}
@@ -62,7 +76,7 @@ import { AuthService } from '../../../auth/services/auth.service';
           </mat-menu>
         </mat-toolbar>
 
-        <mat-sidenav-container class="sidenav-container">
+        <mat-sidenav-container [class.has-warning]="!dbHealth()?.healthy" class="sidenav-container">
           <mat-sidenav [mode]="sidenavMode" [opened]="sidenavOpened" class="sidenav">
             <mat-nav-list>
               <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active">
@@ -164,12 +178,62 @@ import { AuthService } from '../../../auth/services/auth.service';
         padding: 1rem;
       }
     }
+    .database-warning {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: #fff3cd;
+      color: #856404;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 999;
+      border-bottom: 1px solid #ffeaa7;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    :host-context(.dark-theme) .database-warning {
+      background: #664d03;
+      color: #ffecb5;
+      border-bottom-color: #533f03;
+    }
+
+    .database-warning mat-icon {
+      color: #ff9800;
+    }
+
+    .database-warning .db-status {
+      margin-left: auto;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    .sidenav-container.has-warning {
+      margin-top: calc(64px + 50px);
+    }
+
+    @media (max-width: 768px) {
+      .database-warning {
+        top: 56px;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+      }
+
+      .sidenav-container.has-warning {
+        margin-top: calc(56px + 45px);
+      }
+    }
   `]
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit {
   authService = inject(AuthService);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+  private http = inject(HttpClient);
+
+  dbHealth = signal<DatabaseHealth | null>(null);
 
   sidenavOpened = true;
   sidenavMode: 'side' | 'over' = 'side';
@@ -186,6 +250,29 @@ export class AdminLayoutComponent {
       this.sidenavMode = 'over';
       this.sidenavOpened = false;
     }
+  }
+
+  ngOnInit(): void {
+    if (this.isBrowser) {
+      this.checkDatabaseHealth();
+      // Har 30 soniyada tekshirish
+      setInterval(() => this.checkDatabaseHealth(), 30000);
+    }
+  }
+
+  private checkDatabaseHealth(): void {
+    this.http.get<DatabaseHealth>('/api/admin/health')
+      .subscribe({
+        next: (health) => this.dbHealth.set(health),
+        error: (err) => {
+          console.error('Database health check failed:', err);
+          this.dbHealth.set({
+            healthy: false,
+            warning: 'Ma\'lumotlar bazasi holatini tekshirib bo\'lmadi',
+            database: 'unknown'
+          });
+        }
+      });
   }
 
   toggleSidenav(): void {

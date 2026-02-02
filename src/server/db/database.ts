@@ -57,23 +57,60 @@ export interface UploadedImageData {
 // Check if using PostgreSQL
 let usePostgreSQL = false;
 let pool: Pool | null = null;
+let databaseWarning: string | null = null;
 
-function initializePostgreSQL(): void {
+async function initializePostgreSQL(): Promise<void> {
   if (isPostgreSQLConfigured()) {
     pool = getPool();
-    usePostgreSQL = pool !== null;
-    if (usePostgreSQL) {
-      console.log('Using PostgreSQL database');
+    if (pool) {
+      try {
+        // Test connection
+        await pool.query('SELECT 1');
+        usePostgreSQL = true;
+        databaseWarning = null;
+        console.log('✅ Using PostgreSQL database');
+      } catch (error: any) {
+        usePostgreSQL = false;
+        const errorMsg = `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`;
+        databaseWarning = errorMsg;
+
+        // Production muhitida xato otamiz
+        if (process.env['NODE_ENV'] === 'production') {
+          console.error('❌ ' + errorMsg);
+          throw new Error('Production muhitida PostgreSQL talab qilinadi. Iltimos, ma\'lumotlar bazasi ishlab turganini tekshiring.');
+        } else {
+          // Development muhitida fallback
+          console.warn('⚠️ ' + errorMsg);
+          console.warn('⚠️ JSON file storage ishlatilmoqda (fallback - faqat development uchun)');
+        }
+      }
     }
-  }
-  
-  if (!usePostgreSQL) {
-    console.log('Using JSON file storage (fallback)');
+  } else {
+    databaseWarning = 'DATABASE_URL sozlanmagan';
+    if (process.env['NODE_ENV'] === 'production') {
+      console.error('❌ DATABASE_URL sozlanmagan!');
+      throw new Error('Production muhitida DATABASE_URL talab qilinadi');
+    } else {
+      console.log('ℹ️ DATABASE_URL topilmadi. JSON file storage ishlatilmoqda (development rejim)');
+    }
   }
 }
 
 // Initialize on module load
-initializePostgreSQL();
+initializePostgreSQL().catch(err => {
+  console.error('Database initialization failed:', err);
+  process.exit(1);
+});
+
+// Export database warning getter
+export function getDatabaseWarning(): string | null {
+  return databaseWarning;
+}
+
+// Export database status
+export function isDatabaseHealthy(): boolean {
+  return usePostgreSQL && databaseWarning === null;
+}
 
 // Helper to convert PostgreSQL boolean/integer to 0/1
 function boolToInt(value: boolean | number): number {
@@ -582,7 +619,7 @@ export async function initializeDatabase(): Promise<void> {
       const { join } = await import('node:path');
       const schemaPath = join(import.meta.dirname, 'schema.sql');
       const schema = readFileSync(schemaPath, 'utf-8');
-      
+
       await pool.query(schema);
       console.log('PostgreSQL schema initialized successfully');
     } catch (error) {

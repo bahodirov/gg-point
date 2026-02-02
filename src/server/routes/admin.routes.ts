@@ -5,8 +5,29 @@ import { imageService } from '../services/image.service';
 import { uploadLimiter } from '../middleware/security.middleware';
 import { paginationValidation, uuidValidation, validateRequest } from '../middleware/validation.middleware';
 import { join } from 'node:path';
+import { getDatabaseWarning, isDatabaseHealthy } from '../db/database';
 
 const router = Router();
+
+/**
+ * GET /api/admin/health
+ * Database health check
+ */
+router.get('/health', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const warning = getDatabaseWarning();
+    const isHealthy = isDatabaseHealthy();
+
+    res.json({
+      healthy: isHealthy,
+      warning: warning,
+      database: isHealthy ? 'postgresql' : 'json-fallback'
+    });
+  } catch (error) {
+    console.error('Health check error:', error);
+    res.status(500).json({ error: 'Health check failed' });
+  }
+});
 
 /**
  * POST /api/admin/upload-image
@@ -20,7 +41,7 @@ router.post('/upload-image', requireAuth, uploadLimiter, uploadMemory.single('im
     }
 
     const userId = req.user?.id || null;
-    
+
     // Save to temporary location first
     const { writeFile } = await import('node:fs/promises');
     const tempPath = join(process.cwd(), 'public', 'uploads', 'products', `temp-${Date.now()}.tmp`);
@@ -124,7 +145,7 @@ router.delete('/images/:id', requireAuth, uuidValidation, validateRequest, async
     // Check if image is used in any products
     const isUsed = await imageService.isImageUsedInProducts(image.url);
     if (isUsed) {
-      res.status(400).json({ 
+      res.status(400).json({
         error: 'Cannot delete image: it is currently used in one or more products',
         code: 'IMAGE_IN_USE'
       });
