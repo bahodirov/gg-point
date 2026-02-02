@@ -58,48 +58,60 @@ export interface UploadedImageData {
 let usePostgreSQL = false;
 let pool: Pool | null = null;
 let databaseWarning: string | null = null;
+let postgreSQLInitializationPromise: Promise<void> | null = null;
 
 async function initializePostgreSQL(): Promise<void> {
-  if (isPostgreSQLConfigured()) {
-    pool = getPool();
-    if (pool) {
-      try {
-        // Test connection
-        await pool.query('SELECT 1');
-        usePostgreSQL = true;
-        databaseWarning = null;
-        console.log('✅ Using PostgreSQL database');
-      } catch (error: any) {
-        usePostgreSQL = false;
-        const errorMsg = `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`;
-        databaseWarning = errorMsg;
+  if (postgreSQLInitializationPromise) {
+    return postgreSQLInitializationPromise;
+  }
 
-        // Production muhitida xato otamiz
-        if (process.env['NODE_ENV'] === 'production') {
-          console.error('❌ ' + errorMsg);
-          throw new Error('Production muhitida PostgreSQL talab qilinadi. Iltimos, ma\'lumotlar bazasi ishlab turganini tekshiring.');
-        } else {
-          // Development muhitida fallback
-          console.warn('⚠️ ' + errorMsg);
-          console.warn('⚠️ JSON file storage ishlatilmoqda (fallback - faqat development uchun)');
+  postgreSQLInitializationPromise = (async () => {
+    if (isPostgreSQLConfigured()) {
+      pool = getPool();
+      if (pool) {
+        try {
+          // Test connection
+          await pool.query('SELECT 1');
+          usePostgreSQL = true;
+          databaseWarning = null;
+          console.log('✅ Using PostgreSQL database');
+        } catch (error: any) {
+          usePostgreSQL = false;
+          const errorMsg = `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`;
+          databaseWarning = errorMsg;
+
+          // Production muhitida xato otamiz
+          if (process.env['NODE_ENV'] === 'production') {
+            console.error('❌ ' + errorMsg);
+            throw new Error('Production muhitida PostgreSQL talab qilinadi. Iltimos, ma\'lumotlar bazasi ishlab turganini tekshiring.');
+          } else {
+            // Development muhitida fallback
+            console.warn('⚠️ ' + errorMsg);
+            console.warn('⚠️ JSON file storage ishlatilmoqda (fallback - faqat development uchun)');
+          }
         }
       }
-    }
-  } else {
-    databaseWarning = 'DATABASE_URL sozlanmagan';
-    if (process.env['NODE_ENV'] === 'production') {
-      console.error('❌ DATABASE_URL sozlanmagan!');
-      throw new Error('Production muhitida DATABASE_URL talab qilinadi');
     } else {
-      console.log('ℹ️ DATABASE_URL topilmadi. JSON file storage ishlatilmoqda (development rejim)');
+      databaseWarning = 'DATABASE_URL sozlanmagan';
+      if (process.env['NODE_ENV'] === 'production') {
+        console.error('❌ DATABASE_URL sozlanmagan!');
+        throw new Error('Production muhitida DATABASE_URL talab qilinadi');
+      } else {
+        console.log('ℹ️ DATABASE_URL topilmadi. JSON file storage ishlatilmoqda (development rejim)');
+      }
     }
-  }
+  })();
+
+  return postgreSQLInitializationPromise;
 }
 
 // Initialize on module load
 initializePostgreSQL().catch(err => {
   console.error('Database initialization failed:', err);
-  process.exit(1);
+  // Don't exit process here if it's just a connection error that we can fallback from
+  if (process.env['NODE_ENV'] === 'production') {
+    process.exit(1);
+  }
 });
 
 // Export database warning getter
@@ -109,6 +121,10 @@ export function getDatabaseWarning(): string | null {
 
 // Export database status
 export function isDatabaseHealthy(): boolean {
+  // In development, JSON fallback is considered healthy status
+  if (process.env['NODE_ENV'] !== 'production') {
+    return true;
+  }
   return usePostgreSQL && databaseWarning === null;
 }
 
@@ -612,13 +628,26 @@ export const db = {
 
 // Initialize schema (create tables if they don't exist)
 export async function initializeDatabase(): Promise<void> {
+  // Ensure PostgreSQL initialization is complete
+  await initializePostgreSQL();
+
   if (usePostgreSQL && pool) {
     try {
       // Read and execute schema file
       const { readFileSync } = await import('node:fs');
       const { join } = await import('node:path');
-      const schemaPath = join(import.meta.dirname, 'schema.sql');
-      const schema = readFileSync(schemaPath, 'utf-8');
+
+      // Try multiple paths to find schema.sql
+      let schemaPath = join(import.meta.dirname, 'schema.sql');
+      let schema: string;
+
+      try {
+        schema = readFileSync(schemaPath, 'utf-8');
+      } catch (err) {
+        // Try alternative path for development/build environment
+        schemaPath = join(process.cwd(), 'src', 'server', 'db', 'schema.sql');
+        schema = readFileSync(schemaPath, 'utf-8');
+      }
 
       await pool.query(schema);
       console.log('PostgreSQL schema initialized successfully');

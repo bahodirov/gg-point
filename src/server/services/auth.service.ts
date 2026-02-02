@@ -58,9 +58,16 @@ export class AuthService {
    */
   async validateSession(sessionId: string): Promise<User | null> {
     const now = new Date().toISOString();
-    const session = await db.sessions.find(s => s.sid === sessionId && s.expires_at > now);
+    console.log(`Validating session ${sessionId}, now=${now}`);
+    const session = await db.sessions.find(s => s.sid === sessionId);
 
     if (!session) {
+      console.warn(`Session ${sessionId} not found in database`);
+      return null;
+    }
+
+    if (session.expires_at <= now) {
+      console.warn(`Session ${sessionId} expired at ${session.expires_at}`);
       return null;
     }
 

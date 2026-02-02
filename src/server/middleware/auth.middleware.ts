@@ -18,20 +18,23 @@ const SESSION_COOKIE_NAME = 'ggpoint_session';
  */
 export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const sessionId = req.cookies?.[SESSION_COOKIE_NAME];
-  
+
   if (!sessionId) {
+    console.warn('requireAuth: No session ID found in cookies');
     res.status(401).json({ error: 'Authentication required' });
     return;
   }
 
   const user = await authService.validateSession(sessionId);
-  
+
   if (!user) {
+    console.warn(`requireAuth: Invalid or expired session: ${sessionId}`);
     res.clearCookie(SESSION_COOKIE_NAME);
     res.status(401).json({ error: 'Session expired or invalid' });
     return;
   }
 
+  console.log(`requireAuth: User ${user.username} authenticated`);
   req.user = user;
   req.sessionId = sessionId;
   next();
@@ -42,7 +45,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
  */
 export async function optionalAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const sessionId = req.cookies?.[SESSION_COOKIE_NAME];
-  
+
   if (sessionId) {
     const user = await authService.validateSession(sessionId);
     if (user) {
@@ -50,7 +53,7 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
       req.sessionId = sessionId;
     }
   }
-  
+
   next();
 }
 

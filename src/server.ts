@@ -1,3 +1,7 @@
+// Load environment variables first
+import { config } from 'dotenv';
+config();
+
 import {
   AngularNodeAppEngine,
   createNodeRequestHandler,
@@ -17,17 +21,17 @@ const angularApp = new AngularNodeAppEngine();
 let securityInitialized = false;
 async function initializeSecurity() {
   if (securityInitialized) return;
-  
+
   try {
     const { helmetConfig, requestLogger, corsMiddleware } = await import('./server/middleware/security.middleware');
     const { sanitizeInput } = await import('./server/middleware/validation.middleware');
-    
+
     // Apply security middleware
     app.use(helmetConfig);
     app.use(corsMiddleware);
     app.use(requestLogger);
     app.use(sanitizeInput);
-    
+
     securityInitialized = true;
     console.log('Security middleware initialized');
   } catch (error) {
@@ -39,47 +43,49 @@ async function initializeSecurity() {
   }
 }
 
-// Initialize security middleware immediately on startup
-await initializeSecurity();
-
-// Basic middleware - applied after security middleware
+// Basic middleware - applied before security to ensure req.body is available for sanitization
 app.use(express.json());
 app.use(cookieParser());
 
+// Initialize security middleware immediately on startup
+await initializeSecurity();
+
 // Track if API is initialized
-let apiInitialized = false;
-let apiRouter: express.Router | null = null;
+let apiInitializationPromise: Promise<express.Router> | null = null;
 
 /**
  * Lazy-load API routes only when needed (to avoid loading native modules during build)
  */
 async function initializeApi(): Promise<express.Router> {
-  if (apiRouter) {
-    return apiRouter;
+  if (apiInitializationPromise) {
+    return apiInitializationPromise;
   }
 
-  const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }, { default: adminRoutes }] = await Promise.all([
-    import('./server/db/database'),
-    import('./server/db/migrate'),
-    import('./server/routes/auth.routes'),
-    import('./server/routes/products.routes'),
-    import('./server/routes/admin.routes'),
-  ]);
+  apiInitializationPromise = (async () => {
+    const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }, { default: adminRoutes }] = await Promise.all([
+      import('./server/db/database'),
+      import('./server/db/migrate'),
+      import('./server/routes/auth.routes'),
+      import('./server/routes/products.routes'),
+      import('./server/routes/admin.routes'),
+    ]);
 
-  // Initialize database and migrate data
-  initializeDatabase();
-  await migrateData();
+    // Initialize database and migrate data
+    await initializeDatabase();
+    await migrateData();
 
-  // Create API router
-  apiRouter = express.Router();
-  apiRouter.use('/auth', authRoutes);
-  apiRouter.use('/products', productsRoutes);
-  apiRouter.use('/admin', adminRoutes);
+    // Create API router
+    const router = express.Router();
+    router.use('/auth', authRoutes);
+    router.use('/products', productsRoutes);
+    router.use('/admin', adminRoutes);
 
-  apiInitialized = true;
-  console.log('API initialized successfully');
-  
-  return apiRouter;
+    console.log('API initialized successfully');
+
+    return router;
+  })();
+
+  return apiInitializationPromise;
 }
 
 /**

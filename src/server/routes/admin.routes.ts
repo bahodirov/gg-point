@@ -17,11 +17,12 @@ router.get('/health', requireAuth, async (req: Request, res: Response) => {
   try {
     const warning = getDatabaseWarning();
     const isHealthy = isDatabaseHealthy();
+    const usingPostgreSQL = await import('../db/database').then(m => m.isUsingPostgreSQL());
 
     res.json({
       healthy: isHealthy,
       warning: warning,
-      database: isHealthy ? 'postgresql' : 'json-fallback'
+      database: usingPostgreSQL ? 'postgresql' : 'json-fallback'
     });
   } catch (error) {
     console.error('Health check error:', error);

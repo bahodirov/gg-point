@@ -8,6 +8,7 @@ export function validateRequest(req: Request, res: Response, next: NextFunction)
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
+    console.warn('Validation failed for request:', req.url, JSON.stringify(errors.array(), null, 2));
     res.status(400).json({
       error: 'Validation failed',
       details: errors.array(),
@@ -100,12 +101,14 @@ export const productValidation = [
     .optional()
     .trim(),
   body('price')
-    .isInt({ min: 0 })
-    .withMessage('Price must be a positive integer'),
+    .isNumeric()
+    .withMessage('Price must be a number')
+    .custom((value) => value >= 0)
+    .withMessage('Price must be positive'),
   body('old_price')
     .optional()
-    .isInt({ min: 0 })
-    .withMessage('Old price must be a positive integer'),
+    .isNumeric()
+    .withMessage('Old price must be a number'),
   body('category')
     .trim()
     .notEmpty()

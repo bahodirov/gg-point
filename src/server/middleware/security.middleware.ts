@@ -17,7 +17,7 @@ export const helmetConfig = helmet({
       // Consider migrating to nonce-based or hash-based CSP for inline scripts
       // and removing 'unsafe-eval' entirely for production builds
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", "http://localhost:4000", "http://localhost:4200"],
     },
   },
   hsts: {
@@ -90,20 +90,21 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction):
     : ['http://localhost:4200', 'http://localhost:4000'];
 
   const origin = req.headers.origin;
-  
-  // In production, validate origin against allowed list
-  if (process.env['NODE_ENV'] === 'production') {
-    if (!origin || !allowedOrigins.includes(origin)) {
-      res.status(403).json({ error: 'Origin not allowed' });
-      return; // Stop processing, don't set CORS headers or call next()
-    }
+  const isAllowedOrigin = !origin || allowedOrigins.includes(origin);
+
+  if (isAllowedOrigin && origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else if (!origin) {
+    // For same-origin requests that don't send Origin header
+    // No need for Access-Control-Allow-Origin but good practice to be explicit if needed
+  } else if (process.env['NODE_ENV'] === 'production') {
+    res.status(403).json({ error: 'Origin not allowed' });
+    return;
   }
-  
-  // Set CORS headers only for valid origins
-  res.setHeader('Access-Control-Allow-Origin', origin || '*');
+
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
@@ -118,7 +119,7 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction):
  */
 export function requestLogger(req: Request, res: Response, next: NextFunction): void {
   const startTime = Date.now();
-  
+
   // Log request
   const requestLog = {
     method: req.method,
@@ -160,7 +161,7 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
 
   // Don't expose internal error details in production
   const isDevelopment = process.env['NODE_ENV'] !== 'production';
-  
+
   res.status(500).json({
     error: 'Internal server error',
     message: isDevelopment ? err.message : 'An unexpected error occurred',

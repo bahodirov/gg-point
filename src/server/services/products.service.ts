@@ -97,7 +97,11 @@ export class ProductsService {
   async getAllProducts(): Promise<Product[]> {
     const rows = await db.products.all();
     // Sort by created_at descending
-    rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    rows.sort((a, b) => {
+      const dateA = typeof a.created_at === 'string' ? a.created_at : new Date(a.created_at).toISOString();
+      const dateB = typeof b.created_at === 'string' ? b.created_at : new Date(b.created_at).toISOString();
+      return dateB.localeCompare(dateA);
+    });
     return rows.map(rowToProduct);
   }
 
@@ -157,7 +161,7 @@ export class ProductsService {
   async createProduct(data: CreateProductDto): Promise<Product> {
     const id = uuidv4();
     const now = new Date().toISOString();
-    
+
     const product: ProductRow = {
       id,
       slug: data.slug,
@@ -165,8 +169,8 @@ export class ProductsService {
       name_uz: data.name_uz || null,
       description_ru: data.description_ru || null,
       description_uz: data.description_uz || null,
-      price: data.price,
-      old_price: data.old_price || null,
+      price: Number(data.price),
+      old_price: data.old_price ? Number(data.old_price) : null,
       category: data.category,
       images: JSON.stringify(data.images || []),
       specs: JSON.stringify(data.specs || {}),
@@ -179,7 +183,7 @@ export class ProductsService {
     };
 
     await db.products.insert(product);
-    
+
     // Return the product we just created (convert from row format)
     return rowToProduct(product);
   }
@@ -229,7 +233,7 @@ export class ProductsService {
   async getCategories(): Promise<{ category: string; count: number }[]> {
     const products = await db.products.all();
     const categoryMap = new Map<string, number>();
-    
+
     products.forEach(p => {
       const count = categoryMap.get(p.category) || 0;
       categoryMap.set(p.category, count + 1);

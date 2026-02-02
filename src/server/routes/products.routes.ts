@@ -56,7 +56,7 @@ router.get('/categories', async (req: Request, res: Response) => {
 router.get('/:idOrSlug', async (req: Request, res: Response) => {
   try {
     const { idOrSlug } = req.params;
-    
+
     // Try to find by ID first, then by slug
     let product = await productsService.getProductById(idOrSlug);
     if (!product) {
@@ -83,10 +83,11 @@ router.get('/:idOrSlug', async (req: Request, res: Response) => {
  */
 router.post('/', requireAuth, productValidation, validateRequest, async (req: Request, res: Response) => {
   try {
+    console.log('Creating product with data:', JSON.stringify(req.body, null, 2));
     const data: CreateProductDto = req.body;
 
     // Validate required fields
-    if (!data.slug || !data.name_ru || !data.price || !data.category) {
+    if (!data.slug || !data.name_ru || data.price === undefined || data.price === null || !data.category) {
       res.status(400).json({ error: 'Missing required fields: slug, name_ru, price, category' });
       return;
     }

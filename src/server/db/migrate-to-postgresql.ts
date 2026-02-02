@@ -45,8 +45,18 @@ export async function migrateToPostgreSQL(): Promise<void> {
     // Step 1: Initialize schema
     console.log('\nStep 1: Initializing database schema...');
     try {
-      const schemaPath = join(__dirname, 'schema.sql');
-      const schema = readFileSync(schemaPath, 'utf-8');
+      // Try multiple paths to find schema.sql
+      let schemaPath = join(__dirname, 'schema.sql');
+      let schema: string;
+
+      try {
+        schema = readFileSync(schemaPath, 'utf-8');
+      } catch (err) {
+        // Try alternative path for development/build environment
+        schemaPath = join(process.cwd(), 'src', 'server', 'db', 'schema.sql');
+        schema = readFileSync(schemaPath, 'utf-8');
+      }
+
       await pool.query(schema);
       console.log('✓ Schema initialized');
     } catch (error: any) {
