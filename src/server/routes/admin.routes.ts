@@ -22,7 +22,7 @@ router.get('/health', requireAuth, async (req: Request, res: Response) => {
     res.json({
       healthy: isHealthy,
       warning: warning,
-      database: usingPostgreSQL ? 'postgresql' : 'json-fallback'
+      database: usingPostgreSQL ? 'postgresql' : 'not-connected'
     });
   } catch (error) {
     console.error('Health check error:', error);

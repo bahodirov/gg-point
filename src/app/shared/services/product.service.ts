@@ -1,11 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Product, ProductCategory, ProductSpecification } from '../models/product.model';
-import rawProductsData from '../../../../data/products';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
+  private http = inject(HttpClient);
   private productsSignal = signal<Product[]>([]);
   private categoriesSignal = signal<ProductCategory[]>([]);
 
@@ -16,16 +18,21 @@ export class ProductService {
     this.loadProducts();
   }
 
-  private loadProducts(): void {
-    // Transform raw product data to match Product interface
-    const products = rawProductsData.map(p => this.transformProduct(p));
-    this.productsSignal.set(products);
-    this.extractCategories(products);
+  async loadProducts(): Promise<void> {
+    try {
+      // Fetch from API
+      const serverProducts = await firstValueFrom(this.http.get<any[]>('/api/products'));
+      const products = serverProducts.map(p => this.transformProduct(p));
+      this.productsSignal.set(products);
+      this.extractCategories(products);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    }
   }
 
-  private transformProduct(rawProduct: any): Product {
-    // Convert specs object to ProductSpecification array
-    const specifications: ProductSpecification[] = Object.entries(rawProduct.specs || {}).map(
+  private transformProduct(p: any): Product {
+    // Transform from server representation ({ru, uz} objects) to frontend representation
+    const specifications: ProductSpecification[] = Object.entries(p.specs || {}).map(
       ([key, value]) => ({
         key,
         value: String(value)
@@ -33,31 +40,31 @@ export class ProductService {
     );
 
     return {
-      id: rawProduct.id,
-      slug: rawProduct.slug,
-      name: rawProduct.name.ru, // Default to Russian
-      nameUz: rawProduct.name.uz,
-      category: rawProduct.category,
-      price: rawProduct.price,
-      originalPrice: rawProduct.oldPrice,
+      id: p.id,
+      slug: p.slug,
+      name: p.name.ru,
+      nameUz: p.name.uz,
+      category: p.category,
+      price: p.price,
+      originalPrice: p.oldPrice,
       currency: 'UZS',
-      description: rawProduct.description.ru,
-      descriptionUz: rawProduct.description.uz,
+      description: p.description.ru,
+      descriptionUz: p.description.uz,
       specifications,
-      images: rawProduct.images || [],
-      thumbnail: rawProduct.images?.[0] || '',
-      inStock: rawProduct.inStock ?? true,
-      featured: rawProduct.featured ?? false,
-      tags: [], // Can be added later if needed
-      relatedProducts: rawProduct.relatedProducts,
-      createdAt: new Date(),
-      isNew: rawProduct.isNew
+      images: p.images || [],
+      thumbnail: p.images?.[0] || '',
+      inStock: p.inStock ?? true,
+      featured: p.featured ?? false,
+      tags: [],
+      relatedProducts: p.relatedProducts,
+      createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
+      isNew: p.isNew
     } as Product;
   }
 
   private extractCategories(products: Product[]): void {
     const categoryMap = new Map<string, ProductCategory>();
-    
+
     products.forEach(product => {
       if (!categoryMap.has(product.category)) {
         categoryMap.set(product.category, {
@@ -84,7 +91,7 @@ export class ProductService {
   }
 
   getProductsByCategory(category: string): Product[] {
-    return this.productsSignal().filter(p => 
+    return this.productsSignal().filter(p =>
       p.category.toLowerCase() === category.toLowerCase()
     );
   }
@@ -113,7 +120,7 @@ export class ProductService {
     let filtered = this.productsSignal();
 
     if (filters.category) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.category.toLowerCase() === filters.category!.toLowerCase()
       );
     }
@@ -139,8 +146,8 @@ export class ProductService {
 
     // Get products from the same category, excluding the current product
     return this.productsSignal()
-      .filter(p => 
-        p.id !== productId && 
+      .filter(p =>
+        p.id !== productId &&
         p.category === product.category
       )
       .slice(0, limit);

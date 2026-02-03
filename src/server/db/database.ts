@@ -1,9 +1,6 @@
 import { getPool, isPostgreSQLConfigured } from './pool';
 import { Pool } from 'pg';
 
-// Import JSON fallback
-import { db as jsonDb, initializeDatabase as initJsonDb } from './database-json';
-
 // Type definitions
 export interface UserData {
   id: string;
@@ -55,7 +52,6 @@ export interface UploadedImageData {
 }
 
 // Check if using PostgreSQL
-let usePostgreSQL = false;
 let pool: Pool | null = null;
 let databaseWarning: string | null = null;
 let postgreSQLInitializationPromise: Promise<void> | null = null;
@@ -72,33 +68,17 @@ async function initializePostgreSQL(): Promise<void> {
         try {
           // Test connection
           await pool.query('SELECT 1');
-          usePostgreSQL = true;
           databaseWarning = null;
           console.log('✅ Using PostgreSQL database');
         } catch (error: any) {
-          usePostgreSQL = false;
           const errorMsg = `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`;
           databaseWarning = errorMsg;
-
-          // Production muhitida xato otamiz
-          if (process.env['NODE_ENV'] === 'production') {
-            console.error('❌ ' + errorMsg);
-            throw new Error('Production muhitida PostgreSQL talab qilinadi. Iltimos, ma\'lumotlar bazasi ishlab turganini tekshiring.');
-          } else {
-            // Development muhitida fallback
-            console.warn('⚠️ ' + errorMsg);
-            console.warn('⚠️ JSON file storage ishlatilmoqda (fallback - faqat development uchun)');
-          }
+          console.error('❌ ' + errorMsg);
         }
       }
     } else {
       databaseWarning = 'DATABASE_URL sozlanmagan';
-      if (process.env['NODE_ENV'] === 'production') {
-        console.error('❌ DATABASE_URL sozlanmagan!');
-        throw new Error('Production muhitida DATABASE_URL talab qilinadi');
-      } else {
-        console.log('ℹ️ DATABASE_URL topilmadi. JSON file storage ishlatilmoqda (development rejim)');
-      }
+      console.error('❌ DATABASE_URL sozlanmagan!');
     }
   })();
 
@@ -108,7 +88,6 @@ async function initializePostgreSQL(): Promise<void> {
 // Initialize on module load
 initializePostgreSQL().catch(err => {
   console.error('Database initialization failed:', err);
-  // Don't exit process here if it's just a connection error that we can fallback from
   if (process.env['NODE_ENV'] === 'production') {
     process.exit(1);
   }
@@ -121,11 +100,7 @@ export function getDatabaseWarning(): string | null {
 
 // Export database status
 export function isDatabaseHealthy(): boolean {
-  // In development, JSON fallback is considered healthy status
-  if (process.env['NODE_ENV'] !== 'production') {
-    return true;
-  }
-  return usePostgreSQL && databaseWarning === null;
+  return pool !== null && databaseWarning === null;
 }
 
 // Helper to convert PostgreSQL boolean/integer to 0/1
@@ -530,97 +505,82 @@ const pgDb = {
   },
 };
 
-// Database interface that auto-selects PostgreSQL or JSON
+// Database interface that uses PostgreSQL
 export const db = {
   users: {
-    all: (): UserData[] | Promise<UserData[]> => {
-      return usePostgreSQL ? pgDb.users.all() : jsonDb.users.all();
+    all: (): Promise<UserData[]> => {
+      return pgDb.users.all();
     },
-    find: (predicate: (u: UserData) => boolean): UserData | undefined | Promise<UserData | undefined> => {
-      return usePostgreSQL ? pgDb.users.find(predicate) : jsonDb.users.find(predicate);
+    find: (predicate: (u: UserData) => boolean): Promise<UserData | undefined> => {
+      return pgDb.users.find(predicate);
     },
-    insert: (user: UserData): void | Promise<void> => {
-      return usePostgreSQL ? pgDb.users.insert(user) : jsonDb.users.insert(user);
+    insert: (user: UserData): Promise<void> => {
+      return pgDb.users.insert(user);
     },
-    update: (id: string, updates: Partial<UserData>): void | Promise<void> => {
-      return usePostgreSQL ? pgDb.users.update(id, updates) : jsonDb.users.update(id, updates);
+    update: (id: string, updates: Partial<UserData>): Promise<void> => {
+      return pgDb.users.update(id, updates);
     },
-    count: (): number | Promise<number> => {
-      return usePostgreSQL ? pgDb.users.count() : jsonDb.users.count();
+    count: (): Promise<number> => {
+      return pgDb.users.count();
     },
   },
   products: {
-    all: (): ProductData[] | Promise<ProductData[]> => {
-      return usePostgreSQL ? pgDb.products.all() : jsonDb.products.all();
+    all: (): Promise<ProductData[]> => {
+      return pgDb.products.all();
     },
-    find: (predicate: (p: ProductData) => boolean): ProductData | undefined | Promise<ProductData | undefined> => {
-      return usePostgreSQL ? pgDb.products.find(predicate) : jsonDb.products.find(predicate);
+    find: (predicate: (p: ProductData) => boolean): Promise<ProductData | undefined> => {
+      return pgDb.products.find(predicate);
     },
-    filter: (predicate: (p: ProductData) => boolean): ProductData[] | Promise<ProductData[]> => {
-      return usePostgreSQL ? pgDb.products.filter(predicate) : jsonDb.products.filter(predicate);
+    filter: (predicate: (p: ProductData) => boolean): Promise<ProductData[]> => {
+      return pgDb.products.filter(predicate);
     },
-    insert: (product: ProductData): void | Promise<void> => {
-      return usePostgreSQL ? pgDb.products.insert(product) : jsonDb.products.insert(product);
+    insert: (product: ProductData): Promise<void> => {
+      return pgDb.products.insert(product);
     },
-    insertMany: (products: ProductData[]): void | Promise<void> => {
-      return usePostgreSQL ? pgDb.products.insertMany(products) : jsonDb.products.insertMany(products);
+    insertMany: (products: ProductData[]): Promise<void> => {
+      return pgDb.products.insertMany(products);
     },
-    update: (id: string, updates: Partial<ProductData>): void | Promise<void> => {
-      return usePostgreSQL ? pgDb.products.update(id, updates) : jsonDb.products.update(id, updates);
+    update: (id: string, updates: Partial<ProductData>): Promise<void> => {
+      return pgDb.products.update(id, updates);
     },
-    delete: (id: string): boolean | Promise<boolean> => {
-      return usePostgreSQL ? pgDb.products.delete(id) : jsonDb.products.delete(id);
+    delete: (id: string): Promise<boolean> => {
+      return pgDb.products.delete(id);
     },
-    count: (): number | Promise<number> => {
-      return usePostgreSQL ? pgDb.products.count() : jsonDb.products.count();
+    count: (): Promise<number> => {
+      return pgDb.products.count();
     },
   },
   sessions: {
-    all: (): SessionData[] | Promise<SessionData[]> => {
-      return usePostgreSQL ? pgDb.sessions.all() : jsonDb.sessions.all();
+    all: (): Promise<SessionData[]> => {
+      return pgDb.sessions.all();
     },
-    find: (predicate: (s: SessionData) => boolean): SessionData | undefined | Promise<SessionData | undefined> => {
-      return usePostgreSQL ? pgDb.sessions.find(predicate) : jsonDb.sessions.find(predicate);
+    find: (predicate: (s: SessionData) => boolean): Promise<SessionData | undefined> => {
+      return pgDb.sessions.find(predicate);
     },
-    insert: (session: SessionData): void | Promise<void> => {
-      return usePostgreSQL ? pgDb.sessions.insert(session) : jsonDb.sessions.insert(session);
+    insert: (session: SessionData): Promise<void> => {
+      return pgDb.sessions.insert(session);
     },
-    delete: (sid: string): boolean | Promise<boolean> => {
-      return usePostgreSQL ? pgDb.sessions.delete(sid) : jsonDb.sessions.delete(sid);
+    delete: (sid: string): Promise<boolean> => {
+      return pgDb.sessions.delete(sid);
     },
-    deleteExpired: (): number | Promise<number> => {
-      return usePostgreSQL ? pgDb.sessions.deleteExpired() : jsonDb.sessions.deleteExpired();
+    deleteExpired: (): Promise<number> => {
+      return pgDb.sessions.deleteExpired();
     },
   },
   uploadedImages: {
     all: (limit?: number, offset?: number): Promise<UploadedImageData[]> => {
-      if (!usePostgreSQL) {
-        throw new Error('Image upload feature requires PostgreSQL');
-      }
       return pgDb.uploadedImages.all(limit, offset);
     },
     findById: (id: string): Promise<UploadedImageData | null> => {
-      if (!usePostgreSQL) {
-        throw new Error('Image upload feature requires PostgreSQL');
-      }
       return pgDb.uploadedImages.findById(id);
     },
     insert: (image: UploadedImageData): Promise<void> => {
-      if (!usePostgreSQL) {
-        throw new Error('Image upload feature requires PostgreSQL');
-      }
       return pgDb.uploadedImages.insert(image);
     },
     delete: (id: string): Promise<boolean> => {
-      if (!usePostgreSQL) {
-        throw new Error('Image upload feature requires PostgreSQL');
-      }
       return pgDb.uploadedImages.delete(id);
     },
     count: (): Promise<number> => {
-      if (!usePostgreSQL) {
-        throw new Error('Image upload feature requires PostgreSQL');
-      }
       return pgDb.uploadedImages.count();
     },
   },
@@ -631,7 +591,7 @@ export async function initializeDatabase(): Promise<void> {
   // Ensure PostgreSQL initialization is complete
   await initializePostgreSQL();
 
-  if (usePostgreSQL && pool) {
+  if (pool) {
     try {
       // Read and execute schema file
       const { readFileSync } = await import('node:fs');
@@ -656,8 +616,7 @@ export async function initializeDatabase(): Promise<void> {
       throw error;
     }
   } else {
-    // Fall back to JSON
-    initJsonDb();
+    console.error('Cannot initialize database schema: Pool not available');
   }
 }
 
@@ -668,7 +627,7 @@ export function getDb() {
 
 // Check if PostgreSQL is being used
 export function isUsingPostgreSQL(): boolean {
-  return usePostgreSQL;
+  return pool !== null;
 }
 
 export default db;
