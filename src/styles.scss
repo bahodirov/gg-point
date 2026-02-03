@@ -63,31 +63,52 @@ html {
 }
 
 // Fix for Angular Material input fields
-// Proper styling for visibility and proper display
+// CRITICAL: Force dark text for visibility on light backgrounds
 
-// Ensure input text is always visible in light mode
+// Ensure input text is ALWAYS visible in light mode with maximum specificity
+.mat-mdc-form-field .mat-mdc-input-element,
+.mat-mdc-form-field input.mat-mdc-input-element,
+input.mat-mdc-input-element,
 .mat-mdc-input-element,
 .mat-mdc-select,
-.mat-mdc-form-field-textarea-control {
-  color: #1e293b !important;
-  caret-color: #1e3c72;
+.mat-mdc-form-field-textarea-control,
+textarea.mat-mdc-form-field-textarea-control {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #1e3c72 !important;
 }
 
 // Fix placeholder colors for visibility
-.mat-mdc-input-element::placeholder {
-  color: rgba(0, 0, 0, 0.38) !important;
-  opacity: 1;
+.mat-mdc-input-element::placeholder,
+input.mat-mdc-input-element::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.5) !important;
+  opacity: 1 !important;
 }
 
-// Fix label colors in light mode
+// Fix label colors in light mode with high specificity
+.mat-mdc-form-field .mat-mdc-form-field-label,
+.mat-mdc-form-field .mat-mdc-floating-label,
 .mat-mdc-form-field-label,
-.mat-mdc-floating-label {
-  color: rgba(0, 0, 0, 0.6) !important;
+.mat-mdc-floating-label,
+.mdc-floating-label {
+  color: rgba(0, 0, 0, 0.7) !important;
 }
 
 // Fix focused label color
-.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
   color: #1e3c72 !important;
+}
+
+// Fix hint and error text colors
+.mat-mdc-form-field-hint,
+.mat-mdc-form-field-error {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-error {
+  color: #d32f2f !important;
 }
 
 // Fix outlined border colors
@@ -154,24 +175,41 @@ html {
 
 // Dark mode overrides
 .dark {
+  .mat-mdc-form-field .mat-mdc-input-element,
+  .mat-mdc-form-field input.mat-mdc-input-element,
+  input.mat-mdc-input-element,
   .mat-mdc-input-element,
   .mat-mdc-select,
-  .mat-mdc-form-field-textarea-control {
+  .mat-mdc-form-field-textarea-control,
+  textarea.mat-mdc-form-field-textarea-control {
     color: #ffffff !important;
-    caret-color: #64b5f6;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #64b5f6 !important;
   }
 
-  .mat-mdc-input-element::placeholder {
-    color: rgba(255, 255, 255, 0.38) !important;
+  .mat-mdc-input-element::placeholder,
+  input.mat-mdc-input-element::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
+    opacity: 1 !important;
   }
 
+  .mat-mdc-form-field .mat-mdc-form-field-label,
+  .mat-mdc-form-field .mat-mdc-floating-label,
   .mat-mdc-form-field-label,
-  .mat-mdc-floating-label {
-    color: rgba(255, 255, 255, 0.6) !important;
+  .mat-mdc-floating-label,
+  .mdc-floating-label {
+    color: rgba(255, 255, 255, 0.7) !important;
   }
 
-  .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  .mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
+  .mat-mdc-form-field.mat-focused .mdc-floating-label {
     color: #64b5f6 !important;
+  }
+
+  .mat-mdc-form-field-hint,
+  .mat-mdc-form-field-error {
+    color: rgba(255, 255, 255, 0.6) !important;
   }
 
   .mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__leading,
@@ -188,6 +226,6 @@ html {
 
   .mat-mdc-form-field-icon-prefix,
   .mat-mdc-form-field-icon-suffix {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.7) !important;
   }
 }
