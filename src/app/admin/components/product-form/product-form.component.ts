@@ -1,7 +1,7 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEventType } from '@angular/common/http';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
@@ -74,6 +75,7 @@ const CATEGORIES = [
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
     MatSnackBarModule,
     MatDividerModule,
     MatChipsModule,
@@ -125,13 +127,13 @@ const CATEGORIES = [
 
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Description (Russian)</mat-label>
-                  <textarea matInput formControlName="description_ru" rows="4" 
+                  <textarea matInput formControlName="description_ru" rows="4"
                             placeholder="Product description in Russian"></textarea>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Description (Uzbek)</mat-label>
-                  <textarea matInput formControlName="description_uz" rows="4" 
+                  <textarea matInput formControlName="description_uz" rows="4"
                             placeholder="Product description in Uzbek"></textarea>
                 </mat-form-field>
               </mat-card-content>
@@ -201,10 +203,32 @@ const CATEGORIES = [
                     </div>
                   }
                 </div>
-                <button mat-stroked-button type="button" (click)="addImage()">
-                  <mat-icon>add</mat-icon>
-                  Add Image
-                </button>
+
+                <div class="image-actions">
+                  <input
+                    #fileInput
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style="display: none"
+                    (change)="onFilesSelected($event)"
+                  >
+                  <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="isUploading()">
+                    <mat-icon>upload</mat-icon>
+                    Upload from PC
+                  </button>
+                  <button mat-stroked-button type="button" (click)="addImage()">
+                    <mat-icon>add</mat-icon>
+                    Add URL
+                  </button>
+                </div>
+
+                @if (isUploading()) {
+                  <div class="upload-progress">
+                    <mat-progress-bar mode="determinate" [value]="uploadProgress()"></mat-progress-bar>
+                    <span class="progress-text">{{ uploadProgress() }}% uploading...</span>
+                  </div>
+                }
 
                 @if (imagesArray.length > 0) {
                   <div class="image-preview">
@@ -339,6 +363,24 @@ const CATEGORIES = [
       flex: 1;
     }
 
+    .image-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .upload-progress {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .progress-text {
+      font-size: 0.75rem;
+      color: #666;
+    }
+
     .spec-row mat-form-field {
       flex: 1;
     }
@@ -396,11 +438,15 @@ export class ProductFormComponent implements OnInit {
 
   form: FormGroup;
   categories = CATEGORIES;
-  
+
   isLoading = signal(false);
   isSaving = signal(false);
+  isUploading = signal(false);
+  uploadProgress = signal(0);
   isEditMode = signal(false);
   productId = signal<string | null>(null);
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   constructor() {
     this.form = this.fb.group({
@@ -481,6 +527,64 @@ export class ProductFormComponent implements OnInit {
     this.imagesArray.push(this.fb.control(url));
   }
 
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
+    if (!files || files.length === 0) return;
+
+    this.isUploading.set(true);
+    this.uploadProgress.set(0);
+
+    const fileArray = Array.from(files);
+    let completedCount = 0;
+    const totalFiles = fileArray.length;
+
+    const uploadPromises = fileArray.map(file => {
+      return this.uploadFile(file).then(url => {
+        completedCount++;
+        this.uploadProgress.set(Math.round((completedCount / totalFiles) * 100));
+        return url;
+      });
+    });
+
+    Promise.all(uploadPromises)
+      .then(urls => {
+        urls.forEach(url => {
+          if (url) this.addImage(url);
+        });
+        const successCount = urls.filter(u => u).length;
+        this.snackBar.open(`Successfully uploaded ${successCount} images`, 'Close', { duration: 3000 });
+      })
+      .catch(error => {
+        console.error('Batch upload error:', error);
+        this.snackBar.open('Failed to upload some images', 'Close', { duration: 3000 });
+      })
+      .finally(() => {
+        this.isUploading.set(false);
+        if (this.fileInput) {
+          this.fileInput.nativeElement.value = '';
+        }
+      });
+  }
+
+  private uploadFile(file: File): Promise<string | null> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    return new Promise((resolve, reject) => {
+      this.http.post<{ success: boolean; image: { url: string } }>('/api/admin/upload-image', formData)
+        .subscribe({
+          next: (response) => {
+            resolve(response.image?.url || null);
+          },
+          error: (error) => {
+            console.error('Upload error:', error);
+            reject(error);
+          }
+        });
+    });
+  }
+
   removeImage(index: number): void {
     this.imagesArray.removeAt(index);
   }
@@ -501,7 +605,7 @@ export class ProductFormComponent implements OnInit {
     this.isSaving.set(true);
 
     const formValue = this.form.value;
-    
+
     // Convert specs array to object
     const specs: Record<string, string> = {};
     formValue.specs.forEach((spec: { key: string; value: string }) => {
