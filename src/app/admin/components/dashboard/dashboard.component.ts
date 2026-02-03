@@ -127,20 +127,31 @@ interface CategoryCount {
   `,
   styles: [`
     .dashboard {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
     h1 {
-      margin-bottom: 1.5rem;
-      font-size: 1.75rem;
-      font-weight: 500;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #1e3c72;
+      letter-spacing: 0.5px;
+    }
+
+    :host-context(.dark-theme) h1 {
+      color: #e3f2fd;
     }
 
     h2 {
-      margin-bottom: 1rem;
-      font-size: 1.25rem;
-      font-weight: 500;
+      margin-bottom: 1.25rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #2a5298;
+    }
+
+    :host-context(.dark-theme) h2 {
+      color: #bbdefb;
     }
 
     .loading {
@@ -151,69 +162,100 @@ interface CategoryCount {
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.08);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(30, 60, 114, 0.1);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(30, 60, 114, 0.15);
+    }
+
+    :host-context(.dark-theme) .stat-card {
+      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .stat-card mat-card-content {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      padding: 1rem;
+      gap: 1.25rem;
+      padding: 1.5rem;
     }
 
     .stat-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .stat-icon mat-icon {
-      font-size: 30px;
-      width: 30px;
-      height: 30px;
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
       color: white;
     }
 
     .stat-icon.products {
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
     }
 
     .stat-icon.featured {
-      background: linear-gradient(135deg, #f093fb, #f5576c);
+      background: linear-gradient(135deg, #f59e0b, #f97316);
     }
 
     .stat-icon.out-of-stock {
-      background: linear-gradient(135deg, #ff9a9e, #fecfef);
+      background: linear-gradient(135deg, #ef4444, #dc2626);
     }
 
     .stat-icon.categories {
-      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      background: linear-gradient(135deg, #10b981, #059669);
     }
 
     .stat-info {
       display: flex;
       flex-direction: column;
+      flex: 1;
     }
 
     .stat-value {
-      font-size: 1.75rem;
-      font-weight: 600;
+      font-size: 2rem;
+      font-weight: 700;
       line-height: 1;
+      color: #1e3c72;
+    }
+
+    :host-context(.dark-theme) .stat-value {
+      color: white;
     }
 
     .stat-label {
       font-size: 0.875rem;
-      color: #666;
-      margin-top: 0.25rem;
+      color: #64748b;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+
+    :host-context(.dark-theme) .stat-label {
+      color: rgba(255, 255, 255, 0.7);
     }
 
     .actions-section {
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
     }
 
     .actions-grid {
@@ -227,6 +269,16 @@ interface CategoryCount {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .actions-grid button:hover,
+    .actions-grid a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.2);
     }
 
     .categories-section {
@@ -235,8 +287,25 @@ interface CategoryCount {
 
     .categories-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 1rem;
+    }
+
+    .category-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid rgba(30, 60, 114, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.1);
+    }
+
+    :host-context(.dark-theme) .category-card {
+      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .category-card mat-card-content {
@@ -244,17 +313,28 @@ interface CategoryCount {
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 1rem;
+      padding: 1.25rem;
     }
 
     .category-name {
-      font-weight: 500;
+      font-weight: 600;
       text-transform: capitalize;
+      color: #1e3c72;
+      font-size: 1rem;
+    }
+
+    :host-context(.dark-theme) .category-name {
+      color: white;
     }
 
     .category-count {
       font-size: 0.875rem;
-      color: #666;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+
+    :host-context(.dark-theme) .category-count {
+      color: rgba(255, 255, 255, 0.6);
     }
   `]
 })

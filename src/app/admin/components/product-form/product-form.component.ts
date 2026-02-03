@@ -292,7 +292,7 @@ const CATEGORIES = [
   `,
   styles: [`
     .product-form {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -300,13 +300,19 @@ const CATEGORIES = [
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     h1 {
       margin: 0;
-      font-size: 1.75rem;
-      font-weight: 500;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #1e3c72;
+      letter-spacing: 0.5px;
+    }
+
+    :host-context(.dark-theme) h1 {
+      color: #e3f2fd;
     }
 
     .loading {
@@ -317,22 +323,48 @@ const CATEGORIES = [
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 2rem;
     }
 
     .form-section {
       height: fit-content;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.08);
+      border: 1px solid rgba(30, 60, 114, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .form-section:hover {
+      box-shadow: 0 6px 20px rgba(30, 60, 114, 0.12);
+    }
+
+    :host-context(.dark-theme) .form-section {
+      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     mat-card-header {
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem 1.5rem 0;
+    }
+
+    mat-card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e3c72;
+    }
+
+    :host-context(.dark-theme) mat-card-title {
+      color: #e3f2fd;
     }
 
     mat-card-content {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 1rem;
+      padding: 1.5rem;
     }
 
     .full-width {
@@ -348,14 +380,21 @@ const CATEGORIES = [
     .checkboxes {
       display: flex;
       flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 0.5rem;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 8px;
+    }
+
+    :host-context(.dark-theme) .checkboxes {
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.3) 0%, rgba(42, 82, 152, 0.3) 100%);
     }
 
     .image-row,
     .spec-row {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.75rem;
       align-items: flex-start;
     }
 
@@ -365,20 +404,37 @@ const CATEGORIES = [
 
     .image-actions {
       display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .image-actions button {
+      border-radius: 8px;
+      font-weight: 500;
     }
 
     .upload-progress {
-      margin-top: 1rem;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.5rem;
+    }
+
+    :host-context(.dark-theme) .upload-progress {
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.3) 0%, rgba(42, 82, 152, 0.3) 100%);
     }
 
     .progress-text {
-      font-size: 0.75rem;
-      color: #666;
+      font-size: 0.875rem;
+      color: #1e3c72;
+      font-weight: 600;
+    }
+
+    :host-context(.dark-theme) .progress-text {
+      color: #bfdbfe;
     }
 
     .spec-row mat-form-field {
@@ -388,24 +444,47 @@ const CATEGORIES = [
     .image-preview {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
     }
 
     .preview-img {
-      width: 80px;
-      height: 80px;
+      width: 90px;
+      height: 90px;
       object-fit: cover;
-      border-radius: 4px;
-      border: 1px solid #ddd;
+      border-radius: 8px;
+      border: 2px solid rgba(30, 60, 114, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .preview-img:hover {
+      transform: scale(1.05);
+      border-color: #2a5298;
+    }
+
+    :host-context(.dark-theme) .preview-img {
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
     .form-actions {
       display: flex;
       justify-content: flex-end;
       gap: 1rem;
-      margin-top: 2rem;
-      padding: 1rem 0;
+      margin-top: 2.5rem;
+      padding: 1.5rem 0;
+    }
+
+    .form-actions button {
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 0.75rem 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-actions button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.2);
     }
 
     .form-actions button mat-spinner {

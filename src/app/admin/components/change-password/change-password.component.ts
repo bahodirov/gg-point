@@ -111,16 +111,45 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
   `,
   styles: [`
     .change-password {
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto;
     }
 
     mat-card {
-      padding: 1rem;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(30, 60, 114, 0.1);
+      border: 1px solid rgba(30, 60, 114, 0.1);
+    }
+
+    :host-context(.dark-theme) mat-card {
+      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     mat-card-header {
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    mat-card-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #1e3c72;
+    }
+
+    :host-context(.dark-theme) mat-card-title {
+      color: #e3f2fd;
+    }
+
+    mat-card-subtitle {
+      margin-top: 0.5rem;
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    :host-context(.dark-theme) mat-card-subtitle {
+      color: rgba(255, 255, 255, 0.7);
     }
 
     .full-width {
@@ -128,36 +157,62 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
     }
 
     mat-form-field {
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
     }
 
     .error-message {
-      background-color: #ffebee;
-      color: #c62828;
-      padding: 0.75rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      color: #991b1b;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      border-left: 4px solid #dc2626;
+      font-weight: 500;
+    }
+
+    :host-context(.dark-theme) .error-message {
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(185, 28, 28, 0.2) 100%);
+      color: #fca5a5;
     }
 
     .success-message {
-      background-color: #e8f5e9;
-      color: #2e7d32;
-      padding: 0.75rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      color: #065f46;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      border-left: 4px solid #10b981;
+      font-weight: 500;
+    }
+
+    :host-context(.dark-theme) .success-message {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+      color: #6ee7b7;
     }
 
     .form-actions {
       display: flex;
       justify-content: flex-end;
       gap: 1rem;
-      margin-top: 1rem;
+      margin-top: 2rem;
+    }
+
+    .form-actions button {
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 0.75rem 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-actions button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.2);
     }
 
     .form-actions button mat-spinner {
