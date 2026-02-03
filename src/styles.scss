@@ -50,15 +50,18 @@ html {
 }
 
 // Dark mode scrollbar
-.dark ::-webkit-scrollbar-track {
+.dark ::-webkit-scrollbar-track,
+.dark-theme ::-webkit-scrollbar-track {
   background: #2d3748;
 }
 
-.dark ::-webkit-scrollbar-thumb {
+.dark ::-webkit-scrollbar-thumb,
+.dark-theme ::-webkit-scrollbar-thumb {
   background: #4a5568;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
+.dark ::-webkit-scrollbar-thumb:hover,
+.dark-theme ::-webkit-scrollbar-thumb:hover {
   background: #718096;
 }
 
@@ -174,7 +177,8 @@ input.mat-mdc-input-element::placeholder {
 }
 
 // Dark mode overrides
-.dark {
+.dark,
+.dark-theme {
   .mat-mdc-form-field .mat-mdc-input-element,
   .mat-mdc-form-field input.mat-mdc-input-element,
   input.mat-mdc-input-element,
