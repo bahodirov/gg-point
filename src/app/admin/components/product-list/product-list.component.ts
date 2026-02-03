@@ -180,7 +180,7 @@ interface Product {
   `,
   styles: [`
     .product-list {
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
     }
 
@@ -188,23 +188,38 @@ interface Product {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     h1 {
       margin: 0;
-      font-size: 1.75rem;
-      font-weight: 500;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #1e3c72;
+      letter-spacing: 0.5px;
+    }
+
+    :host-context(.dark-theme) h1 {
+      color: #e3f2fd;
     }
 
     .filter-card {
-      margin-bottom: 1rem;
-      padding: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(30, 60, 114, 0.08);
+      border: 1px solid rgba(30, 60, 114, 0.1);
+    }
+
+    :host-context(.dark-theme) .filter-card {
+      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .search-field {
       width: 100%;
-      max-width: 400px;
+      max-width: 500px;
     }
 
     .loading {
@@ -217,20 +232,50 @@ interface Product {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 3rem;
+      padding: 4rem;
       text-align: center;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(30, 60, 114, 0.08);
+    }
+
+    :host-context(.dark-theme) .empty-card {
+      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
     }
 
     .empty-card mat-icon {
       font-size: 64px;
       width: 64px;
       height: 64px;
-      color: #ccc;
+      color: #cbd5e1;
       margin-bottom: 1rem;
+    }
+
+    :host-context(.dark-theme) .empty-card mat-icon {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .empty-card p {
+      color: #64748b;
+      font-size: 1.125rem;
+      margin-bottom: 1.5rem;
+    }
+
+    :host-context(.dark-theme) .empty-card p {
+      color: rgba(255, 255, 255, 0.7);
     }
 
     .table-card {
       overflow: hidden;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(30, 60, 114, 0.08);
+      border: 1px solid rgba(30, 60, 114, 0.1);
+    }
+
+    :host-context(.dark-theme) .table-card {
+      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .table-container {
@@ -242,89 +287,120 @@ interface Product {
     }
 
     .product-thumbnail {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       object-fit: cover;
-      border-radius: 4px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .no-image {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f5f5f5;
-      border-radius: 4px;
+      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+      border-radius: 8px;
+    }
+
+    :host-context(.dark-theme) .no-image {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     }
 
     .no-image mat-icon {
-      color: #ccc;
+      color: #94a3b8;
     }
 
     .product-name {
-      font-weight: 500;
+      font-weight: 600;
+      color: #1e3c72;
+      font-size: 0.95rem;
+    }
+
+    :host-context(.dark-theme) .product-name {
+      color: white;
     }
 
     .product-slug {
       font-size: 0.75rem;
-      color: #666;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+
+    :host-context(.dark-theme) .product-slug {
+      color: rgba(255, 255, 255, 0.5);
     }
 
     .category-badge {
-      background: #e3f2fd;
-      color: #1976d2;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      color: #1e3c72;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
       font-size: 0.75rem;
       text-transform: capitalize;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(30, 60, 114, 0.1);
+    }
+
+    :host-context(.dark-theme) .category-badge {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      color: #bfdbfe;
     }
 
     .price {
-      font-weight: 500;
+      font-weight: 600;
+      color: #1e3c72;
+      font-size: 0.95rem;
+    }
+
+    :host-context(.dark-theme) .price {
+      color: white;
     }
 
     .old-price {
       font-size: 0.75rem;
-      color: #999;
+      color: #94a3b8;
       text-decoration: line-through;
+      margin-top: 0.125rem;
     }
 
     .status-badges {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.25rem;
+      gap: 0.375rem;
     }
 
     .status-badges mat-chip {
       font-size: 0.7rem;
-      min-height: 24px;
-      padding: 0 8px;
+      min-height: 26px;
+      padding: 0 10px;
+      font-weight: 600;
     }
 
     .in-stock {
-      background-color: #e8f5e9 !important;
-      color: #2e7d32 !important;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+      color: #065f46 !important;
     }
 
     .out-of-stock {
-      background-color: #ffebee !important;
-      color: #c62828 !important;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+      color: #991b1b !important;
     }
 
     .featured {
-      background-color: #fff3e0 !important;
-      color: #ef6c00 !important;
+      background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%) !important;
+      color: #9a3412 !important;
     }
 
     .new {
-      background-color: #e3f2fd !important;
-      color: #1565c0 !important;
+      background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
+      color: #1e3a8a !important;
     }
 
     .actions {
       display: flex;
-      gap: 0.25rem;
+      gap: 0.375rem;
     }
 
     @media (max-width: 768px) {
@@ -332,6 +408,10 @@ interface Product {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+      }
+
+      .search-field {
+        max-width: 100%;
       }
     }
   `]

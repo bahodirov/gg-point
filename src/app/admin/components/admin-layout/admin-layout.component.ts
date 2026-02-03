@@ -110,6 +110,8 @@ interface DatabaseHealth {
       align-items: center;
       justify-content: center;
       gap: 1rem;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      color: white;
     }
 
     .admin-layout {
@@ -124,11 +126,15 @@ interface DatabaseHealth {
       left: 0;
       right: 0;
       z-index: 1000;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
     .toolbar-title {
       margin-left: 0.5rem;
-      font-weight: 500;
+      font-weight: 600;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
     }
 
     .spacer {
@@ -141,31 +147,59 @@ interface DatabaseHealth {
     }
 
     .sidenav {
-      width: 250px;
-      background: #fafafa;
+      width: 260px;
+      background: linear-gradient(180deg, #1a2f5c 0%, #1e3c72 100%);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     :host-context(.dark-theme) .sidenav {
-      background: #1e1e1e;
+      background: linear-gradient(180deg, #1a2f5c 0%, #1e3c72 100%);
     }
 
     .content {
-      padding: 1.5rem;
-      background: #f5f5f5;
+      padding: 2rem;
+      background: linear-gradient(135deg, #e8f0f8 0%, #f5f8fc 100%);
       min-height: calc(100vh - 64px);
     }
 
     :host-context(.dark-theme) .content {
-      background: #121212;
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+    }
+
+    mat-nav-list {
+      padding-top: 1rem;
+    }
+
+    mat-nav-list a {
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0.25rem 0.75rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    mat-nav-list a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
     }
 
     mat-nav-list a.active {
-      background-color: rgba(103, 58, 183, 0.1);
-      border-left: 3px solid #673ab7;
+      background: linear-gradient(135deg, #3b5998 0%, #4a6fb8 100%);
+      border-left: 3px solid #64b5f6;
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    mat-nav-list a mat-icon {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    mat-nav-list a.active mat-icon {
+      color: #64b5f6;
     }
 
     mat-divider {
-      margin: 1rem 0;
+      margin: 1rem 0.75rem;
+      background-color: rgba(255, 255, 255, 0.1);
     }
 
     @media (max-width: 768px) {
@@ -178,26 +212,27 @@ interface DatabaseHealth {
         padding: 1rem;
       }
     }
+
     .database-warning {
       position: fixed;
       top: 64px;
       left: 0;
       right: 0;
-      background: #fff3cd;
+      background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
       color: #856404;
       padding: 0.75rem 1.5rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       z-index: 999;
-      border-bottom: 1px solid #ffeaa7;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-bottom: 2px solid #ffc107;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
     :host-context(.dark-theme) .database-warning {
-      background: #664d03;
+      background: linear-gradient(135deg, #664d03 0%, #7a5c04 100%);
       color: #ffecb5;
-      border-bottom-color: #533f03;
+      border-bottom-color: #8a6d05;
     }
 
     .database-warning mat-icon {
@@ -207,7 +242,8 @@ interface DatabaseHealth {
     .database-warning .db-status {
       margin-left: auto;
       font-size: 0.875rem;
-      opacity: 0.8;
+      opacity: 0.9;
+      font-weight: 500;
     }
 
     .sidenav-container.has-warning {
