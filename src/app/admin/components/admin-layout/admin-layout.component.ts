@@ -59,10 +59,6 @@ interface DatabaseHealth {
           <span class="toolbar-title">GGPoint Admin</span>
           <span class="spacer"></span>
 
-          <button mat-icon-button (click)="toggleTheme()" [attr.aria-label]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
-            <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-          </button>
-
           <button mat-button [matMenuTriggerFor]="userMenu">
             <mat-icon>account_circle</mat-icon>
             {{ authService.currentUser()?.username }}
@@ -292,12 +288,10 @@ export class AdminLayoutComponent implements OnInit {
       this.sidenavOpened = false;
     }
 
-    // Load theme preference
+    // Always use dark mode for admin panel
+    this.isDarkMode.set(true);
     if (this.isBrowser) {
-      const savedTheme = localStorage.getItem('admin-theme');
-      const darkMode = savedTheme === 'dark';
-      this.isDarkMode.set(darkMode);
-      this.applyTheme(darkMode);
+      this.applyTheme(true);
     }
   }
 
@@ -332,16 +326,6 @@ export class AdminLayoutComponent implements OnInit {
     this.authService.logout().subscribe(() => {
       this.router.navigate(['/login']);
     });
-  }
-
-  toggleTheme(): void {
-    const newDarkMode = !this.isDarkMode();
-    this.isDarkMode.set(newDarkMode);
-    this.applyTheme(newDarkMode);
-
-    if (this.isBrowser) {
-      localStorage.setItem('admin-theme', newDarkMode ? 'dark' : 'light');
-    }
   }
 
   private applyTheme(darkMode: boolean): void {
