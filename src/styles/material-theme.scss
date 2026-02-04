@@ -32,7 +32,8 @@ html {
   @include mat.all-component-themes($ggpoint-theme);
 }
 
-// Apply dark theme when .dark class is present
-html.dark {
+// Apply dark theme when .dark or .dark-theme class is present
+html.dark,
+html.dark-theme {
   @include mat.all-component-themes($ggpoint-dark-theme);
 }
