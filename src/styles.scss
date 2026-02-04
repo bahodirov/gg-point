@@ -67,112 +67,116 @@ html {
 
 // Fix for Angular Material input fields
 // CRITICAL: Force dark text for visibility on light backgrounds
+// Placed AFTER @tailwind directives to override Tailwind's base resets
+// Uses :not(.dark):not(.dark-theme) for higher specificity in light mode
 
-// Ensure input text is ALWAYS visible in light mode with maximum specificity
-.mat-mdc-form-field .mat-mdc-input-element,
-.mat-mdc-form-field input.mat-mdc-input-element,
-input.mat-mdc-input-element,
-.mat-mdc-input-element,
-.mat-mdc-select,
-.mat-mdc-form-field-textarea-control,
-textarea.mat-mdc-form-field-textarea-control {
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-  caret-color: #1e3c72 !important;
-}
-
-// Fix placeholder colors for visibility
-.mat-mdc-input-element::placeholder,
-input.mat-mdc-input-element::placeholder {
-  color: rgba(0, 0, 0, 0.5) !important;
-  -webkit-text-fill-color: rgba(0, 0, 0, 0.5) !important;
-  opacity: 1 !important;
-}
-
-// Fix label colors in light mode with high specificity
-.mat-mdc-form-field .mat-mdc-form-field-label,
-.mat-mdc-form-field .mat-mdc-floating-label,
-.mat-mdc-form-field-label,
-.mat-mdc-floating-label,
-.mdc-floating-label {
-  color: rgba(0, 0, 0, 0.7) !important;
-}
-
-// Fix focused label color
-.mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
-.mat-mdc-form-field.mat-focused .mdc-floating-label {
-  color: #1e3c72 !important;
-}
-
-// Fix hint and error text colors
-.mat-mdc-form-field-hint,
-.mat-mdc-form-field-error {
-  color: rgba(0, 0, 0, 0.6) !important;
-}
-
-.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-error {
-  color: #d32f2f !important;
-}
-
-// Fix outlined border colors
-.mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__leading,
-.mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__notch,
-.mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__trailing {
-  border-color: rgba(0, 0, 0, 0.24) !important;
-}
-
-// Fix hover state
-.mat-mdc-text-field-wrapper:hover .mdc-notched-outline .mdc-notched-outline__leading,
-.mat-mdc-text-field-wrapper:hover .mdc-notched-outline .mdc-notched-outline__notch,
-.mat-mdc-text-field-wrapper:hover .mdc-notched-outline .mdc-notched-outline__trailing {
-  border-color: rgba(0, 0, 0, 0.87) !important;
-}
-
-// Fix for outlined appearance form fields
-.mdc-text-field--outlined {
-  .mat-mdc-form-field-infix {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    min-height: 56px;
+html:not(.dark):not(.dark-theme) {
+  // Ensure input text is ALWAYS visible in light mode with maximum specificity
+  .mat-mdc-form-field .mat-mdc-input-element,
+  .mat-mdc-form-field input.mat-mdc-input-element,
+  input.mat-mdc-input-element,
+  .mat-mdc-input-element,
+  .mat-mdc-select,
+  .mat-mdc-form-field-textarea-control,
+  textarea.mat-mdc-form-field-textarea-control {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    caret-color: #1e3c72 !important;
   }
-}
 
-// Fix notched outline alignment and prevent line/border gaps
-.mat-mdc-text-field-wrapper {
-  .mdc-notched-outline {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      border-width: 1px;
-      border-style: solid;
+  // Fix placeholder colors for visibility
+  .mat-mdc-input-element::placeholder,
+  input.mat-mdc-input-element::placeholder {
+    color: rgba(0, 0, 0, 0.5) !important;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.5) !important;
+    opacity: 1 !important;
+  }
+
+  // Fix label colors in light mode with high specificity
+  .mat-mdc-form-field .mat-mdc-form-field-label,
+  .mat-mdc-form-field .mat-mdc-floating-label,
+  .mat-mdc-form-field-label,
+  .mat-mdc-floating-label,
+  .mdc-floating-label {
+    color: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  // Fix focused label color
+  .mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
+  .mat-mdc-form-field.mat-focused .mdc-floating-label {
+    color: #1e3c72 !important;
+  }
+
+  // Fix hint and error text colors
+  .mat-mdc-form-field-hint,
+  .mat-mdc-form-field-error {
+    color: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-error {
+    color: #d32f2f !important;
+  }
+
+  // Fix outlined border colors
+  .mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__leading,
+  .mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__notch,
+  .mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__trailing {
+    border-color: rgba(0, 0, 0, 0.24) !important;
+  }
+
+  // Fix hover state
+  .mat-mdc-text-field-wrapper:hover .mdc-notched-outline .mdc-notched-outline__leading,
+  .mat-mdc-text-field-wrapper:hover .mdc-notched-outline .mdc-notched-outline__notch,
+  .mat-mdc-text-field-wrapper:hover .mdc-notched-outline .mdc-notched-outline__trailing {
+    border-color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  // Fix for outlined appearance form fields
+  .mdc-text-field--outlined {
+    .mat-mdc-form-field-infix {
+      padding-top: 16px;
+      padding-bottom: 16px;
+      min-height: 56px;
     }
   }
-}
 
-// Ensure proper notch sizing for label
-.mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__notch {
-  border-left: none;
-  border-right: none;
-  padding: 0 8px;
-}
+  // Fix notched outline alignment and prevent line/border gaps
+  .mat-mdc-text-field-wrapper {
+    .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-width: 1px;
+        border-style: solid;
+      }
+    }
+  }
 
-// Fix notched outline when label is floating
-.mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--notched .mdc-notched-outline__notch {
-  padding-top: 0;
-  padding-bottom: 0;
-  border-top: none;
-}
+  // Ensure proper notch sizing for label
+  .mat-mdc-text-field-wrapper .mdc-notched-outline .mdc-notched-outline__notch {
+    border-left: none;
+    border-right: none;
+    padding: 0 8px;
+  }
 
-// Fix icons color
-.mat-mdc-form-field-icon-prefix,
-.mat-mdc-form-field-icon-suffix {
-  color: rgba(0, 0, 0, 0.54);
-}
+  // Fix notched outline when label is floating
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--notched .mdc-notched-outline__notch {
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top: none;
+  }
 
-// Fix for slider labels
-.mat-mdc-slider {
-  .mdc-slider__track {
-    height: 4px;
+  // Fix icons color
+  .mat-mdc-form-field-icon-prefix,
+  .mat-mdc-form-field-icon-suffix {
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  // Fix for slider labels
+  .mat-mdc-slider {
+    .mdc-slider__track {
+      height: 4px;
+    }
   }
 }
 
