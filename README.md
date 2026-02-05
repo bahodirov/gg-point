@@ -153,7 +153,7 @@ The application supports two storage options:
    npm run serve:ssr:ggpoint
    ```
    
-   For detailed migration instructions, see [DATABASE_MIGRATION.md](./DATABASE_MIGRATION.md)
+   For detailed migration instructions, see [Database Migration Guide](./docs/deployment/DATABASE_MIGRATION.md)
 
 #### Using JSON Files (Development)
 
@@ -406,6 +406,16 @@ The application is fully responsive and tested on:
 - Firefox (latest)
 - Safari (latest)
 - Edge (latest)
+
+## 📚 Documentation
+
+For comprehensive guides, see the [docs/](./docs/) folder:
+
+- **[SEO Guide](./docs/seo/index.md)** - Complete SEO optimization guide
+- **[Deployment Guide](./docs/deployment/DEPLOYMENT.md)** - Production deployment instructions
+- **[Database Migration](./docs/deployment/DATABASE_MIGRATION.md)** - PostgreSQL setup and migration
+- **[Security Guide](./docs/SECURITY.md)** - Security best practices and features
+- **[Implementation Guides](./docs/guides/)** - Admin panel, translations, and other features
 
 ## 📄 License
 
