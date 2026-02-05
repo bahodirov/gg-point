@@ -62,7 +62,7 @@ export const authLimiter = rateLimit({
   handler: (req: Request, res: Response) => {
     res.status(429).json({
       error: 'Too many login attempts',
-      message: 'Too many login attempts, please try again after 15 minutes',
+      message: 'Too many login attempts, please try again in 15 minutes',
       retryAfter: 15 * 60 // 15 minutes in seconds
     });
   },
@@ -95,6 +95,12 @@ export const publicLimiter = rateLimit({
   message: 'Too many requests, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
+  handler: (req: Request, res: Response) => {
+    res.status(429).json({
+      error: 'Too many requests',
+      message: 'Too many requests, please try again later',
+    });
+  },
 });
 
 /**
@@ -106,6 +112,13 @@ export const writeLimiter = rateLimit({
   message: 'Too many write operations, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
+  handler: (req: Request, res: Response) => {
+    res.status(429).json({
+      error: 'Too many write operations',
+      message: 'Too many write operations, please try again later',
+      retryAfter: 15 * 60 // 15 minutes in seconds
+    });
+  },
 });
 
 /**
