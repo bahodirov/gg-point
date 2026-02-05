@@ -82,6 +82,7 @@ export const uploadLimiter = rateLimit({
     res.status(429).json({
       error: 'Upload limit exceeded',
       message: 'Too many uploads, please try again later',
+      retryAfter: 15 * 60 // 15 minutes in seconds
     });
   },
 });
@@ -99,6 +100,7 @@ export const publicLimiter = rateLimit({
     res.status(429).json({
       error: 'Too many requests',
       message: 'Too many requests, please try again later',
+      retryAfter: 60 // 1 minute in seconds
     });
   },
 });
