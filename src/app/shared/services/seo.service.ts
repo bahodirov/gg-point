@@ -20,6 +20,7 @@ export interface SEOConfig {
 
 // Schema interfaces
 interface SchemaProduct {
+  id: string;
   name: string;
   images?: string[];
   thumbnail?: string;

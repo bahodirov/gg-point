@@ -2,12 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
+// TranslationObject type from @ngx-translate/core
+type StrictTranslation = string | StrictTranslation[] | TranslationObject | undefined | null;
+interface TranslationObject {
+  [key: string]: StrictTranslation;
+}
+
 // Custom HTTP Loader for translations
 export class CustomTranslateHttpLoader implements TranslateLoader {
   constructor(private http: HttpClient, private prefix: string = './assets/i18n/', private suffix: string = '.json') {}
 
-  getTranslation(lang: string): Observable<Record<string, unknown>> {
-    return this.http.get(`${this.prefix}${lang}${this.suffix}`);
+  getTranslation(lang: string): Observable<TranslationObject> {
+    return this.http.get<TranslationObject>(`${this.prefix}${lang}${this.suffix}`);
   }
 }
 
