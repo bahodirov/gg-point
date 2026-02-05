@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ServerProduct } from '../../../shared/models/product.model';
 
 interface DashboardStats {
   totalProducts: number;
@@ -17,15 +18,6 @@ interface DashboardStats {
 interface CategoryCount {
   category: string;
   count: number;
-}
-
-// Server product response interface
-interface ServerProduct {
-  id: string;
-  slug: string;
-  category: string;
-  featured?: boolean;
-  inStock?: boolean;
 }
 
 @Component({
