@@ -3,6 +3,24 @@ import { HttpClient } from '@angular/common/http';
 import { Product, ProductCategory, ProductSpecification } from '../models/product.model';
 import { firstValueFrom } from 'rxjs';
 
+// Server product response interface
+interface ServerProduct {
+  id: string;
+  slug: string;
+  name: { ru: string; uz?: string };
+  category: string;
+  price: number;
+  oldPrice?: number;
+  description: { ru: string; uz?: string };
+  specs?: Record<string, string | number | boolean>;
+  images?: string[];
+  inStock?: boolean;
+  featured?: boolean;
+  isNew?: boolean;
+  relatedProducts?: string[];
+  createdAt?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +39,7 @@ export class ProductService {
   async loadProducts(): Promise<void> {
     try {
       // Fetch from API
-      const serverProducts = await firstValueFrom(this.http.get<any[]>('/api/products'));
+      const serverProducts = await firstValueFrom(this.http.get<ServerProduct[]>('/api/products'));
       const products = serverProducts.map(p => this.transformProduct(p));
       this.productsSignal.set(products);
       this.extractCategories(products);
@@ -30,7 +48,7 @@ export class ProductService {
     }
   }
 
-  private transformProduct(p: any): Product {
+  private transformProduct(p: ServerProduct): Product {
     // Transform from server representation ({ru, uz} objects) to frontend representation
     const specifications: ProductSpecification[] = Object.entries(p.specs || {}).map(
       ([key, value]) => ({

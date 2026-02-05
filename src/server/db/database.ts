@@ -70,8 +70,10 @@ async function initializePostgreSQL(): Promise<void> {
           await pool.query('SELECT 1');
           databaseWarning = null;
           console.log('✅ Using PostgreSQL database');
-        } catch (error: any) {
-          const errorMsg = `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`;
+        } catch (error: unknown) {
+          const errorMsg = error instanceof Error 
+            ? `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`
+            : `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: Unknown error`;
           databaseWarning = errorMsg;
           console.error('❌ ' + errorMsg);
         }
@@ -160,7 +162,7 @@ const pgDb = {
     update: async (id: string, updates: Partial<UserData>): Promise<void> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const fields: string[] = [];
-      const values: any[] = [];
+      const values: (string | number | null)[] = [];
       let paramCount = 1;
 
       Object.entries(updates).forEach(([key, value]) => {
@@ -249,7 +251,7 @@ const pgDb = {
       if (!pool) throw new Error('PostgreSQL not initialized');
 
       const conditions: string[] = [];
-      const values: any[] = [];
+      const values: (string | boolean)[] = [];
 
       if (options.category !== undefined) {
         values.push(options.category);
@@ -373,7 +375,7 @@ const pgDb = {
     update: async (id: string, updates: Partial<ProductData>): Promise<void> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const fields: string[] = [];
-      const values: any[] = [];
+      const values: (string | number | boolean | null)[] = [];
       let paramCount = 1;
 
       Object.entries(updates).forEach(([key, value]) => {

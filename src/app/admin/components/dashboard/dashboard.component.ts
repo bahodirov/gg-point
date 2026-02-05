@@ -19,6 +19,15 @@ interface CategoryCount {
   count: number;
 }
 
+// Server product response interface
+interface ServerProduct {
+  id: string;
+  slug: string;
+  category: string;
+  featured?: boolean;
+  inStock?: boolean;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -356,7 +365,7 @@ export class DashboardComponent implements OnInit {
 
   private loadStats(): void {
     // Load products
-    this.http.get<any[]>('/api/products').subscribe({
+    this.http.get<ServerProduct[]>('/api/products').subscribe({
       next: (products) => {
         const totalProducts = products.length;
         const featuredProducts = products.filter(p => p.featured).length;
