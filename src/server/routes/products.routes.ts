@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { productsService, CreateProductDto, UpdateProductDto } from '../services/products.service';
 import { requireAuth } from '../middleware/auth.middleware';
 import { productValidation, searchValidation, validateRequest } from '../middleware/validation.middleware';
+import { publicLimiter, writeLimiter } from '../middleware/security.middleware';
 
 const router = Router();
 
@@ -11,7 +12,7 @@ const router = Router();
  * GET /api/products
  * Get all products (public)
  */
-router.get('/', searchValidation, validateRequest, async (req: Request, res: Response) => {
+router.get('/', publicLimiter, searchValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { category, search, featured } = req.query;
 
@@ -39,7 +40,7 @@ router.get('/', searchValidation, validateRequest, async (req: Request, res: Res
  * GET /api/products/categories
  * Get all categories with counts (public)
  */
-router.get('/categories', async (req: Request, res: Response) => {
+router.get('/categories', publicLimiter, async (req: Request, res: Response) => {
   try {
     const categories = await productsService.getCategories();
     res.json(categories);
@@ -53,7 +54,7 @@ router.get('/categories', async (req: Request, res: Response) => {
  * GET /api/products/:idOrSlug
  * Get single product by ID or slug (public)
  */
-router.get('/:idOrSlug', async (req: Request, res: Response) => {
+router.get('/:idOrSlug', publicLimiter, async (req: Request, res: Response) => {
   try {
     const { idOrSlug } = req.params;
 
@@ -81,7 +82,7 @@ router.get('/:idOrSlug', async (req: Request, res: Response) => {
  * POST /api/products
  * Create a new product (admin only)
  */
-router.post('/', requireAuth, productValidation, validateRequest, async (req: Request, res: Response) => {
+router.post('/', requireAuth, writeLimiter, productValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     console.log('Creating product with data:', JSON.stringify(req.body, null, 2));
     const data: CreateProductDto = req.body;
@@ -110,7 +111,7 @@ router.post('/', requireAuth, productValidation, validateRequest, async (req: Re
  * PUT /api/products/:id
  * Update a product (admin only)
  */
-router.put('/:id', requireAuth, async (req: Request, res: Response) => {
+router.put('/:id', requireAuth, writeLimiter, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data: UpdateProductDto = req.body;
@@ -140,7 +141,7 @@ router.put('/:id', requireAuth, async (req: Request, res: Response) => {
  * DELETE /api/products/:id
  * Delete a product (admin only)
  */
-router.delete('/:id', requireAuth, async (req: Request, res: Response) => {
+router.delete('/:id', requireAuth, writeLimiter, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 

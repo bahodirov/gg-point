@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../middleware/auth.middleware';
 import { uploadMemory } from '../config/multer.config';
 import { imageService } from '../services/image.service';
-import { uploadLimiter } from '../middleware/security.middleware';
+import { uploadLimiter, apiLimiter, writeLimiter } from '../middleware/security.middleware';
 import { paginationValidation, uuidValidation, validateRequest } from '../middleware/validation.middleware';
 import { join } from 'node:path';
 import { getDatabaseWarning, isDatabaseHealthy } from '../db/database';
@@ -13,7 +13,7 @@ const router = Router();
  * GET /api/admin/health
  * Database health check
  */
-router.get('/health', requireAuth, async (req: Request, res: Response) => {
+router.get('/health', requireAuth, apiLimiter, async (req: Request, res: Response) => {
   try {
     const warning = getDatabaseWarning();
     const isHealthy = isDatabaseHealthy();
@@ -84,7 +84,7 @@ router.post('/upload-image', requireAuth, uploadLimiter, uploadMemory.single('im
  * GET /api/admin/images
  * List all uploaded images with pagination
  */
-router.get('/images', requireAuth, paginationValidation, validateRequest, async (req: Request, res: Response) => {
+router.get('/images', requireAuth, apiLimiter, paginationValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const page = parseInt(String(req.query['page'] || '1'), 10);
     const perPage = parseInt(String(req.query['per_page'] || '50'), 10);
@@ -112,7 +112,7 @@ router.get('/images', requireAuth, paginationValidation, validateRequest, async 
  * GET /api/admin/images/:id
  * Get single image by ID
  */
-router.get('/images/:id', requireAuth, uuidValidation, validateRequest, async (req: Request, res: Response) => {
+router.get('/images/:id', requireAuth, apiLimiter, uuidValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const image = await imageService.getImageById(id);
@@ -133,7 +133,7 @@ router.get('/images/:id', requireAuth, uuidValidation, validateRequest, async (r
  * DELETE /api/admin/images/:id
  * Delete image (with validation)
  */
-router.delete('/images/:id', requireAuth, uuidValidation, validateRequest, async (req: Request, res: Response) => {
+router.delete('/images/:id', requireAuth, writeLimiter, uuidValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const image = await imageService.getImageById(id);
