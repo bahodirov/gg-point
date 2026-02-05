@@ -102,7 +102,8 @@ export const authLimiter = rateLimit({
     res.status(429).json({
       error: 'Too many requests',
       message: 'Too many login attempts, please try again later',
-      retryAfter: req.rateLimit.resetTime
+      // 15 minutes in seconds; avoid relying on req.rateLimit.resetTime
+      retryAfter: 15 * 60
     });
   }
 });
