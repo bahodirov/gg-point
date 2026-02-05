@@ -89,8 +89,8 @@ CREATE INDEX idx_products_images_gin ON products USING gin(images);
 const result = await db.pool.query(`
   SELECT p.id, p.name, p.images
   FROM products p
-  WHERE p.images @> $1::jsonb
-`, [JSON.stringify([imageFileName])]);
+  WHERE p.images ? $1
+`, [imageFileName]);
 
 // Or use full-text search
 CREATE INDEX idx_products_images_fulltext ON products

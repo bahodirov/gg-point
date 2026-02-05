@@ -32,7 +32,16 @@ Content Security Policy (CSP) configuration allows `'unsafe-inline'` and `'unsaf
 ```typescript
 // Generate nonce for each request
 const nonce = crypto.randomBytes(16).toString('base64');
+
+// Make the nonce available to your rendering layer (for example, via locals)
+// so it can be added to <script> / <style> tags:
 res.locals.cspNonce = nonce;
+
+// Configure CSP to allow only scripts/styles with this nonce.
+// NOTE: This is a simplified illustration. For Angular SSR you must also
+// modify the server-side rendering pipeline to inject this nonce into the
+// rendered <script> (and optionally <style>) tags. The exact integration
+// depends on your SSR setup and is not shown here.
 
 "script-src": ["'self'", `'nonce-${nonce}'`],
 "style-src": ["'self'", `'nonce-${nonce}'`],

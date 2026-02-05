@@ -1,15 +1,14 @@
 # GitHub Issues to Create
 
-This directory contains detailed issue templates for problems found in the codebase through comprehensive code analysis performed on 2026-02-05.
+This `.github-issues/` directory contains markdown files you can use as copy‑paste templates for GitHub issues found during comprehensive code analysis performed on 2026-02-05. These files are **not** wired into GitHub's automatic issue template system (which expects templates under `.github/ISSUE_TEMPLATE/`); they are intended for manual use.
 
 ## Quick Start
 
-1. Open each file in this directory
-2. Copy the entire content of each file
-3. Go to https://github.com/bahodirov/gg-point/issues/new
-4. Paste the content as the issue description
-5. Use the first line (# title) as the issue title
-6. Create the issue
+1. Open each markdown file in this `.github-issues/` directory
+2. Copy the entire content of the file
+3. In your browser, open the repository's new‑issue page: https://github.com/bahodirov/gg-point/issues/new
+4. Paste the copied content as the issue description
+5. Use the first line (starting with `#`) as the issue title
 
 ## Files Overview
 
