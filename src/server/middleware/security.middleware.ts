@@ -2,6 +2,10 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
 
+// Rate limit time constants (in seconds)
+const FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
+const ONE_MINUTE_IN_SECONDS = 60;
+
 /**
  * Helmet configuration for security headers
  */
@@ -63,7 +67,7 @@ export const authLimiter = rateLimit({
     res.status(429).json({
       error: 'Too many login attempts',
       message: 'Too many login attempts, please try again in 15 minutes',
-      retryAfter: 15 * 60 // 15 minutes in seconds
+      retryAfter: FIFTEEN_MINUTES_IN_SECONDS
     });
   },
 });
@@ -82,7 +86,7 @@ export const uploadLimiter = rateLimit({
     res.status(429).json({
       error: 'Upload limit exceeded',
       message: 'Too many uploads, please try again later',
-      retryAfter: 15 * 60 // 15 minutes in seconds
+      retryAfter: FIFTEEN_MINUTES_IN_SECONDS
     });
   },
 });
@@ -100,7 +104,7 @@ export const publicLimiter = rateLimit({
     res.status(429).json({
       error: 'Too many requests',
       message: 'Too many requests, please try again later',
-      retryAfter: 60 // 1 minute in seconds
+      retryAfter: ONE_MINUTE_IN_SECONDS
     });
   },
 });
@@ -118,7 +122,7 @@ export const writeLimiter = rateLimit({
     res.status(429).json({
       error: 'Too many write operations',
       message: 'Too many write operations, please try again later',
-      retryAfter: 15 * 60 // 15 minutes in seconds
+      retryAfter: FIFTEEN_MINUTES_IN_SECONDS
     });
   },
 });
