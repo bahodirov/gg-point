@@ -78,7 +78,7 @@ export const authLimiter = rateLimit({
 export const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: parseInt(process.env['UPLOAD_RATE_LIMIT_MAX'] || '10', 10), // 10 uploads per 15 minutes
-  skipSuccessfulRequests: false,
+  skipSuccessfulRequests: true, // Only count failed uploads
   message: 'Too many uploads, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,

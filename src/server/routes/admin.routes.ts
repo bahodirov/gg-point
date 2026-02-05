@@ -13,7 +13,7 @@ const router = Router();
  * GET /api/admin/health
  * Database health check
  */
-router.get('/health', requireAuth, apiLimiter, async (req: Request, res: Response) => {
+router.get('/health', apiLimiter, requireAuth, async (req: Request, res: Response) => {
   try {
     const warning = getDatabaseWarning();
     const isHealthy = isDatabaseHealthy();
@@ -34,7 +34,7 @@ router.get('/health', requireAuth, apiLimiter, async (req: Request, res: Respons
  * POST /api/admin/upload-image
  * Upload and optimize a single image
  */
-router.post('/upload-image', requireAuth, uploadLimiter, uploadMemory.single('image'), async (req: Request, res: Response) => {
+router.post('/upload-image', uploadLimiter, requireAuth, uploadMemory.single('image'), async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       res.status(400).json({ error: 'No image file provided' });
@@ -84,7 +84,7 @@ router.post('/upload-image', requireAuth, uploadLimiter, uploadMemory.single('im
  * GET /api/admin/images
  * List all uploaded images with pagination
  */
-router.get('/images', requireAuth, apiLimiter, paginationValidation, validateRequest, async (req: Request, res: Response) => {
+router.get('/images', apiLimiter, requireAuth, paginationValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const page = parseInt(String(req.query['page'] || '1'), 10);
     const perPage = parseInt(String(req.query['per_page'] || '50'), 10);
@@ -112,7 +112,7 @@ router.get('/images', requireAuth, apiLimiter, paginationValidation, validateReq
  * GET /api/admin/images/:id
  * Get single image by ID
  */
-router.get('/images/:id', requireAuth, apiLimiter, uuidValidation, validateRequest, async (req: Request, res: Response) => {
+router.get('/images/:id', apiLimiter, requireAuth, uuidValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const image = await imageService.getImageById(id);
@@ -133,7 +133,7 @@ router.get('/images/:id', requireAuth, apiLimiter, uuidValidation, validateReque
  * DELETE /api/admin/images/:id
  * Delete image (with validation)
  */
-router.delete('/images/:id', requireAuth, writeLimiter, uuidValidation, validateRequest, async (req: Request, res: Response) => {
+router.delete('/images/:id', writeLimiter, requireAuth, uuidValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const image = await imageService.getImageById(id);

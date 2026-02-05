@@ -83,7 +83,7 @@ router.get('/session', apiLimiter, async (req: Request, res: Response) => {
  * POST /api/auth/change-password
  * Change current user's password
  */
-router.post('/change-password', requireAuth, writeLimiter, changePasswordValidation, validateRequest, async (req: Request, res: Response) => {
+router.post('/change-password', writeLimiter, requireAuth, changePasswordValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     const { currentPassword, newPassword } = req.body;
 

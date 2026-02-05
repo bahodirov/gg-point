@@ -82,7 +82,7 @@ router.get('/:idOrSlug', publicLimiter, async (req: Request, res: Response) => {
  * POST /api/products
  * Create a new product (admin only)
  */
-router.post('/', requireAuth, writeLimiter, productValidation, validateRequest, async (req: Request, res: Response) => {
+router.post('/', writeLimiter, requireAuth, productValidation, validateRequest, async (req: Request, res: Response) => {
   try {
     console.log('Creating product with data:', JSON.stringify(req.body, null, 2));
     const data: CreateProductDto = req.body;
@@ -111,7 +111,7 @@ router.post('/', requireAuth, writeLimiter, productValidation, validateRequest, 
  * PUT /api/products/:id
  * Update a product (admin only)
  */
-router.put('/:id', requireAuth, writeLimiter, async (req: Request, res: Response) => {
+router.put('/:id', writeLimiter, requireAuth, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data: UpdateProductDto = req.body;
@@ -141,7 +141,7 @@ router.put('/:id', requireAuth, writeLimiter, async (req: Request, res: Response
  * DELETE /api/products/:id
  * Delete a product (admin only)
  */
-router.delete('/:id', requireAuth, writeLimiter, async (req: Request, res: Response) => {
+router.delete('/:id', writeLimiter, requireAuth, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
