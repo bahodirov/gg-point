@@ -2,6 +2,10 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
 
+// Rate limit time constants (in seconds)
+const FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
+const ONE_MINUTE_IN_SECONDS = 60;
+
 /**
  * Helmet configuration for security headers
  */
@@ -54,13 +58,16 @@ export const apiLimiter = rateLimit({
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env['AUTH_RATE_LIMIT_MAX'] || '10', 10),
-  skipSuccessfulRequests: false,
+  max: parseInt(process.env['AUTH_RATE_LIMIT_MAX'] || '5', 10), // 5 attempts per 15 minutes
+  skipSuccessfulRequests: true, // Don't count successful logins
   message: 'Too many authentication attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
   handler: (req: Request, res: Response) => {
     res.status(429).json({
       error: 'Too many login attempts',
-      message: 'Account temporarily locked. Please try again in 15 minutes.',
+      message: 'Too many login attempts, please try again in 15 minutes',
+      retryAfter: FIFTEEN_MINUTES_IN_SECONDS
     });
   },
 });
@@ -69,14 +76,53 @@ export const authLimiter = rateLimit({
  * Rate limiter for upload endpoints
  */
 export const uploadLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: parseInt(process.env['UPLOAD_RATE_LIMIT_MAX'] || '20', 10),
-  skipSuccessfulRequests: false,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: parseInt(process.env['UPLOAD_RATE_LIMIT_MAX'] || '10', 10), // 10 uploads per 15 minutes
+  skipSuccessfulRequests: true, // Only increment counter for failed uploads (status >= 400)
   message: 'Too many uploads, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
   handler: (req: Request, res: Response) => {
     res.status(429).json({
       error: 'Upload limit exceeded',
-      message: 'You have exceeded the upload limit. Please try again in an hour.',
+      message: 'Too many uploads, please try again later',
+      retryAfter: FIFTEEN_MINUTES_IN_SECONDS
+    });
+  },
+});
+
+/**
+ * Lenient rate limit for public read endpoints
+ */
+export const publicLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: parseInt(process.env['PUBLIC_RATE_LIMIT_MAX'] || '60', 10), // 60 requests per minute
+  message: 'Too many requests, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req: Request, res: Response) => {
+    res.status(429).json({
+      error: 'Too many requests',
+      message: 'Too many requests, please try again later',
+      retryAfter: ONE_MINUTE_IN_SECONDS
+    });
+  },
+});
+
+/**
+ * Stricter rate limit for write operations
+ */
+export const writeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: parseInt(process.env['WRITE_RATE_LIMIT_MAX'] || '20', 10), // 20 write operations per 15 minutes
+  message: 'Too many write operations, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req: Request, res: Response) => {
+    res.status(429).json({
+      error: 'Too many write operations',
+      message: 'Too many write operations, please try again later',
+      retryAfter: FIFTEEN_MINUTES_IN_SECONDS
     });
   },
 });
@@ -174,6 +220,8 @@ export default {
   apiLimiter,
   authLimiter,
   uploadLimiter,
+  publicLimiter,
+  writeLimiter,
   corsMiddleware,
   requestLogger,
   errorHandler,
