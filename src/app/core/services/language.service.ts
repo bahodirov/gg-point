@@ -55,7 +55,7 @@ export class LanguageService {
 
   setLanguage(lang: Language): void {
     if (!this.SUPPORTED_LANGUAGES.includes(lang)) {
-      console.warn(`Language '${lang}' is not supported. Using default.`);
+      // Language not supported, using default
       lang = this.DEFAULT_LANGUAGE;
     }
 

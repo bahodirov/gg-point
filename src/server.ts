@@ -97,7 +97,7 @@ app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
     const router = await initializeApi();
     router(req, res, next);
   } catch (error) {
-    console.error('Failed to initialize API:', error);
+    logger.error('Failed to initialize API:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

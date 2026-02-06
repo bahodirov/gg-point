@@ -91,7 +91,7 @@ export function getPool(): Pool | null {
 
   // Error handler
   pool.on('error', (err) => {
-    console.error('Unexpected error on idle PostgreSQL client', err);
+    logger.error('Unexpected error on idle PostgreSQL client', err);
   });
 
   // Log successful connection in development

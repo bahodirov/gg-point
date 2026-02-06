@@ -198,7 +198,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
  * Error handling middleware
  */
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {
-  console.error('Error:', {
+  logger.error('Error:', {
     message: err.message,
     stack: err.stack,
     url: req.url,

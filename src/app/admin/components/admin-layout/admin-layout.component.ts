@@ -308,7 +308,7 @@ export class AdminLayoutComponent implements OnInit {
       .subscribe({
         next: (health) => this.dbHealth.set(health),
         error: (err) => {
-          console.error('Database health check failed:', err);
+          // Database health check error, set as unhealthy
           this.dbHealth.set({
             healthy: false,
             warning: 'Ma\'lumotlar bazasi holatini tekshirib bo\'lmadi',

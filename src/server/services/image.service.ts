@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { join } from 'node:path';
 import { unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { logger } from '../utils/logger';
 
 const MAX_IMAGE_WIDTH = parseInt(process.env['MAX_IMAGE_WIDTH'] || '1920', 10);
 const THUMBNAIL_WIDTH = parseInt(process.env['THUMBNAIL_WIDTH'] || '300', 10);
@@ -80,9 +81,8 @@ export class ImageService {
         try {
           await unlink(inputPath);
         } catch (error) {
-          console.error('Failed to delete original file:', error);
-          console.error('File path:', inputPath);
-          console.error('Consider monitoring disk space and setting up alerts for cleanup failures');
+          logger.error('Failed to delete original file:', { error, filePath: inputPath });
+          logger.warn('Consider monitoring disk space and setting up alerts for cleanup failures');
         }
       }
 
@@ -106,14 +106,14 @@ export class ImageService {
         try {
           await unlink(optimizedPath);
         } catch (cleanupError) {
-          console.error('Failed to cleanup optimized file:', cleanupError);
+          logger.error('Failed to cleanup optimized file:', cleanupError);
         }
       }
       if (existsSync(thumbnailPath)) {
         try {
           await unlink(thumbnailPath);
         } catch (cleanupError) {
-          console.error('Failed to cleanup thumbnail file:', cleanupError);
+          logger.error('Failed to cleanup thumbnail file:', cleanupError);
         }
       }
       throw error;
@@ -235,7 +235,7 @@ export class ImageService {
       try {
         await unlink(image.path);
       } catch (error) {
-        console.error('Failed to delete image file:', error);
+        logger.error('Failed to delete image file:', error);
       }
     }
 

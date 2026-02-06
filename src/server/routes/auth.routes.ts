@@ -3,6 +3,7 @@ import { authService } from '../services/auth.service';
 import { requireAuth, setSessionCookie, clearSessionCookie } from '../middleware/auth.middleware';
 import { loginValidation, changePasswordValidation, validateRequest } from '../middleware/validation.middleware';
 import { authLimiter, apiLimiter, writeLimiter } from '../middleware/security.middleware';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -29,7 +30,7 @@ router.post('/login', authLimiter, loginValidation, validateRequest, async (req:
     setSessionCookie(res, result.sessionId);
     res.json({ success: true, user: result.user });
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -46,7 +47,7 @@ router.post('/logout', requireAuth, async (req: Request, res: Response) => {
     clearSessionCookie(res);
     res.json({ success: true });
   } catch (error) {
-    console.error('Logout error:', error);
+    logger.error('Logout error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -74,7 +75,7 @@ router.get('/session', apiLimiter, async (req: Request, res: Response) => {
 
     res.json({ authenticated: true, user });
   } catch (error) {
-    console.error('Session check error:', error);
+    logger.error('Session check error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -101,7 +102,7 @@ router.post('/change-password', writeLimiter, requireAuth, changePasswordValidat
 
     res.json({ success: true });
   } catch (error) {
-    console.error('Change password error:', error);
+    logger.error('Change password error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

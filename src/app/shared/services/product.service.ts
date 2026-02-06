@@ -26,7 +26,7 @@ export class ProductService {
       this.productsSignal.set(products);
       this.extractCategories(products);
     } catch (error) {
-      console.error('Failed to load products:', error);
+      // Failed to load products, silently handled
     }
   }
 
