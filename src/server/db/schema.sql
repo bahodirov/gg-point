@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     message TEXT NOT NULL,
     status VARCHAR(50) DEFAULT 'new' CHECK (status IN ('new', 'responded', 'archived')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    replied_at TIMESTAMP
+    responded_at TIMESTAMP
 );
 
 -- Create indexes for contact_messages
