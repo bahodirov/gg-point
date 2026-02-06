@@ -70,16 +70,13 @@ const isRecord = (value: unknown): value is Record<string, string> =>
   value !== null &&
   typeof value === 'object' &&
   !Array.isArray(value) &&
-  Object.keys(value).every(
-    key =>
-      Object.prototype.hasOwnProperty.call(value, key) &&
-      typeof (value as Record<string, unknown>)[key] === 'string'
-  );
+  Object.entries(value).every(([, item]) => typeof item === 'string');
 
 function safeJsonParse<T>(
   value: unknown,
   fallback: T,
-  isValid: (parsed: unknown) => parsed is T
+  isValid: (parsed: unknown) => parsed is T,
+  label: string
 ): T {
   const resolve = (parsed: unknown): T => (isValid(parsed) ? parsed : fallback);
 
@@ -90,7 +87,7 @@ function safeJsonParse<T>(
   try {
     return resolve(JSON.parse(value));
   } catch (error) {
-    console.warn('Failed to parse JSON field');
+    console.warn(`Failed to parse JSON field: ${label}`);
     return fallback;
   }
 }
@@ -110,12 +107,12 @@ function rowToProduct(row: ProductRow): Product {
     price: row.price,
     oldPrice: row.old_price || undefined,
     category: row.category,
-    images: safeJsonParse(row.images, [], isStringArray),
-    specs: safeJsonParse(row.specs, {}, isRecord),
+    images: safeJsonParse(row.images, [], isStringArray, 'images'),
+    specs: safeJsonParse(row.specs, {}, isRecord, 'specs'),
     inStock: row.in_stock === 1,
     featured: row.featured === 1,
     isNew: row.is_new === 1,
-    relatedProducts: safeJsonParse(row.related_products, [], isStringArray),
+    relatedProducts: safeJsonParse(row.related_products, [], isStringArray, 'related_products'),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
