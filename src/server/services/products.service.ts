@@ -64,6 +64,30 @@ export interface Product {
   updatedAt: string;
 }
 
+const isStringArray = (value: unknown): value is string[] => Array.isArray(value);
+const isRecord = (value: unknown): value is Record<string, string> =>
+  value !== null && typeof value === 'object' && !Array.isArray(value);
+
+function safeJsonParse<T>(
+  value: unknown,
+  fallback: T,
+  isValid: (parsed: unknown) => parsed is T,
+  label: string
+): T {
+  const resolve = (parsed: unknown): T => (isValid(parsed) ? parsed : fallback);
+
+  if (typeof value !== 'string') {
+    return resolve(value);
+  }
+
+  try {
+    return resolve(JSON.parse(value));
+  } catch (error) {
+    console.warn(`Failed to parse ${label} JSON`, error);
+    return fallback;
+  }
+}
+
 function rowToProduct(row: ProductRow): Product {
   return {
     id: row.id,
@@ -79,12 +103,12 @@ function rowToProduct(row: ProductRow): Product {
     price: row.price,
     oldPrice: row.old_price || undefined,
     category: row.category,
-    images: JSON.parse(row.images || '[]'),
-    specs: JSON.parse(row.specs || '{}'),
+    images: safeJsonParse(row.images, [], isStringArray, 'images'),
+    specs: safeJsonParse(row.specs, {}, isRecord, 'specs'),
     inStock: row.in_stock === 1,
     featured: row.featured === 1,
     isNew: row.is_new === 1,
-    relatedProducts: JSON.parse(row.related_products || '[]'),
+    relatedProducts: safeJsonParse(row.related_products, [], isStringArray, 'related_products'),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

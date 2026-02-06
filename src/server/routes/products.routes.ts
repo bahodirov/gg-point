@@ -6,6 +6,10 @@ import { publicLimiter, writeLimiter } from '../middleware/security.middleware';
 
 const router = Router();
 
+const DEFAULT_FEATURED_LIMIT = 6;
+const MIN_FEATURED_LIMIT = 1;
+const MAX_FEATURED_LIMIT = 100;
+
 // ==================== PUBLIC ROUTES ====================
 
 /**
@@ -23,7 +27,10 @@ router.get('/', publicLimiter, searchValidation, validateRequest, async (req: Re
     } else if (category) {
       products = await productsService.getProductsByCategory(String(category));
     } else if (featured === 'true') {
-      const limit = req.query['limit'] ? parseInt(String(req.query['limit']), 10) : 6;
+      const rawLimit = Number.parseInt(String(req.query['limit']), 10);
+      const limit = Number.isFinite(rawLimit)
+        ? Math.min(Math.max(rawLimit, MIN_FEATURED_LIMIT), MAX_FEATURED_LIMIT)
+        : DEFAULT_FEATURED_LIMIT;
       products = await productsService.getFeaturedProducts(limit);
     } else {
       products = await productsService.getAllProducts();

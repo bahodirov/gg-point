@@ -9,6 +9,12 @@ import { getDatabaseWarning, isDatabaseHealthy } from '../db/database';
 
 const router = Router();
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_PER_PAGE = 50;
+const MIN_PAGE = 1;
+const MIN_PER_PAGE = 1;
+const MAX_PER_PAGE = 100;
+
 /**
  * GET /api/admin/health
  * Database health check
@@ -86,8 +92,15 @@ router.post('/upload-image', uploadLimiter, requireAuth, uploadMemory.single('im
  */
 router.get('/images', apiLimiter, requireAuth, paginationValidation, validateRequest, async (req: Request, res: Response) => {
   try {
-    const page = parseInt(String(req.query['page'] || '1'), 10);
-    const perPage = parseInt(String(req.query['per_page'] || '50'), 10);
+    const rawPage = Number.parseInt(String(req.query['page']), 10);
+    const rawPerPage = Number.parseInt(
+      String(req.query['per_page'] ?? req.query['perPage']),
+      10
+    );
+    const page = Number.isFinite(rawPage) ? Math.max(rawPage, MIN_PAGE) : DEFAULT_PAGE;
+    const perPage = Number.isFinite(rawPerPage)
+      ? Math.min(Math.max(rawPerPage, MIN_PER_PAGE), MAX_PER_PAGE)
+      : DEFAULT_PER_PAGE;
     const offset = (page - 1) * perPage;
 
     const images = await imageService.getAllImages(perPage, offset);
