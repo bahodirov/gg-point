@@ -38,7 +38,7 @@ export class ProductService {
     const specifications: ProductSpecification[] = Object.entries(normalizedSpecs).map(
       ([key, value]) => ({
         key,
-        value: value == null ? '' : String(value)
+        value: value === null || value === undefined ? '' : String(value)
       })
     );
 
