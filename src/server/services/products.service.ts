@@ -66,7 +66,7 @@ export interface Product {
 
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(item => typeof item === 'string');
-const SAFE_JSON_FIELDS = new Set(['images', 'specs', 'related_products']);
+type SafeJsonField = 'images' | 'specs' | 'related_products';
 const isRecord = (value: unknown): value is Record<string, string> => {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     return false;
@@ -87,7 +87,7 @@ function safeJsonParse<T>(
   value: unknown,
   fallback: T,
   isValid: (parsed: unknown) => parsed is T,
-  label: string
+  label: SafeJsonField
 ): T {
   const resolve = (parsed: unknown): T => (isValid(parsed) ? parsed : fallback);
 
@@ -98,8 +98,7 @@ function safeJsonParse<T>(
   try {
     return resolve(JSON.parse(value));
   } catch (error) {
-    const safeLabel = SAFE_JSON_FIELDS.has(label) ? label : 'unknown';
-    console.warn(`Failed to parse JSON field: ${safeLabel}`);
+    console.warn(`Failed to parse JSON field: ${label}`);
     return fallback;
   }
 }

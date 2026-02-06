@@ -93,8 +93,11 @@ router.post('/upload-image', uploadLimiter, requireAuth, uploadMemory.single('im
  */
 router.get('/images', apiLimiter, requireAuth, paginationValidation, validateRequest, async (req: Request, res: Response) => {
   try {
-    const rawPage = Number.parseInt(String(req.query['page'] || DEFAULT_PAGE), 10);
-    const rawPerPage = Number.parseInt(String(req.query['per_page'] || DEFAULT_PER_PAGE), 10);
+    const pageParam = req.query['page'];
+    const perPageParam = req.query['per_page'];
+    const rawPage = typeof pageParam === 'string' ? Number.parseInt(pageParam, 10) : Number.NaN;
+    const rawPerPage =
+      typeof perPageParam === 'string' ? Number.parseInt(perPageParam, 10) : Number.NaN;
     const page = Number.isFinite(rawPage)
       ? Math.min(Math.max(rawPage, MIN_PAGE), MAX_PAGE)
       : DEFAULT_PAGE;
