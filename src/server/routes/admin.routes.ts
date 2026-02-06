@@ -12,6 +12,7 @@ const router = Router();
 const DEFAULT_PAGE = 1;
 const DEFAULT_PER_PAGE = 50;
 const MIN_PAGE = 1;
+const MAX_PAGE = 10000;
 const MIN_PER_PAGE = 1;
 const MAX_PER_PAGE = 100;
 
@@ -94,7 +95,9 @@ router.get('/images', apiLimiter, requireAuth, paginationValidation, validateReq
   try {
     const rawPage = Number.parseInt(String(req.query['page'] || DEFAULT_PAGE), 10);
     const rawPerPage = Number.parseInt(String(req.query['per_page'] || DEFAULT_PER_PAGE), 10);
-    const page = Number.isFinite(rawPage) ? Math.max(rawPage, MIN_PAGE) : DEFAULT_PAGE;
+    const page = Number.isFinite(rawPage)
+      ? Math.min(Math.max(rawPage, MIN_PAGE), MAX_PAGE)
+      : DEFAULT_PAGE;
     const perPage = Number.isFinite(rawPerPage)
       ? Math.min(Math.max(rawPerPage, MIN_PER_PAGE), MAX_PER_PAGE)
       : DEFAULT_PER_PAGE;
