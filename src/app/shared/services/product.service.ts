@@ -38,7 +38,7 @@ export class ProductService {
     const specifications: ProductSpecification[] = Object.entries(safeSpecs).map(
       ([key, value]) => ({
         key,
-        value: value === null || value === undefined ? '' : String(value)
+        value: String(value ?? '')
       })
     );
 
