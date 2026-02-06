@@ -232,9 +232,14 @@ export class ProductDetailComponent implements OnInit {
   relatedProducts = signal<Product[]>([]);
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const productId = params['id'];
-      this.loadProduct(productId);
+    this.route.params.subscribe({
+      next: (params) => {
+        const productId = params['id'];
+        this.loadProduct(productId);
+      },
+      error: (error) => {
+        console.error('Failed to load route params:', error);
+      }
     });
   }
 

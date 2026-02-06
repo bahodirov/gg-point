@@ -323,8 +323,15 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout().subscribe(() => {
-      this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Logout failed:', error);
+        // Still navigate to login even on error
+        this.router.navigate(['/login']);
+      }
     });
   }
 

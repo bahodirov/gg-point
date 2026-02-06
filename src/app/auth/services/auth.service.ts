@@ -87,10 +87,18 @@ export class AuthService {
       .pipe(
         catchError(() => of({ authenticated: false, user: undefined } as SessionResponse))
       )
-      .subscribe(response => {
-        this.isAuthenticatedSignal.set(response.authenticated);
-        this.currentUserSignal.set(response.user || null);
-        this.isLoadingSignal.set(false);
+      .subscribe({
+        next: (response) => {
+          this.isAuthenticatedSignal.set(response.authenticated);
+          this.currentUserSignal.set(response.user || null);
+          this.isLoadingSignal.set(false);
+        },
+        error: (error) => {
+          console.error('Failed to check session:', error);
+          this.isAuthenticatedSignal.set(false);
+          this.currentUserSignal.set(null);
+          this.isLoadingSignal.set(false);
+        }
       });
   }
 
