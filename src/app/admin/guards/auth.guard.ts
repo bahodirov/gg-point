@@ -16,7 +16,8 @@ export const authGuard: CanActivateFn = (route, state) => {
   // If already authenticated, allow access
   if (authService.isAuthenticated()) {
     const currentUser = authService.currentUser();
-    if (currentUser?.must_change_password && !state.url.startsWith('/admin/change-password')) {
+    const requestedPath = state.url.split('?')[0];
+    if (currentUser?.must_change_password && requestedPath !== '/admin/change-password') {
       router.navigate(['/admin/change-password']);
       return false;
     }
