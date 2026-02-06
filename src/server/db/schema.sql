@@ -47,6 +47,14 @@ CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);
 CREATE INDEX IF NOT EXISTS idx_products_in_stock ON products(in_stock);
 CREATE INDEX IF NOT EXISTS idx_products_created_at ON products(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_products_images_gin ON products USING GIN (images);
+CREATE INDEX IF NOT EXISTS idx_products_search ON products USING GIN (
+    to_tsvector('simple',
+      COALESCE(name_ru, '') || ' ' ||
+      COALESCE(name_uz, '') || ' ' ||
+      COALESCE(description_ru, '') || ' ' ||
+      COALESCE(description_uz, '')
+    )
+);
 
 -- Sessions table
 CREATE TABLE IF NOT EXISTS sessions (

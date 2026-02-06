@@ -297,18 +297,23 @@ const pgDb = {
     },
     searchByText: async (queryText: string): Promise<ProductData[]> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
-      const searchValue = `%${queryText}%`;
+      const trimmedQuery = queryText.trim();
+      if (!trimmedQuery) {
+        return pgDb.products.all();
+      }
       const result = await pool.query(
         `SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category,
                 images::text, specs::text, in_stock, featured, is_new, related_products::text,
                 created_at, updated_at
          FROM products
-         WHERE name_ru ILIKE $1
-            OR COALESCE(name_uz, '') ILIKE $1
-            OR COALESCE(description_ru, '') ILIKE $1
-            OR COALESCE(description_uz, '') ILIKE $1
+         WHERE to_tsvector('simple',
+           COALESCE(name_ru, '') || ' ' ||
+           COALESCE(name_uz, '') || ' ' ||
+           COALESCE(description_ru, '') || ' ' ||
+           COALESCE(description_uz, '')
+         ) @@ plainto_tsquery('simple', $1)
          ORDER BY created_at DESC`,
-        [searchValue]
+        [trimmedQuery]
       );
       return result.rows.map(row => ({
         ...row,
