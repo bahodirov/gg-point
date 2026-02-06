@@ -109,11 +109,32 @@ REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 
 **3. Use SSL/TLS for Connections**
 
-In production, always use SSL for database connections:
+In production, always use SSL for database connections with certificate verification enabled:
 
 `.env`:
 ```env
 DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require
+```
+
+**🔒 CRITICAL SECURITY FEATURE**: 
+- SSL certificate verification is **ALWAYS ENABLED** in production (`NODE_ENV=production`)
+- Setting `DB_SSL_REJECT_UNAUTHORIZED=false` in production will **fail application startup** with a critical error
+- This prevents man-in-the-middle (MITM) attacks on database connections
+- Use `DB_SSL_REJECT_UNAUTHORIZED=false` only in development/staging environments with self-signed certificates
+
+**Development/Staging with Self-Signed Certificates:**
+```env
+NODE_ENV=development
+DATABASE_URL=postgresql://user:pass@host:5432/db
+DB_SSL_REJECT_UNAUTHORIZED=false  # Only allowed in non-production
+```
+
+**Production (Secure):**
+```env
+NODE_ENV=production
+DATABASE_URL=postgresql://user:pass@host:5432/db
+# DB_SSL_REJECT_UNAUTHORIZED must NOT be set to 'false'
+# SSL verification is automatically enabled
 ```
 
 **4. Restrict Network Access**
@@ -458,8 +479,8 @@ res.status(500).json({
 - [ ] Change default admin password
 - [ ] Generate strong SESSION_SECRET
 - [ ] Configure DATABASE_URL with strong password
-- [ ] Enable PostgreSQL SSL connections
-- [ ] Set NODE_ENV=production
+- [ ] Enable PostgreSQL SSL connections (verify DB_SSL_REJECT_UNAUTHORIZED is NOT set to 'false' in production)
+- [ ] Set NODE_ENV=production (this enforces SSL certificate verification)
 - [ ] Review and configure CORS_ORIGIN
 - [ ] Set up HTTPS/TLS certificates
 - [ ] Configure firewall rules
@@ -519,4 +540,4 @@ We take security seriously and will respond within 48 hours.
 
 This document should be reviewed and updated regularly as new security features are added or vulnerabilities are discovered.
 
-Last updated: 2026-02-01
+Last updated: 2026-02-06
