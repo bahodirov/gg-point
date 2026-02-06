@@ -11,6 +11,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { SeoService } from '../../shared/services/seo.service';
 
+interface ContactApiError {
+  error?: {
+    error?: string;
+  };
+}
+
 @Component({
   selector: 'app-contact',
   standalone: true,
@@ -228,7 +234,7 @@ export class ContactComponent implements OnInit {
         error: (error) => {
           console.error('Failed to send message:', error);
           this.isSubmitting = false;
-          const apiMessage = (error as { error?: { error?: string } })?.error?.error;
+          const apiMessage = (error as ContactApiError)?.error?.error;
           this.submitErrorMessage = apiMessage ?? 'Error sending message. Please try again.';
           this.submitError = true;
 

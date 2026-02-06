@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
-    status VARCHAR(50) DEFAULT 'new' CHECK (status IN ('new', 'replied', 'archived')),
+    status VARCHAR(50) DEFAULT 'new' CHECK (status IN ('new', 'resolved', 'archived')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     replied_at TIMESTAMP
 );
