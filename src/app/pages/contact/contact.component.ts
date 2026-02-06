@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,12 +10,6 @@ import { MatCardModule } from '@angular/material/card';
 import { TranslateModule } from '@ngx-translate/core';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { SeoService } from '../../shared/services/seo.service';
-
-interface ContactApiError {
-  error?: {
-    error?: string;
-  };
-}
 
 @Component({
   selector: 'app-contact',
@@ -234,7 +228,10 @@ export class ContactComponent implements OnInit {
         error: (error) => {
           console.error('Failed to send message:', error);
           this.isSubmitting = false;
-          const apiMessage = (error as ContactApiError)?.error?.error;
+          const apiMessage =
+            error instanceof HttpErrorResponse && typeof error.error?.error === 'string'
+              ? error.error.error
+              : undefined;
           this.submitErrorMessage = apiMessage ?? 'Error sending message. Please try again.';
           this.submitError = true;
 
