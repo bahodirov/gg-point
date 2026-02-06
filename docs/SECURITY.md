@@ -118,9 +118,10 @@ DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require
 
 **🔒 CRITICAL SECURITY FEATURE**: 
 - SSL certificate verification is **ALWAYS ENABLED** in production (`NODE_ENV=production`)
+- **IMPORTANT**: If `NODE_ENV` is undefined or empty, it's treated as production for security (fail-safe to secure configuration)
 - Setting `DB_SSL_REJECT_UNAUTHORIZED=false` in production will **fail application startup** with a critical error
 - This prevents man-in-the-middle (MITM) attacks on database connections
-- Use `DB_SSL_REJECT_UNAUTHORIZED=false` only in development/staging environments with self-signed certificates
+- Use `DB_SSL_REJECT_UNAUTHORIZED=false` only in `NODE_ENV=development` environments with self-signed certificates
 
 **Development/Staging with Self-Signed Certificates:**
 ```env
@@ -136,6 +137,8 @@ DATABASE_URL=postgresql://user:pass@host:5432/db
 # DB_SSL_REJECT_UNAUTHORIZED must NOT be set to 'false'
 # SSL verification is automatically enabled
 ```
+
+**⚠️ Security Note:** If `NODE_ENV` is not set or is empty, the application treats it as production to ensure secure defaults.
 
 **4. Restrict Network Access**
 
@@ -479,6 +482,7 @@ res.status(500).json({
 - [ ] Change default admin password
 - [ ] Generate strong SESSION_SECRET
 - [ ] Configure DATABASE_URL with strong password
+- [ ] **CRITICAL**: Ensure NODE_ENV is explicitly set to 'production' (if undefined, SSL verification is enforced but NODE_ENV should be set)
 - [ ] Enable PostgreSQL SSL connections (verify DB_SSL_REJECT_UNAUTHORIZED is NOT set to 'false' in production)
 - [ ] Set NODE_ENV=production (this enforces SSL certificate verification)
 - [ ] Review and configure CORS_ORIGIN
