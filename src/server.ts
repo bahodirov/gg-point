@@ -11,6 +11,7 @@ import {
 import express, { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import { join } from 'node:path';
+import { logger } from './server/utils/logger';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -33,11 +34,11 @@ async function initializeSecurity() {
     app.use(sanitizeInput);
 
     securityInitialized = true;
-    console.log('Security middleware initialized');
+    logger.info('Security middleware initialized');
   } catch (error) {
-    console.error('FATAL: Failed to initialize security middleware:', error);
-    console.error('Application cannot start without security protections.');
-    console.error('Please check that all security middleware modules are available.');
+    logger.error('FATAL: Failed to initialize security middleware:', error);
+    logger.error('Application cannot start without security protections.');
+    logger.error('Please check that all security middleware modules are available.');
     // Fail fast: do not start the application without security middleware
     throw error;
   }
@@ -80,7 +81,7 @@ async function initializeApi(): Promise<express.Router> {
     router.use('/products', productsRoutes);
     router.use('/admin', adminRoutes);
 
-    console.log('API initialized successfully');
+    logger.info('API initialized successfully');
 
     return router;
   })();
@@ -135,7 +136,7 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
       throw error;
     }
 
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    logger.info(`Node Express server listening on http://localhost:${port}`);
   });
 }
 

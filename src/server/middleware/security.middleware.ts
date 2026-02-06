@@ -1,6 +1,7 @@
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
 
 // Rate limit time constants (in seconds)
 const FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
@@ -186,7 +187,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
 
     // Only log errors and admin actions
     if (res.statusCode >= 400 || req.url.includes('/admin') || req.url.includes('/auth')) {
-      console.log(JSON.stringify(responseLog));
+      logger.info(responseLog);
     }
   });
 

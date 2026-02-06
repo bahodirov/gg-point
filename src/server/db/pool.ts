@@ -1,4 +1,5 @@
 import { Pool, PoolConfig } from 'pg';
+import { logger } from '../utils/logger';
 
 // Environment variable validation
 function validateEnvironment(): void {
@@ -6,8 +7,8 @@ function validateEnvironment(): void {
   
   if (!process.env['DATABASE_URL'] && !process.env['DB_NAME']) {
     if (isDev) {
-      console.warn('WARNING: No database configuration found. Please set DATABASE_URL or DB_* environment variables.');
-      console.warn('Falling back to JSON file storage for development.');
+      logger.warn('WARNING: No database configuration found. Please set DATABASE_URL or DB_* environment variables.');
+      logger.warn('Falling back to JSON file storage for development.');
     } else {
       throw new Error('DATABASE_URL or DB_* environment variables must be set in production');
     }
@@ -28,9 +29,9 @@ function getPoolConfig(): PoolConfig | null {
     
     // Warn if SSL verification is disabled in production
     if (process.env['NODE_ENV'] === 'production' && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
-      console.warn('WARNING: SSL certificate verification is disabled (DB_SSL_REJECT_UNAUTHORIZED=false).');
-      console.warn('This makes the connection vulnerable to man-in-the-middle attacks.');
-      console.warn('Use proper SSL certificates in production or keep this setting only for development with self-signed certificates.');
+      logger.warn('WARNING: SSL certificate verification is disabled (DB_SSL_REJECT_UNAUTHORIZED=false).');
+      logger.warn('This makes the connection vulnerable to man-in-the-middle attacks.');
+      logger.warn('Use proper SSL certificates in production or keep this setting only for development with self-signed certificates.');
     }
     
     return {
@@ -52,9 +53,9 @@ function getPoolConfig(): PoolConfig | null {
     
     // Warn if SSL verification is disabled in production
     if (process.env['NODE_ENV'] === 'production' && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
-      console.warn('WARNING: SSL certificate verification is disabled (DB_SSL_REJECT_UNAUTHORIZED=false).');
-      console.warn('This makes the connection vulnerable to man-in-the-middle attacks.');
-      console.warn('Use proper SSL certificates in production or keep this setting only for development with self-signed certificates.');
+      logger.warn('WARNING: SSL certificate verification is disabled (DB_SSL_REJECT_UNAUTHORIZED=false).');
+      logger.warn('This makes the connection vulnerable to man-in-the-middle attacks.');
+      logger.warn('Use proper SSL certificates in production or keep this setting only for development with self-signed certificates.');
     }
     
     return {
@@ -96,7 +97,7 @@ export function getPool(): Pool | null {
   // Log successful connection in development
   if (process.env['NODE_ENV'] !== 'production') {
     pool.on('connect', () => {
-      console.log('PostgreSQL client connected to pool');
+      logger.debug('PostgreSQL client connected to pool');
     });
   }
 
@@ -113,7 +114,7 @@ export async function closePool(): Promise<void> {
   if (pool) {
     await pool.end();
     pool = null;
-    console.log('PostgreSQL pool closed');
+    logger.info('PostgreSQL pool closed');
   }
 }
 
@@ -128,10 +129,10 @@ export async function testConnection(): Promise<boolean> {
     const client = await poolInstance.connect();
     await client.query('SELECT NOW()');
     client.release();
-    console.log('PostgreSQL connection test successful');
+    logger.info('PostgreSQL connection test successful');
     return true;
   } catch (error) {
-    console.error('PostgreSQL connection test failed:', error);
+    logger.error('PostgreSQL connection test failed:', error);
     return false;
   }
 }

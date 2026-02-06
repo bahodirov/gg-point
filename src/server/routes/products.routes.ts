@@ -3,6 +3,7 @@ import { productsService, CreateProductDto, UpdateProductDto } from '../services
 import { requireAuth } from '../middleware/auth.middleware';
 import { productValidation, searchValidation, validateRequest } from '../middleware/validation.middleware';
 import { publicLimiter, writeLimiter } from '../middleware/security.middleware';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -84,7 +85,7 @@ router.get('/:idOrSlug', publicLimiter, async (req: Request, res: Response) => {
  */
 router.post('/', writeLimiter, requireAuth, productValidation, validateRequest, async (req: Request, res: Response) => {
   try {
-    console.log('Creating product with data:', JSON.stringify(req.body, null, 2));
+    logger.debug('Creating product with data:', req.body);
     const data: CreateProductDto = req.body;
 
     // Validate required fields

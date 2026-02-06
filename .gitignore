@@ -58,3 +58,7 @@ Thumbs.db
 # Upload directory
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Log files
+/logs
+*.log
