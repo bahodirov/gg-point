@@ -85,20 +85,15 @@ export class AuthService {
     this.isLoadingSignal.set(true);
     this.http.get<SessionResponse>('/api/auth/session')
       .pipe(
-        catchError(() => of({ authenticated: false, user: undefined } as SessionResponse))
-      )
-      .subscribe({
-        next: (response) => {
-          this.isAuthenticatedSignal.set(response.authenticated);
-          this.currentUserSignal.set(response.user || null);
-          this.isLoadingSignal.set(false);
-        },
-        error: (error) => {
+        catchError((error) => {
           console.error('Failed to check session:', error);
-          this.isAuthenticatedSignal.set(false);
-          this.currentUserSignal.set(null);
-          this.isLoadingSignal.set(false);
-        }
+          return of({ authenticated: false, user: undefined } as SessionResponse);
+        })
+      )
+      .subscribe((response) => {
+        this.isAuthenticatedSignal.set(response.authenticated);
+        this.currentUserSignal.set(response.user || null);
+        this.isLoadingSignal.set(false);
       });
   }
 
