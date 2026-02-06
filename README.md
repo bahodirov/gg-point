@@ -66,12 +66,36 @@ A modern, lightweight ecommerce catalog website built with Angular 20 featuring 
    npm install --legacy-peer-deps
    ```
 
-3. **Run development server**
+3. **Configure environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` with your configuration. See [docs/ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) for detailed documentation.
+
+4. **Run development server**
    ```bash
    npm start
    ```
    
    Navigate to `http://localhost:4200/`
+
+## ⚙️ Configuration
+
+The application uses environment variables for configuration. Copy `.env.example` to `.env` and customize:
+
+```bash
+cp .env.example .env
+```
+
+Key configuration areas:
+- **Domain & API URLs**: Configure frontend and backend URLs for different environments
+- **Contact Information**: Set business phone, email, address, and hours
+- **CORS Origins**: Specify allowed origins for cross-origin requests
+- **Database**: PostgreSQL connection settings
+- **Security**: Rate limiting and session configuration
+
+For detailed documentation, see [docs/ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md).
 
 ## 📦 Build
 
