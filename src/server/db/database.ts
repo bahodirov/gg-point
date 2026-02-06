@@ -299,7 +299,7 @@ const pgDb = {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const trimmedQuery = queryText.trim();
       if (!trimmedQuery) {
-        return pgDb.products.all();
+        return [];
       }
       const result = await pool.query(
         `SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category,
