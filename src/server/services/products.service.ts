@@ -98,7 +98,7 @@ function safeJsonParse<T>(
   try {
     return resolve(JSON.parse(value));
   } catch (error) {
-    console.warn(`Failed to parse JSON field: ${label}`);
+    console.warn(`Failed to parse JSON field: ${label} (invalid JSON)`);
     return fallback;
   }
 }

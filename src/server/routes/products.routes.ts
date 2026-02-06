@@ -27,7 +27,9 @@ router.get('/', publicLimiter, searchValidation, validateRequest, async (req: Re
     } else if (category) {
       products = await productsService.getProductsByCategory(String(category));
     } else if (featured === 'true') {
-      const rawLimit = Number.parseInt(String(req.query['limit']), 10);
+      const limitParam = req.query['limit'];
+      const rawLimit =
+        typeof limitParam === 'string' ? Number.parseInt(limitParam, 10) : Number.NaN;
       const limit = Number.isFinite(rawLimit)
         ? Math.min(Math.max(rawLimit, MIN_FEATURED_LIMIT), MAX_FEATURED_LIMIT)
         : DEFAULT_FEATURED_LIMIT;
