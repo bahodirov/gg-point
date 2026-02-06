@@ -20,17 +20,26 @@ function getPoolConfig(): PoolConfig | null {
 
   // Option 1: Use DATABASE_URL
   if (process.env['DATABASE_URL']) {
-    const sslConfig = process.env['NODE_ENV'] === 'production'
-      ? process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false'
-        ? { rejectUnauthorized: false }
-        : true
-      : undefined;
-    
-    // Warn if SSL verification is disabled in production
+    // Fail startup if insecure SSL configuration detected in production
     if (process.env['NODE_ENV'] === 'production' && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
-      console.warn('WARNING: SSL certificate verification is disabled (DB_SSL_REJECT_UNAUTHORIZED=false).');
-      console.warn('This makes the connection vulnerable to man-in-the-middle attacks.');
-      console.warn('Use proper SSL certificates in production or keep this setting only for development with self-signed certificates.');
+      throw new Error(
+        'CRITICAL SECURITY ERROR: SSL certificate verification is disabled in production (DB_SSL_REJECT_UNAUTHORIZED=false). ' +
+        'This makes the connection vulnerable to man-in-the-middle attacks. ' +
+        'Remove DB_SSL_REJECT_UNAUTHORIZED or set it to "true" in production. ' +
+        'Use rejectUnauthorized=false only in development environments with self-signed certificates.'
+      );
+    }
+
+    const sslConfig = process.env['NODE_ENV'] === 'production'
+      ? true  // Always enable SSL verification in production
+      : process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false'
+        ? { rejectUnauthorized: false }
+        : undefined;
+    
+    // Warn if SSL verification is disabled in development
+    if (process.env['NODE_ENV'] !== 'production' && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
+      console.warn('WARNING: SSL is configured with rejectUnauthorized: false');
+      console.warn('This is insecure and should only be used in development');
     }
     
     return {
@@ -44,17 +53,26 @@ function getPoolConfig(): PoolConfig | null {
 
   // Option 2: Use individual settings
   if (process.env['DB_NAME']) {
-    const sslConfig = process.env['NODE_ENV'] === 'production'
-      ? process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false'
-        ? { rejectUnauthorized: false }
-        : true
-      : undefined;
-    
-    // Warn if SSL verification is disabled in production
+    // Fail startup if insecure SSL configuration detected in production
     if (process.env['NODE_ENV'] === 'production' && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
-      console.warn('WARNING: SSL certificate verification is disabled (DB_SSL_REJECT_UNAUTHORIZED=false).');
-      console.warn('This makes the connection vulnerable to man-in-the-middle attacks.');
-      console.warn('Use proper SSL certificates in production or keep this setting only for development with self-signed certificates.');
+      throw new Error(
+        'CRITICAL SECURITY ERROR: SSL certificate verification is disabled in production (DB_SSL_REJECT_UNAUTHORIZED=false). ' +
+        'This makes the connection vulnerable to man-in-the-middle attacks. ' +
+        'Remove DB_SSL_REJECT_UNAUTHORIZED or set it to "true" in production. ' +
+        'Use rejectUnauthorized=false only in development environments with self-signed certificates.'
+      );
+    }
+
+    const sslConfig = process.env['NODE_ENV'] === 'production'
+      ? true  // Always enable SSL verification in production
+      : process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false'
+        ? { rejectUnauthorized: false }
+        : undefined;
+    
+    // Warn if SSL verification is disabled in development
+    if (process.env['NODE_ENV'] !== 'production' && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
+      console.warn('WARNING: SSL is configured with rejectUnauthorized: false');
+      console.warn('This is insecure and should only be used in development');
     }
     
     return {
