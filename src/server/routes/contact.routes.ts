@@ -51,6 +51,7 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
       typeof req.headers['x-request-id'] === 'string' ? req.headers['x-request-id'] : undefined;
     console.error('Contact form error:', {
       requestId: requestId ?? new Date().toISOString(),
+      operation: 'insert_contact_message',
       message: error instanceof Error ? error.message : String(error),
     });
     return res

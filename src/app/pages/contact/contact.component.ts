@@ -232,8 +232,8 @@ export class ContactComponent implements OnInit {
               : undefined;
           const logDetails =
             error instanceof HttpErrorResponse
-              ? { status: error.status, message: 'Contact form submission failed' }
-              : { message: 'Contact form submission failed' };
+              ? { status: error.status }
+              : { status: 'unknown' };
           console.error('Failed to send message:', logDetails);
           this.isSubmitting = false;
           this.submitErrorMessage = apiMessage ?? 'Error sending message. Please try again.';
