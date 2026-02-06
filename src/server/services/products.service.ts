@@ -64,9 +64,13 @@ export interface Product {
   updatedAt: string;
 }
 
-const isStringArray = (value: unknown): value is string[] => Array.isArray(value);
+const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every(item => typeof item === 'string');
 const isRecord = (value: unknown): value is Record<string, string> =>
-  value !== null && typeof value === 'object' && !Array.isArray(value);
+  value !== null &&
+  typeof value === 'object' &&
+  !Array.isArray(value) &&
+  Object.values(value).every(item => typeof item === 'string');
 
 function safeJsonParse<T>(
   value: unknown,
