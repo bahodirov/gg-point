@@ -72,15 +72,6 @@ CREATE TABLE IF NOT EXISTS contact_messages (
 CREATE INDEX IF NOT EXISTS idx_contact_messages_status ON contact_messages(status);
 CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(created_at DESC);
 
-DO $$
-BEGIN
-    ALTER TABLE contact_messages
-        ADD CONSTRAINT contact_messages_status_check
-        CHECK (status IN ('new', 'replied', 'archived'));
-EXCEPTION
-    WHEN duplicate_object THEN NULL;
-END $$;
-
 -- Uploaded images table (NEW)
 CREATE TABLE IF NOT EXISTS uploaded_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

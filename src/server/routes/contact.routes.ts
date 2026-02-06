@@ -35,7 +35,7 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
   const pool = getPool();
 
   if (!pool) {
-    res.status(503).json({ error: 'Unable to submit message. Please try again later.' });
+    res.status(503).json({ error: 'Service temporarily unavailable. Please try again later.' });
     return;
   }
 
@@ -47,7 +47,7 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
     res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
     console.error('Contact form error:', error);
-    res.status(500).json({ error: 'Unable to submit message. Please try again later.' });
+    res.status(500).json({ error: 'Failed to process your message. Please try again later.' });
   }
 });
 
