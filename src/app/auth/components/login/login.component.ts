@@ -184,7 +184,12 @@ export class LoginComponent {
 
     // Redirect if already logged in
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/admin']);
+      const currentUser = this.authService.currentUser();
+      if (currentUser?.must_change_password) {
+        this.router.navigate(['/admin/change-password']);
+      } else {
+        this.router.navigate(['/admin']);
+      }
     }
   }
 
@@ -206,7 +211,11 @@ export class LoginComponent {
       next: (response) => {
         this.isLoading.set(false);
         if (response.success) {
-          this.router.navigate(['/admin']);
+          if (response.user?.must_change_password) {
+            this.router.navigate(['/admin/change-password']);
+          } else {
+            this.router.navigate(['/admin']);
+          }
         }
       },
       error: (error) => {

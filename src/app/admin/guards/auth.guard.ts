@@ -3,7 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../../auth/services/auth.service';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
@@ -15,6 +15,11 @@ export const authGuard: CanActivateFn = () => {
 
   // If already authenticated, allow access
   if (authService.isAuthenticated()) {
+    const currentUser = authService.currentUser();
+    if (currentUser?.must_change_password && !state.url.startsWith('/admin/change-password')) {
+      router.navigate(['/admin/change-password']);
+      return false;
+    }
     return true;
   }
 

@@ -8,6 +8,7 @@ export interface UserData {
   password_hash: string;
   email: string | null;
   role: string;
+  must_change_password: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -152,9 +153,18 @@ const pgDb = {
     insert: async (user: UserData): Promise<void> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       await pool.query(
-        `INSERT INTO users (id, username, password_hash, email, role, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [user.id, user.username, user.password_hash, user.email, user.role, user.created_at, user.updated_at]
+        `INSERT INTO users (id, username, password_hash, email, role, must_change_password, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [
+          user.id,
+          user.username,
+          user.password_hash,
+          user.email,
+          user.role,
+          user.must_change_password,
+          user.created_at,
+          user.updated_at,
+        ]
       );
     },
     update: async (id: string, updates: Partial<UserData>): Promise<void> => {
