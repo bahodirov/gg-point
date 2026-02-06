@@ -4,9 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { createHash, randomBytes } from 'node:crypto';
 
 const DEFAULT_ADMIN_USERNAME = 'admin';
-const DEFAULT_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+const DEFAULT_PASSWORD_CHECK_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
 
-function hashPassword(value: string): string {
+function hashForDefaultCredentialCheck(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
@@ -26,7 +26,7 @@ export async function migrateData(): Promise<void> {
 
     if (userCount === 0) {
       console.log('No users found. Creating admin user...');
-      const adminUsername = (process.env['ADMIN_USERNAME'] || DEFAULT_ADMIN_USERNAME).trim() || DEFAULT_ADMIN_USERNAME;
+      const adminUsername = process.env['ADMIN_USERNAME']?.trim() || DEFAULT_ADMIN_USERNAME;
       const envAdminPassword = process.env['ADMIN_PASSWORD']?.trim();
       const adminPassword = envAdminPassword ?? generateAdminPassword();
       const isProduction = process.env['NODE_ENV'] === 'production';
@@ -37,7 +37,11 @@ export async function migrateData(): Promise<void> {
           console.warn('Set ADMIN_PASSWORD in production to avoid logging credentials.');
         }
         console.warn(`Generated admin password for ${adminUsername}: ${adminPassword}`);
-      } else if (isProduction && adminUsername === DEFAULT_ADMIN_USERNAME && hashPassword(envAdminPassword) === DEFAULT_PASSWORD_HASH) {
+      } else if (
+        isProduction &&
+        adminUsername === DEFAULT_ADMIN_USERNAME &&
+        hashForDefaultCredentialCheck(envAdminPassword) === DEFAULT_PASSWORD_CHECK_HASH
+      ) {
         console.warn('Default admin credentials detected in production. Update ADMIN_PASSWORD immediately.');
       }
 
