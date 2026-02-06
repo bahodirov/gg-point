@@ -2,6 +2,7 @@ import { Injectable, inject, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 export interface SEOConfig {
   title?: string;
@@ -33,7 +34,7 @@ export class SeoService {
     title: 'GGPoint - Computer Accessories Store',
     description: 'Modern computer accessories and gadgets store in Uzbekistan. Find the best quality products for your setup.',
     keywords: 'computer, accessories, gadgets, Uzbekistan, gaming, peripherals, компьютерные аксессуары, игровые устройства',
-    image: 'https://gg-point.uz/assets/images/og-image.png',
+    image: `${environment.domain}/assets/images/og-image.png`,
     type: 'website',
     robots: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
   };
@@ -44,7 +45,7 @@ export class SeoService {
 
   updateMetaTags(config: SEOConfig): void {
     const seoConfig = { ...this.defaultConfig, ...config };
-    const url = seoConfig.canonical || seoConfig.url || `https://gg-point.uz${this.router.url}`;
+    const url = seoConfig.canonical || seoConfig.url || `${environment.domain}${this.router.url}`;
 
     // Set title
     this.title.setTitle(seoConfig.title!);
@@ -168,7 +169,7 @@ export class SeoService {
       },
       offers: {
         '@type': 'Offer',
-        url: `https://gg-point.uz/catalog/${product.id}`,
+        url: `${environment.domain}/catalog/${product.id}`,
         priceCurrency: 'UZS',
         price: product.price.toString(),
         priceValidUntil: '2026-12-31',
@@ -190,8 +191,8 @@ export class SeoService {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'GGPoint',
-      url: 'https://gg-point.uz',
-      logo: 'https://gg-point.uz/assets/images/logo.png',
+      url: environment.domain,
+      logo: `${environment.domain}/assets/images/logo.png`,
       description: 'Modern computer accessories and gadgets store in Uzbekistan',
       address: {
         '@type': 'PostalAddress',
@@ -216,9 +217,9 @@ export class SeoService {
       '@type': 'Store',
       name: 'GGPoint',
       description: 'Premium computer accessories and gaming peripherals store in Tashkent, Uzbekistan',
-      url: 'https://gg-point.uz',
-      telephone: '+998-XX-XXX-XXXX',
-      email: 'info@gg-point.uz',
+      url: environment.domain,
+      telephone: environment.contact.phone,
+      email: environment.contact.email,
       address: {
         '@type': 'PostalAddress',
         streetAddress: 'Tashkent',
@@ -277,12 +278,12 @@ export class SeoService {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: 'GGPoint',
-      url: 'https://gg-point.uz',
+      url: environment.domain,
       potentialAction: {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: 'https://gg-point.uz/catalog?search={search_term_string}'
+          urlTemplate: `${environment.domain}/catalog?search={search_term_string}`
         },
         'query-input': 'required name=search_term_string'
       }
@@ -297,7 +298,7 @@ export class SeoService {
         '@type': 'ListItem',
         position: index + 1,
         name: item.name,
-        item: item.url ? `https://gg-point.uz${item.url}` : undefined
+        item: item.url ? `${environment.domain}${item.url}` : undefined
       }))
     };
   }
@@ -318,7 +319,7 @@ export class SeoService {
         name: 'GGPoint',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://gg-point.uz/assets/images/logo.png'
+          url: `${environment.domain}/assets/images/logo.png`
         }
       },
       datePublished: article.publishDate,

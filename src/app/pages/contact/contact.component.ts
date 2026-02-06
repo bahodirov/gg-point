@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { TranslateModule } from '@ngx-translate/core';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { SeoService } from '../../shared/services/seo.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-contact',
@@ -126,8 +127,8 @@ import { SeoService } from '../../shared/services/seo.service';
                   <mat-icon class="mr-3 text-primary-600 dark:text-primary-400">phone</mat-icon>
                   <div>
                     <div class="font-medium text-gray-900 dark:text-white">Phone</div>
-                    <a href="tel:+998901234567" class="text-primary-600 dark:text-primary-400 hover:underline">
-                      +998 90 123 45 67
+                    <a [href]="'tel:' + environment.contact.phone" class="text-primary-600 dark:text-primary-400 hover:underline">
+                      {{ environment.contact.phone }}
                     </a>
                   </div>
                 </div>
@@ -136,8 +137,8 @@ import { SeoService } from '../../shared/services/seo.service';
                   <mat-icon class="mr-3 text-primary-600 dark:text-primary-400">email</mat-icon>
                   <div>
                     <div class="font-medium text-gray-900 dark:text-white">Email</div>
-                    <a href="mailto:info@gg-point.uz" class="text-primary-600 dark:text-primary-400 hover:underline">
-                      info&#64;gg-point.uz
+                    <a [href]="'mailto:' + environment.contact.email" class="text-primary-600 dark:text-primary-400 hover:underline">
+                      {{ environment.contact.email }}
                     </a>
                   </div>
                 </div>
@@ -147,8 +148,7 @@ import { SeoService } from '../../shared/services/seo.service';
                   <div>
                     <div class="font-medium text-gray-900 dark:text-white">Address</div>
                     <p class="text-gray-700 dark:text-gray-300">
-                      Tashkent, Uzbekistan<br>
-                      Amir Temur Avenue
+                      {{ environment.contact.address }}
                     </p>
                   </div>
                 </div>
@@ -158,8 +158,7 @@ import { SeoService } from '../../shared/services/seo.service';
                   <div>
                     <div class="font-medium text-gray-900 dark:text-white">Business Hours</div>
                     <p class="text-gray-700 dark:text-gray-300">
-                      Monday - Sunday<br>
-                      9:00 - 20:00
+                      {{ environment.contact.hours }}
                     </p>
                   </div>
                 </div>
@@ -186,6 +185,9 @@ import { SeoService } from '../../shared/services/seo.service';
 export class ContactComponent implements OnInit {
   private fb = inject(FormBuilder);
   private seoService = inject(SeoService);
+
+  // Make environment accessible in template
+  protected readonly environment = environment;
 
   contactForm!: FormGroup;
   isSubmitting = false;
@@ -228,14 +230,14 @@ export class ContactComponent implements OnInit {
   private updateSEO(): void {
     this.seoService.updateMetaTags({
       title: 'Contact GGPoint - Computer Accessories Store in Tashkent | Get Support 24/7',
-      description: 'Contact GGPoint for computer accessories inquiries in Uzbekistan. Reach us via Telegram, phone +998 90 123 45 67, or email info@gg-point.uz. Expert support available 24/7. Visit our Tashkent showroom on Amir Temur Avenue.',
+      description: `Contact GGPoint for computer accessories inquiries in Uzbekistan. Reach us via Telegram, phone ${environment.contact.phone}, or email ${environment.contact.email}. Expert support available 24/7. Visit our Tashkent showroom.`,
       keywords: 'contact ggpoint, computer store contact Tashkent, gaming store support Uzbekistan, ggpoint telegram, help desk, customer service, связаться с нами, контакты магазина компьютерных аксессуаров',
       type: 'website',
-      canonical: 'https://gg-point.uz/contact',
+      canonical: `${environment.domain}/contact`,
       languageAlternates: [
-        { lang: 'en', url: 'https://gg-point.uz/contact' },
-        { lang: 'ru', url: 'https://gg-point.uz/contact' },
-        { lang: 'uz', url: 'https://gg-point.uz/contact' }
+        { lang: 'en', url: `${environment.domain}/contact` },
+        { lang: 'ru', url: `${environment.domain}/contact` },
+        { lang: 'uz', url: `${environment.domain}/contact` }
       ]
     });
 
@@ -245,15 +247,15 @@ export class ContactComponent implements OnInit {
       '@type': 'ContactPage',
       'name': 'Contact GGPoint',
       'description': 'Get in touch with GGPoint for computer accessories inquiries',
-      'url': 'https://gg-point.uz/contact',
+      'url': `${environment.domain}/contact`,
       'mainEntity': {
         '@type': 'LocalBusiness',
         'name': 'GGPoint',
-        'telephone': '+998-90-123-45-67',
-        'email': 'info@gg-point.uz',
+        'telephone': environment.contact.phone,
+        'email': environment.contact.email,
         'address': {
           '@type': 'PostalAddress',
-          'streetAddress': 'Amir Temur Avenue',
+          'streetAddress': environment.contact.address,
           'addressLocality': 'Tashkent',
           'addressCountry': 'UZ'
         },

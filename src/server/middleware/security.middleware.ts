@@ -1,6 +1,7 @@
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
+import { config } from '../../config/environment';
 
 // Rate limit time constants (in seconds)
 const FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
@@ -21,7 +22,7 @@ export const helmetConfig = helmet({
       // Consider migrating to nonce-based or hash-based CSP for inline scripts
       // and removing 'unsafe-eval' entirely for production builds
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      connectSrc: ["'self'", "http://localhost:4000", "http://localhost:4200"],
+      connectSrc: ["'self'", config.apiUrl, config.domain],
     },
   },
   hsts: {
@@ -131,9 +132,7 @@ export const writeLimiter = rateLimit({
  * CORS configuration
  */
 export function corsMiddleware(req: Request, res: Response, next: NextFunction): void {
-  const allowedOrigins = process.env['CORS_ORIGIN']
-    ? process.env['CORS_ORIGIN'].split(',')
-    : ['http://localhost:4200', 'http://localhost:4000'];
+  const allowedOrigins = config.corsOrigins;
 
   const origin = req.headers.origin;
   const isAllowedOrigin = !origin || allowedOrigins.includes(origin);
