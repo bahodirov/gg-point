@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -220,11 +220,12 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
     }
   `]
 })
-export class ChangePasswordComponent {
+export class ChangePasswordComponent implements OnDestroy {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private redirectTimeout?: ReturnType<typeof setTimeout>;
 
   form: FormGroup;
   isLoading = signal(false);
@@ -277,7 +278,10 @@ export class ChangePasswordComponent {
         this.form.reset();
         
         // Redirect after a short delay
-        setTimeout(() => {
+        if (this.redirectTimeout !== undefined) {
+          clearTimeout(this.redirectTimeout);
+        }
+        this.redirectTimeout = setTimeout(() => {
           this.router.navigate(['/admin/dashboard']);
         }, PASSWORD_CHANGE_REDIRECT_DELAY_MS);
       },
@@ -286,5 +290,11 @@ export class ChangePasswordComponent {
         this.errorMessage.set(error.error?.error || 'Failed to change password');
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.redirectTimeout !== undefined) {
+      clearTimeout(this.redirectTimeout);
+    }
   }
 }
