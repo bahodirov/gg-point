@@ -37,7 +37,7 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
   if (!pool) {
     return res
       .status(503)
-      .json({ error: 'Service temporarily unavailable. Please try again later.' });
+      .json({ message: 'Service temporarily unavailable. Please try again later.' });
   }
 
   try {
@@ -47,16 +47,12 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
     );
     return res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
-    const logPayload = {
+    console.error('Contact form error:', {
       message: error instanceof Error ? error.message : String(error),
-      ...(process.env['NODE_ENV'] !== 'production' && error instanceof Error
-        ? { stack: error.stack }
-        : {}),
-    };
-    console.error('Contact form error:', logPayload);
+    });
     return res
       .status(500)
-      .json({ error: 'Failed to process your message. Please try again later.' });
+      .json({ message: 'Failed to process your message. Please try again later.' });
   }
 });
 

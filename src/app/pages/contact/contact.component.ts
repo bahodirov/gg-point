@@ -229,8 +229,8 @@ export class ContactComponent implements OnInit {
           console.error('Failed to send message:', error);
           this.isSubmitting = false;
           const apiMessage =
-            error instanceof HttpErrorResponse && typeof error.error?.error === 'string'
-              ? error.error.error
+            error instanceof HttpErrorResponse && typeof error.error?.message === 'string'
+              ? error.error.message
               : undefined;
           this.submitErrorMessage = apiMessage ?? 'Error sending message. Please try again.';
           this.submitError = true;
