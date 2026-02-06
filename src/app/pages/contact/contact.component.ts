@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -185,6 +186,7 @@ import { SeoService } from '../../shared/services/seo.service';
 })
 export class ContactComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
   private seoService = inject(SeoService);
 
   contactForm!: FormGroup;
@@ -211,17 +213,27 @@ export class ContactComponent implements OnInit {
       this.submitSuccess = false;
       this.submitError = false;
 
-      // Simulate form submission
-      setTimeout(() => {
-        this.isSubmitting = false;
-        this.submitSuccess = true;
-        this.contactForm.reset();
-        
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-          this.submitSuccess = false;
-        }, 5000);
-      }, 1000);
+      this.http.post('/api/contact', this.contactForm.value).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.submitSuccess = true;
+          this.contactForm.reset();
+
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            this.submitSuccess = false;
+          }, 5000);
+        },
+        error: (error) => {
+          console.error('Failed to send message:', error);
+          this.isSubmitting = false;
+          this.submitError = true;
+
+          setTimeout(() => {
+            this.submitError = false;
+          }, 5000);
+        }
+      });
     }
   }
 

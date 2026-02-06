@@ -62,12 +62,13 @@ async function initializeApi(): Promise<express.Router> {
   }
 
   apiInitializationPromise = (async () => {
-    const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }, { default: adminRoutes }] = await Promise.all([
+    const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }, { default: adminRoutes }, { default: contactRoutes }] = await Promise.all([
       import('./server/db/database'),
       import('./server/db/migrate'),
       import('./server/routes/auth.routes'),
       import('./server/routes/products.routes'),
       import('./server/routes/admin.routes'),
+      import('./server/routes/contact.routes'),
     ]);
 
     // Initialize database and migrate data
@@ -79,6 +80,7 @@ async function initializeApi(): Promise<express.Router> {
     router.use('/auth', authRoutes);
     router.use('/products', productsRoutes);
     router.use('/admin', adminRoutes);
+    router.use('/contact', contactRoutes);
 
     console.log('API initialized successfully');
 
