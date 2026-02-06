@@ -1,4 +1,12 @@
 import winston from 'winston';
+import { existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+
+// Create logs directory if it doesn't exist
+const logsDir = join(process.cwd(), 'logs');
+if (!existsSync(logsDir)) {
+  mkdirSync(logsDir, { recursive: true });
+}
 
 /**
  * Application logger using Winston
@@ -50,13 +58,4 @@ if (process.env['NODE_ENV'] !== 'production') {
       })
     )
   }));
-}
-
-// Create logs directory if it doesn't exist
-import { existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
-
-const logsDir = join(process.cwd(), 'logs');
-if (!existsSync(logsDir)) {
-  mkdirSync(logsDir, { recursive: true });
 }
