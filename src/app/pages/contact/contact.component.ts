@@ -227,13 +227,13 @@ export class ContactComponent implements OnInit {
         },
         error: (error) => {
           const apiMessage =
-            error instanceof HttpErrorResponse && typeof error.error?.message === 'string'
-              ? error.error.message
-              : undefined;
-          const logDetails =
             error instanceof HttpErrorResponse
-              ? { status: error.status }
-              : { status: 'unknown' };
+              ? typeof error.error?.message === 'string'
+                ? error.error.message
+                : undefined
+              : undefined;
+          const status = error instanceof HttpErrorResponse ? error.status : undefined;
+          const logDetails = status !== undefined ? { status } : {};
           console.error('Failed to send message:', logDetails);
           this.isSubmitting = false;
           this.submitErrorMessage = apiMessage ?? 'Error sending message. Please try again.';

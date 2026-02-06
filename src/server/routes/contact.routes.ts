@@ -47,8 +47,8 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
     );
     return res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
-    const requestId =
-      typeof req.headers['x-request-id'] === 'string' ? req.headers['x-request-id'] : undefined;
+    const requestIdHeader = req.headers['x-request-id'];
+    const requestId = Array.isArray(requestIdHeader) ? requestIdHeader[0] : requestIdHeader;
     console.error('Contact form error:', {
       requestId: requestId ?? new Date().toISOString(),
       operation: 'insert_contact_message',
