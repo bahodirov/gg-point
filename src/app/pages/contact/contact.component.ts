@@ -186,7 +186,7 @@ import { SeoService } from '../../shared/services/seo.service';
 export class ContactComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private seoService = inject(SeoService);
-  private submitTimers: Array<ReturnType<typeof setTimeout>> = [];
+  private timers: Array<ReturnType<typeof setTimeout>> = [];
 
   contactForm!: FormGroup;
   isSubmitting = false;
@@ -222,15 +222,15 @@ export class ContactComponent implements OnInit, OnDestroy {
         const hideTimer = setTimeout(() => {
           this.submitSuccess = false;
         }, 5000);
-        this.submitTimers.push(hideTimer);
+        this.timers.push(hideTimer);
       }, 1000);
-      this.submitTimers.push(submitTimer);
+      this.timers.push(submitTimer);
     }
   }
 
   ngOnDestroy(): void {
-    this.submitTimers.forEach((timer) => clearTimeout(timer));
-    this.submitTimers = [];
+    this.timers.forEach((timer) => clearTimeout(timer));
+    this.timers = [];
   }
 
   private updateSEO(): void {
