@@ -15,7 +15,7 @@ export function cspNonceMiddleware(req: Request, res: Response, next: NextFuncti
   const nonce = randomBytes(16).toString('base64');
   
   // Make the nonce available to the application
-  res.locals['cspNonce'] = nonce;
+  res.locals.cspNonce = nonce;
   
   next();
 }
@@ -26,7 +26,12 @@ export function cspNonceMiddleware(req: Request, res: Response, next: NextFuncti
  */
 export function helmetConfig(req: Request, res: Response, next: NextFunction): void {
   // Get the nonce from res.locals (set by cspNonceMiddleware)
-  const nonce = res.locals['cspNonce'] || '';
+  const nonce = res.locals.cspNonce;
+  
+  if (!nonce) {
+    console.error('CSP nonce is missing! Ensure cspNonceMiddleware is applied before helmetConfig.');
+    return next(new Error('CSP nonce not initialized'));
+  }
   
   helmet({
     contentSecurityPolicy: {
