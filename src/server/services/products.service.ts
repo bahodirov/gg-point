@@ -87,8 +87,7 @@ function safeJsonParse<T>(
   try {
     return resolve(JSON.parse(value));
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.warn(`Failed to parse ${label} JSON: ${message}`);
+    console.warn(`Failed to parse ${label} JSON`);
     return fallback;
   }
 }
