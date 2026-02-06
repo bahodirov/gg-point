@@ -1,40 +1,59 @@
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
+import { randomBytes } from 'crypto';
 
 // Rate limit time constants (in seconds)
 const FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
 const ONE_MINUTE_IN_SECONDS = 60;
 
 /**
- * Helmet configuration for security headers
+ * Middleware to generate and attach a CSP nonce to each request
  */
-export const helmetConfig = helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc: ["'self'", 'data:', 'https:'],
-      // NOTE: 'unsafe-inline' and 'unsafe-eval' significantly weaken XSS protection
-      // Angular production builds don't require 'unsafe-eval'
-      // Consider migrating to nonce-based or hash-based CSP for inline scripts
-      // and removing 'unsafe-eval' entirely for production builds
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      connectSrc: ["'self'", "http://localhost:4000", "http://localhost:4200"],
+export function cspNonceMiddleware(req: Request, res: Response, next: NextFunction): void {
+  // Generate a unique nonce for this request
+  const nonce = randomBytes(16).toString('base64');
+  
+  // Make the nonce available to the application
+  res.locals['cspNonce'] = nonce;
+  
+  next();
+}
+
+/**
+ * Helmet configuration for security headers with nonce-based CSP
+ * Note: The nonce must be generated per request and injected into the middleware
+ */
+export function helmetConfig(req: Request, res: Response, next: NextFunction): void {
+  // Get the nonce from res.locals (set by cspNonceMiddleware)
+  const nonce = res.locals['cspNonce'] || '';
+  
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        // Use nonce for styles instead of unsafe-inline
+        styleSrc: ["'self'", `'nonce-${nonce}'`, 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        // Use nonce for scripts instead of unsafe-inline and unsafe-eval
+        // Removed 'unsafe-inline' and 'unsafe-eval' to prevent XSS attacks
+        scriptSrc: ["'self'", `'nonce-${nonce}'`],
+        connectSrc: ["'self'", "http://localhost:4000", "http://localhost:4200"],
+      },
     },
-  },
-  hsts: {
-    maxAge: 31536000, // 1 year
-    includeSubDomains: true,
-    preload: true,
-  },
-  frameguard: {
-    action: 'deny',
-  },
-  noSniff: true,
-  xssFilter: true,
-});
+    hsts: {
+      maxAge: 31536000, // 1 year
+      includeSubDomains: true,
+      preload: true,
+    },
+    frameguard: {
+      action: 'deny',
+    },
+    noSniff: true,
+    xssFilter: true,
+  })(req, res, next);
+}
 
 /**
  * General API rate limiter
@@ -216,6 +235,7 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
 }
 
 export default {
+  cspNonceMiddleware,
   helmetConfig,
   apiLimiter,
   authLimiter,
