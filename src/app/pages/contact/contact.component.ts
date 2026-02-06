@@ -226,12 +226,13 @@ export class ContactComponent implements OnInit {
           }, 5000);
         },
         error: (error) => {
-          const apiMessage =
-            error instanceof HttpErrorResponse
-              ? typeof error.error?.message === 'string'
-                ? error.error.message
-                : undefined
-              : undefined;
+          let apiMessage: string | undefined;
+          if (error instanceof HttpErrorResponse) {
+            const maybeMessage = error.error?.message;
+            if (typeof maybeMessage === 'string') {
+              apiMessage = maybeMessage;
+            }
+          }
           const status = error instanceof HttpErrorResponse ? error.status : undefined;
           const logDetails = status !== undefined ? { status } : {};
           console.error('Failed to send message:', logDetails);

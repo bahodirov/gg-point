@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { randomUUID } from 'node:crypto';
 import { body } from 'express-validator';
 import { validateRequest } from '../middleware/validation.middleware';
 import { writeLimiter } from '../middleware/security.middleware';
@@ -50,7 +51,7 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
     const requestIdHeader = req.headers['x-request-id'];
     const requestId = Array.isArray(requestIdHeader) ? requestIdHeader[0] : requestIdHeader;
     console.error('Contact form error:', {
-      requestId: requestId ?? new Date().toISOString(),
+      requestId: requestId ?? randomUUID(),
       operation: 'insert_contact_message',
       message: error instanceof Error ? error.message : String(error),
     });
