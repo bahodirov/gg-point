@@ -47,10 +47,13 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
     );
     return res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
-    console.error('Contact form error:', {
+    const logPayload = {
       message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+      ...(process.env['NODE_ENV'] !== 'production' && error instanceof Error
+        ? { stack: error.stack }
+        : {}),
+    };
+    console.error('Contact form error:', logPayload);
     return res
       .status(500)
       .json({ error: 'Failed to process your message. Please try again later.' });

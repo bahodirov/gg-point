@@ -228,8 +228,8 @@ export class ContactComponent implements OnInit {
         error: (error) => {
           console.error('Failed to send message:', error);
           this.isSubmitting = false;
-          this.submitErrorMessage =
-            error?.error?.error ?? 'Error sending message. Please try again.';
+          const apiMessage = (error as { error?: { error?: string } })?.error?.error;
+          this.submitErrorMessage = apiMessage ?? 'Error sending message. Please try again.';
           this.submitError = true;
 
           setTimeout(() => {
