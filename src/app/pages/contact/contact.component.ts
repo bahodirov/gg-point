@@ -93,12 +93,12 @@ import { SeoService } from '../../shared/services/seo.service';
                   </div>
                 }
 
-                @if (submitError) {
-                  <div class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-4 rounded-lg">
-                    <mat-icon class="align-middle mr-2">error</mat-icon>
-                    Error sending message. Please try again.
-                  </div>
-                }
+                 @if (submitError) {
+                   <div class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-4 rounded-lg">
+                     <mat-icon class="align-middle mr-2">error</mat-icon>
+                     {{ submitErrorMessage }}
+                   </div>
+                 }
               </div>
             </form>
           </mat-card>
@@ -193,6 +193,7 @@ export class ContactComponent implements OnInit {
   isSubmitting = false;
   submitSuccess = false;
   submitError = false;
+  submitErrorMessage = 'Error sending message. Please try again.';
 
   ngOnInit(): void {
     this.initForm();
@@ -227,6 +228,8 @@ export class ContactComponent implements OnInit {
         error: (error) => {
           console.error('Failed to send message:', error);
           this.isSubmitting = false;
+          this.submitErrorMessage =
+            error?.error?.error ?? 'Error sending message. Please try again.';
           this.submitError = true;
 
           setTimeout(() => {

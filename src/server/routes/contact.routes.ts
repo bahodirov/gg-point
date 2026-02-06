@@ -35,8 +35,9 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
   const pool = getPool();
 
   if (!pool) {
-    res.status(503).json({ error: 'Service temporarily unavailable. Please try again later.' });
-    return;
+    return res
+      .status(503)
+      .json({ error: 'Service temporarily unavailable. Please try again later.' });
   }
 
   try {
@@ -44,10 +45,15 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
       'INSERT INTO contact_messages (name, email, message) VALUES ($1, $2, $3)',
       [name, email, message]
     );
-    res.json({ success: true, message: 'Message sent successfully' });
+    return res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
-    console.error('Contact form error:', error);
-    res.status(500).json({ error: 'Failed to process your message. Please try again later.' });
+    console.error('Contact form error:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return res
+      .status(500)
+      .json({ error: 'Failed to process your message. Please try again later.' });
   }
 });
 
