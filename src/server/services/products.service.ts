@@ -70,7 +70,11 @@ const isRecord = (value: unknown): value is Record<string, string> =>
   value !== null &&
   typeof value === 'object' &&
   !Array.isArray(value) &&
-  Object.values(value).every(item => typeof item === 'string');
+  Object.keys(value).every(
+    key =>
+      Object.prototype.hasOwnProperty.call(value, key) &&
+      typeof (value as Record<string, unknown>)[key] === 'string'
+  );
 
 function safeJsonParse<T>(
   value: unknown,
@@ -87,7 +91,7 @@ function safeJsonParse<T>(
   try {
     return resolve(JSON.parse(value));
   } catch (error) {
-    console.warn(`Failed to parse ${label} JSON`);
+    console.warn('Failed to parse JSON field');
     return fallback;
   }
 }
