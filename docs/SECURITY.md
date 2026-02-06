@@ -193,17 +193,40 @@ export function sanitizeInput(req, res, next) {
 
 **2. Content Security Policy (CSP)**
 
-Helmet middleware configures CSP headers:
+The application uses a strict nonce-based CSP configuration to prevent XSS attacks:
 
 ```typescript
+// Generate unique nonce for each request
+export function cspNonceMiddleware(req, res, next) {
+  const nonce = randomBytes(16).toString('base64');
+  res.locals.cspNonce = nonce;
+  next();
+}
+
+// Configure CSP with nonce
 contentSecurityPolicy: {
   directives: {
     defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-    styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    scriptSrc: ["'self'", `'nonce-${nonce}'`],  // Nonce-based, no unsafe-inline
+    styleSrc: ["'self'", `'nonce-${nonce}'`, 'https://fonts.googleapis.com'],
     imgSrc: ["'self'", 'data:', 'https:'],
+    fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+    connectSrc: ["'self'", "http://localhost:4000", "http://localhost:4200"],
   },
 }
+```
+
+**Key Security Features:**
+- ✅ **Removed `'unsafe-inline'` and `'unsafe-eval'`** - Prevents arbitrary script execution
+- ✅ **Nonce-based CSP** - Each request gets a unique nonce for inline scripts/styles
+- ✅ **Strict directives** - Only allows scripts and styles from trusted sources
+- ✅ **Per-request nonces** - Fresh cryptographically random nonce for each HTTP request
+
+**Note:** The nonce must be added to any inline `<script>` or `<style>` tags:
+```html
+<script nonce="${cspNonce}">
+  // Inline script code
+</script>
 ```
 
 ### CORS Configuration
@@ -519,4 +542,4 @@ We take security seriously and will respond within 48 hours.
 
 This document should be reviewed and updated regularly as new security features are added or vulnerabilities are discovered.
 
-Last updated: 2026-02-01
+Last updated: 2026-02-06
