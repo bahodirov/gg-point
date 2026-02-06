@@ -162,7 +162,7 @@ const pgDb = {
     update: async (id: string, updates: Partial<UserData>): Promise<void> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const fields: string[] = [];
-      const values: (string | number | null)[] = [];
+      const values: (string | null)[] = [];
       let paramCount = 1;
 
       Object.entries(updates).forEach(([key, value]) => {

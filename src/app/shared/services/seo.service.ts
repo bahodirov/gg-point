@@ -19,11 +19,13 @@ export interface SEOConfig {
 }
 
 // Schema interfaces
+// This interface accepts Product from product.model.ts
+// Optional fields (brand, rating, reviewCount) are not in Product but used for schema generation
 interface SchemaProduct {
   id: string;
   name: string;
-  images?: string[];
-  thumbnail?: string;
+  images: string[];
+  thumbnail: string;
   description: string;
   brand?: string;
   price: number;

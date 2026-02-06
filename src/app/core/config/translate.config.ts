@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
-// TranslationObject type from @ngx-translate/core
+// Custom type definition matching @ngx-translate/core's expected TranslationObject structure
+// This mirrors the library's internal type but is defined locally since it's not exported
 type StrictTranslation = string | StrictTranslation[] | TranslationObject | undefined | null;
 interface TranslationObject {
   [key: string]: StrictTranslation;
