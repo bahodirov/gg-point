@@ -126,18 +126,19 @@ const pgDb = {
       );
       return result.rows;
     },
-    find: async (predicate: (u: UserData) => boolean): Promise<UserData | undefined> => {
-      if (!pool) throw new Error('PostgreSQL not initialized');
-      // Note: This loads all users and filters in memory
-      // For production, use specific methods like findByUsername or findById
-      const allUsers = await pgDb.users.all();
-      return allUsers.find(predicate);
-    },
     findByUsername: async (username: string): Promise<UserData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
         'SELECT * FROM users WHERE username = $1',
         [username]
+      );
+      return result.rows[0] || null;
+    },
+    findByEmail: async (email: string): Promise<UserData | null> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT * FROM users WHERE email = $1',
+        [email]
       );
       return result.rows[0] || null;
     },
@@ -198,11 +199,6 @@ const pgDb = {
         is_new: boolToInt(row.is_new),
       }));
     },
-    find: async (predicate: (p: ProductData) => boolean): Promise<ProductData | undefined> => {
-      if (!pool) throw new Error('PostgreSQL not initialized');
-      const allProducts = await pgDb.products.all();
-      return allProducts.find(predicate);
-    },
     findById: async (id: string): Promise<ProductData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
@@ -232,13 +228,6 @@ const pgDb = {
         featured: boolToInt(row.featured),
         is_new: boolToInt(row.is_new),
       };
-    },
-    filter: async (predicate: (p: ProductData) => boolean): Promise<ProductData[]> => {
-      if (!pool) throw new Error('PostgreSQL not initialized');
-      // Note: This is a simplified filter that loads all products
-      // For production with large datasets, use specific query methods like filterByCategory
-      const allProducts = await pgDb.products.all();
-      return allProducts.filter(predicate);
     },
     filterByOptions: async (options: {
       category?: string;
@@ -298,6 +287,28 @@ const pgDb = {
       const result = await pool.query(
         'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products WHERE LOWER(category) = LOWER($1) ORDER BY created_at DESC',
         [category]
+      );
+      return result.rows.map(row => ({
+        ...row,
+        in_stock: boolToInt(row.in_stock),
+        featured: boolToInt(row.featured),
+        is_new: boolToInt(row.is_new),
+      }));
+    },
+    searchByText: async (queryText: string): Promise<ProductData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const searchValue = `%${queryText}%`;
+      const result = await pool.query(
+        `SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category,
+                images::text, specs::text, in_stock, featured, is_new, related_products::text,
+                created_at, updated_at
+         FROM products
+         WHERE name_ru ILIKE $1
+            OR COALESCE(name_uz, '') ILIKE $1
+            OR COALESCE(description_ru, '') ILIKE $1
+            OR COALESCE(description_uz, '') ILIKE $1
+         ORDER BY created_at DESC`,
+        [searchValue]
       );
       return result.rows.map(row => ({
         ...row,
@@ -420,11 +431,6 @@ const pgDb = {
       );
       return result.rows;
     },
-    find: async (predicate: (s: SessionData) => boolean): Promise<SessionData | undefined> => {
-      if (!pool) throw new Error('PostgreSQL not initialized');
-      const allSessions = await pgDb.sessions.all();
-      return allSessions.find(predicate);
-    },
     findBySid: async (sid: string): Promise<SessionData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
@@ -511,8 +517,14 @@ export const db = {
     all: (): Promise<UserData[]> => {
       return pgDb.users.all();
     },
-    find: (predicate: (u: UserData) => boolean): Promise<UserData | undefined> => {
-      return pgDb.users.find(predicate);
+    findByUsername: (username: string): Promise<UserData | null> => {
+      return pgDb.users.findByUsername(username);
+    },
+    findByEmail: (email: string): Promise<UserData | null> => {
+      return pgDb.users.findByEmail(email);
+    },
+    findById: (id: string): Promise<UserData | null> => {
+      return pgDb.users.findById(id);
     },
     insert: (user: UserData): Promise<void> => {
       return pgDb.users.insert(user);
@@ -528,11 +540,25 @@ export const db = {
     all: (): Promise<ProductData[]> => {
       return pgDb.products.all();
     },
-    find: (predicate: (p: ProductData) => boolean): Promise<ProductData | undefined> => {
-      return pgDb.products.find(predicate);
+    findById: (id: string): Promise<ProductData | null> => {
+      return pgDb.products.findById(id);
     },
-    filter: (predicate: (p: ProductData) => boolean): Promise<ProductData[]> => {
-      return pgDb.products.filter(predicate);
+    findBySlug: (slug: string): Promise<ProductData | null> => {
+      return pgDb.products.findBySlug(slug);
+    },
+    filterByOptions: (options: {
+      category?: string;
+      inStock?: boolean;
+      featured?: boolean;
+      isNew?: boolean;
+    }): Promise<ProductData[]> => {
+      return pgDb.products.filterByOptions(options);
+    },
+    filterByCategory: (category: string): Promise<ProductData[]> => {
+      return pgDb.products.filterByCategory(category);
+    },
+    searchByText: (queryText: string): Promise<ProductData[]> => {
+      return pgDb.products.searchByText(queryText);
     },
     insert: (product: ProductData): Promise<void> => {
       return pgDb.products.insert(product);
@@ -554,8 +580,8 @@ export const db = {
     all: (): Promise<SessionData[]> => {
       return pgDb.sessions.all();
     },
-    find: (predicate: (s: SessionData) => boolean): Promise<SessionData | undefined> => {
-      return pgDb.sessions.find(predicate);
+    findBySid: (sid: string): Promise<SessionData | null> => {
+      return pgDb.sessions.findBySid(sid);
     },
     insert: (session: SessionData): Promise<void> => {
       return pgDb.sessions.insert(session);

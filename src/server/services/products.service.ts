@@ -109,7 +109,7 @@ export class ProductsService {
    * Get product by ID
    */
   async getProductById(id: string): Promise<Product | null> {
-    const row = await db.products.find(p => p.id === id);
+    const row = await db.products.findById(id);
     return row ? rowToProduct(row) : null;
   }
 
@@ -117,7 +117,7 @@ export class ProductsService {
    * Get product by slug
    */
   async getProductBySlug(slug: string): Promise<Product | null> {
-    const row = await db.products.find(p => p.slug === slug);
+    const row = await db.products.findBySlug(slug);
     return row ? rowToProduct(row) : null;
   }
 
@@ -125,7 +125,7 @@ export class ProductsService {
    * Get products by category
    */
   async getProductsByCategory(category: string): Promise<Product[]> {
-    const rows = await db.products.filter(p => p.category.toLowerCase() === category.toLowerCase());
+    const rows = await db.products.filterByCategory(category);
     rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return rows.map(rowToProduct);
   }
@@ -134,7 +134,7 @@ export class ProductsService {
    * Get featured products
    */
   async getFeaturedProducts(limit: number = 6): Promise<Product[]> {
-    const rows = await db.products.filter(p => p.featured === 1);
+    const rows = await db.products.filterByOptions({ featured: true });
     rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return rows.slice(0, limit).map(rowToProduct);
   }
@@ -143,14 +143,7 @@ export class ProductsService {
    * Search products
    */
   async searchProducts(query: string): Promise<Product[]> {
-    const lowerQuery = query.toLowerCase();
-    const rows = await db.products.filter(p => {
-      const matchName = p.name_ru.toLowerCase().includes(lowerQuery);
-      const matchNameUz = p.name_uz ? p.name_uz.toLowerCase().includes(lowerQuery) : false;
-      const matchDesc = p.description_ru ? p.description_ru.toLowerCase().includes(lowerQuery) : false;
-      const matchDescUz = p.description_uz ? p.description_uz.toLowerCase().includes(lowerQuery) : false;
-      return matchName || matchNameUz || matchDesc || matchDescUz;
-    });
+    const rows = await db.products.searchByText(query);
     rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return rows.map(rowToProduct);
   }
@@ -192,7 +185,7 @@ export class ProductsService {
    * Update a product
    */
   async updateProduct(id: string, data: UpdateProductDto): Promise<Product | null> {
-    const existing = await db.products.find(p => p.id === id);
+    const existing = await db.products.findById(id);
     if (!existing) {
       return null;
     }
@@ -248,7 +241,7 @@ export class ProductsService {
    * Check if slug is unique
    */
   async isSlugUnique(slug: string, excludeId?: string): Promise<boolean> {
-    const existing = await db.products.find(p => p.slug === slug);
+    const existing = await db.products.findBySlug(slug);
     if (!existing) return true;
     if (excludeId && existing.id === excludeId) return true;
     return false;

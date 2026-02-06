@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Create index on username for faster lookups
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at DESC);
 
 -- Products table
 CREATE TABLE IF NOT EXISTS products (
@@ -44,6 +46,7 @@ CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
 CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);
 CREATE INDEX IF NOT EXISTS idx_products_in_stock ON products(in_stock);
 CREATE INDEX IF NOT EXISTS idx_products_created_at ON products(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_products_images_gin ON products USING GIN (images);
 
 -- Sessions table
 CREATE TABLE IF NOT EXISTS sessions (
