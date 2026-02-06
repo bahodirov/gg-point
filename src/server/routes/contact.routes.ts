@@ -35,7 +35,7 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
   const pool = getPool();
 
   if (!pool) {
-    res.status(503).json({ error: 'Database service unavailable' });
+    res.status(503).json({ error: 'Unable to submit message. Please try again later.' });
     return;
   }
 
