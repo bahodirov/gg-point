@@ -147,9 +147,7 @@ import { environment } from '../../../environments/environment';
                   <mat-icon class="mr-3 text-primary-600 dark:text-primary-400">location_on</mat-icon>
                   <div>
                     <div class="font-medium text-gray-900 dark:text-white">Address</div>
-                    <p class="text-gray-700 dark:text-gray-300">
-                      {{ environment.contact.address }}
-                    </p>
+                    <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ environment.contact.address }}</p>
                   </div>
                 </div>
 
@@ -157,9 +155,7 @@ import { environment } from '../../../environments/environment';
                   <mat-icon class="mr-3 text-primary-600 dark:text-primary-400">schedule</mat-icon>
                   <div>
                     <div class="font-medium text-gray-900 dark:text-white">Business Hours</div>
-                    <p class="text-gray-700 dark:text-gray-300">
-                      {{ environment.contact.hours }}
-                    </p>
+                    <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ environment.contact.hours }}</p>
                   </div>
                 </div>
               </div>

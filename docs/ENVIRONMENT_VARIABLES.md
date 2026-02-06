@@ -60,11 +60,13 @@ These values are used in the contact page and SEO structured data.
 - **Description**: Business physical address
 - **Default**: `Tashkent, Uzbekistan`
 - **Example**: `CONTACT_ADDRESS=123 Main St, Tashkent, Uzbekistan`
+- **Multi-line**: Use `\n` for line breaks: `CONTACT_ADDRESS=Tashkent, Uzbekistan\nAmir Temur Avenue`
 
 #### `CONTACT_HOURS`
 - **Description**: Business operating hours
 - **Default**: `Monday - Sunday, 9:00 - 20:00`
 - **Example**: `CONTACT_HOURS=Mon-Fri 9:00-18:00, Sat-Sun 10:00-16:00`
+- **Multi-line**: Use `\n` for line breaks: `CONTACT_HOURS=Monday - Sunday\n9:00 - 20:00`
 
 ### CORS Configuration
 

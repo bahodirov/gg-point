@@ -136,7 +136,11 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
       throw error;
     }
 
-    console.log(`Node Express server listening on ${config.domain.replace(/:4200$/, `:${port}`)}`);
+    // Log the appropriate URL based on the environment
+    const serverUrl = config.production 
+      ? config.apiUrl 
+      : `http://localhost:${port}`;
+    console.log(`Node Express server listening on ${serverUrl}`);
   });
 }
 
