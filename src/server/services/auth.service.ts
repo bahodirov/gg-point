@@ -7,6 +7,7 @@ export interface User {
   username: string;
   email: string | null;
   role: string;
+  must_change_password: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -105,6 +106,7 @@ export class AuthService {
     const newPasswordHash = await bcrypt.hash(newPassword, 12);
     await db.users.update(userId, {
       password_hash: newPasswordHash,
+      must_change_password: false,
       updated_at: new Date().toISOString(),
     });
 

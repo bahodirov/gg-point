@@ -8,6 +8,7 @@ export interface User {
   username: string;
   email: string | null;
   role: string;
+  must_change_password?: boolean;
 }
 
 export interface LoginResponse {
@@ -104,6 +105,13 @@ export class AuthService {
     return this.http.post<{ success: boolean }>('/api/auth/change-password', {
       currentPassword,
       newPassword
-    });
+    }).pipe(
+      tap(() => {
+        const currentUser = this.currentUserSignal();
+        if (currentUser?.must_change_password) {
+          this.currentUserSignal.set({ ...currentUser, must_change_password: false });
+        }
+      })
+    );
   }
 }

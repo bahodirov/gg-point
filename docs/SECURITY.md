@@ -36,13 +36,13 @@ export const passwordValidation = [
 ];
 ```
 
-### Change Default Credentials
+### Change Admin Credentials
 
-⚠️ **CRITICAL**: Change the default admin password immediately after deployment!
+⚠️ **CRITICAL**: Set a strong admin password immediately after deployment!
 
-Default credentials:
-- Username: `admin`
-- Password: `admin123`
+Admin credentials are configured via environment variables:
+- `ADMIN_USERNAME` (defaults to `admin`)
+- `ADMIN_PASSWORD` (if omitted, a random password is generated and logged on first setup)
 
 **Change password via Admin Panel:**
 1. Login to `/admin`
@@ -55,7 +55,7 @@ curl -X POST https://yourdomain.com/api/auth/change-password \
   -H "Content-Type: application/json" \
   -H "Cookie: ggpoint_session=YOUR_SESSION_ID" \
   -d '{
-    "currentPassword": "admin123",
+    "currentPassword": "<current-password>",
     "newPassword": "YourNewStrongPassword123!"
   }'
 ```

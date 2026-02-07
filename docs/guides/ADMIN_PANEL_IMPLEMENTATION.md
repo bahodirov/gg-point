@@ -374,11 +374,11 @@ export class ProductsService {
 
 ---
 
-## 7. Default Admin Credentials
+## 7. Admin Credentials
 
-For initial setup, a default admin user will be created:
-- **Username**: `admin`
-- **Password**: `admin123` (should be changed immediately after first login)
+For initial setup, an admin user is created using environment variables:
+- **ADMIN_USERNAME** (defaults to `admin`)
+- **ADMIN_PASSWORD** (if omitted, a random password is generated and logged on first setup)
 
 ---
 
@@ -394,4 +394,4 @@ After implementation, start the admin panel with:
 
 2. Access admin panel at: `http://localhost:4000/admin`
 
-3. Login with default credentials and change password immediately.
+3. Login with the configured credentials and change the password immediately.

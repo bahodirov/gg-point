@@ -300,9 +300,10 @@ To rollback to JSON storage:
 1. **Configure PostgreSQL** (if not already done)
    - Follow [DATABASE_MIGRATION.md](./DATABASE_MIGRATION.md)
 
-2. **Change Default Password**
-   - Login to `/admin` with `admin/admin123`
-   - Change password immediately
+2. **Set Admin Credentials**
+   - Configure `ADMIN_USERNAME` and `ADMIN_PASSWORD`
+   - If `ADMIN_PASSWORD` is omitted, use the generated password from startup logs
+   - Change password immediately after first login
 
 3. **Set Up Production Environment**
    - Follow [DEPLOYMENT.md](./DEPLOYMENT.md)
