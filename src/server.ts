@@ -8,9 +8,10 @@ import {
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { type Request, type Response, type NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import { join } from 'node:path';
+import { CSP_NONCE } from '@angular/core';
 import { logger } from './server/utils/logger';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -33,10 +34,10 @@ async function initializeSecurity() {
 
     // Apply CSP nonce middleware first (must come before helmetConfig)
     app.use(cspNonceMiddleware);
-    
+
     // Apply helmet security middleware with nonce support
     app.use(helmetConfig);
-    
+
     // Apply CORS and other security middleware
     app.use(corsMiddleware);
     app.use(requestLogger);
@@ -128,11 +129,28 @@ app.use(
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
+  const nonce = res.locals['cspNonce'];
   angularApp
-    .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .handle(req, {
+      providers: [{ provide: CSP_NONCE, useValue: nonce }],
+    })
+    .then(async (response) => {
+      if (response && response.headers.get('content-type')?.includes('text/html')) {
+        // For HTML responses, replace nonce placeholders in index.html
+        const html = await response.text();
+        const modifiedHtml = html.replace(/NONCE_PLACEHOLDER/g, nonce);
+        const modifiedResponse = new Response(modifiedHtml, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+        });
+        writeResponseToNodeResponse(modifiedResponse, res);
+      } else if (response) {
+        writeResponseToNodeResponse(response, res);
+      } else {
+        next();
+      }
+    })
     .catch(next);
 });
 

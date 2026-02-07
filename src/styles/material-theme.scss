@@ -1,8 +1,8 @@
 @use '@angular/material' as mat;
 
-// Create palettes for Material 3
-$primary-palette: mat.generate-palette(#0ea5e9);
-$tertiary-palette: mat.generate-palette(#00bcd4);
+// Use built-in palettes for Material 3
+$primary-palette: mat.$azure-palette;
+$tertiary-palette: mat.$cyan-palette;
 
 // Create light theme
 $ggpoint-theme: mat.define-theme((

@@ -162,9 +162,9 @@ interface CategoryCount {
     }
 
     .stat-card {
-      background: white;
+      background: red;
       border-radius: 16px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #327bda;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
@@ -240,7 +240,7 @@ interface CategoryCount {
 
     .actions-section {
       margin-bottom: 4rem;
-      background: white;
+      background: red;
       padding: 2rem;
       border-radius: 20px;
       border: 1px solid #e2e8f0;
@@ -274,7 +274,7 @@ interface CategoryCount {
     }
 
     .category-card {
-      background: white;
+      background: red;
       border-radius: 16px;
       border: 1px solid #e2e8f0;
       transition: all 0.2s ease;

@@ -127,7 +127,7 @@ interface DatabaseHealth {
       left: 0;
       right: 0;
       z-index: 1000;
-      background: white !important;
+      background: blue !important;
       color: #0f172a !important;
       border-bottom: 1px solid #e2e8f0;
       height: 64px;
