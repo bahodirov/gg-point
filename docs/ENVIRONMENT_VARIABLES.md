@@ -68,6 +68,40 @@ These values are used in the contact page and SEO structured data.
 - **Example**: `CONTACT_HOURS=Mon-Fri 9:00-18:00, Sat-Sun 10:00-16:00`
 - **Multi-line**: Use `\n` for line breaks: `CONTACT_HOURS=Monday - Sunday\n9:00 - 20:00`
 
+#### Schema.org Structured Data Fields
+
+The following fields are used for schema.org structured data in SEO and should be precise:
+
+#### `CONTACT_STREET`
+- **Description**: Street address only (for schema.org structured data)
+- **Default**: `Amir Temur Avenue`
+- **Example**: `CONTACT_STREET=123 Main Street`
+
+#### `CONTACT_CITY`
+- **Description**: City name (for schema.org structured data)
+- **Default**: `Tashkent`
+- **Example**: `CONTACT_CITY=Tashkent`
+
+#### `CONTACT_REGION`
+- **Description**: State/region name (for schema.org structured data)
+- **Default**: `Tashkent`
+- **Example**: `CONTACT_REGION=Tashkent Region`
+
+#### `CONTACT_COUNTRY`
+- **Description**: Country code (ISO 3166-1 alpha-2, for schema.org structured data)
+- **Default**: `UZ`
+- **Example**: `CONTACT_COUNTRY=UZ`
+
+#### `CONTACT_OPEN_TIME`
+- **Description**: Opening time in 24-hour format (for schema.org structured data)
+- **Default**: `09:00`
+- **Example**: `CONTACT_OPEN_TIME=09:00`
+
+#### `CONTACT_CLOSE_TIME`
+- **Description**: Closing time in 24-hour format (for schema.org structured data)
+- **Default**: `20:00`
+- **Example**: `CONTACT_CLOSE_TIME=21:00`
+
 ### CORS Configuration
 
 #### `CORS_ORIGIN`
@@ -223,8 +257,8 @@ The Angular application uses environment files for client-side configuration:
 - **`src/environments/environment.prod.ts`**: Production configuration
 
 These files are automatically selected based on the build configuration:
-- `ng build` (development): Uses `environment.ts`
-- `ng build --configuration=production`: Uses `environment.prod.ts`
+- `ng build` (production, default): Uses `environment.prod.ts`
+- `ng build --configuration=development`: Uses `environment.ts`
 
 ### Customizing Angular Environment Files
 
@@ -265,7 +299,7 @@ export const environment = {
 3. **Use strong secrets**: Generate strong random values for `SESSION_SECRET`
 4. **Set appropriate CORS origins**: Only allow trusted origins in production
 5. **Use environment variables in CI/CD**: Set environment variables in your CI/CD pipeline
-6. **Validate on startup**: The application validates critical environment variables on startup
+6. **Validate on startup**: The application validates critical environment variables (e.g., `SESSION_SECRET` in production) on startup and will fail fast if they are invalid
 7. **Document changes**: Update this file when adding or modifying environment variables
 
 ## Troubleshooting
@@ -274,7 +308,9 @@ export const environment = {
 
 Check that all required environment variables are set:
 - `DATABASE_URL` or `DB_NAME` is required
-- `SESSION_SECRET` must be at least 32 characters
+- `SESSION_SECRET` is required in production and must be at least 32 characters
+
+If you see an "Environment validation failed" error, check the console output for specific validation errors.
 
 ### CORS errors in production
 

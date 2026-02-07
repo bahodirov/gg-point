@@ -10,5 +10,12 @@ export const environment = {
     email: 'info@gg-point.uz',
     address: 'Tashkent, Uzbekistan\nAmir Temur Avenue',
     hours: 'Monday - Sunday\n9:00 - 20:00',
+    // Schema.org specific fields
+    streetAddress: 'Amir Temur Avenue',
+    city: 'Tashkent',
+    region: 'Tashkent',
+    country: 'UZ',
+    openTime: '09:00',
+    closeTime: '20:00',
   },
 };

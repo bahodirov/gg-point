@@ -251,15 +251,15 @@ export class ContactComponent implements OnInit {
         'email': environment.contact.email,
         'address': {
           '@type': 'PostalAddress',
-          'streetAddress': environment.contact.address,
-          'addressLocality': 'Tashkent',
-          'addressCountry': 'UZ'
+          'streetAddress': environment.contact.streetAddress,
+          'addressLocality': environment.contact.city,
+          'addressCountry': environment.contact.country
         },
         'openingHoursSpecification': {
           '@type': 'OpeningHoursSpecification',
           'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-          'opens': '09:00',
-          'closes': '20:00'
+          'opens': environment.contact.openTime,
+          'closes': environment.contact.closeTime
         }
       }
     };

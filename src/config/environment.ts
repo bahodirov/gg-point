@@ -3,6 +3,30 @@
  * Centralizes all environment variables for better maintainability
  */
 
+// Validate critical environment variables
+function validateEnvironment() {
+  const errors: string[] = [];
+
+  // Validate SESSION_SECRET in production
+  if (process.env['NODE_ENV'] === 'production') {
+    const sessionSecret = process.env['SESSION_SECRET'];
+    if (!sessionSecret) {
+      errors.push('SESSION_SECRET is required in production');
+    } else if (sessionSecret.length < 32) {
+      errors.push('SESSION_SECRET must be at least 32 characters long');
+    }
+  }
+
+  if (errors.length > 0) {
+    console.error('Environment validation failed:');
+    errors.forEach((error) => console.error(`  - ${error}`));
+    throw new Error('Invalid environment configuration');
+  }
+}
+
+// Run validation
+validateEnvironment();
+
 export const config = {
   // Application settings
   nodeEnv: process.env['NODE_ENV'] || 'development',
@@ -19,11 +43,21 @@ export const config = {
     email: process.env['CONTACT_EMAIL'] || 'info@gg-point.uz',
     address: process.env['CONTACT_ADDRESS'] || 'Tashkent, Uzbekistan',
     hours: process.env['CONTACT_HOURS'] || 'Monday - Sunday, 9:00 - 20:00',
+    // Schema.org specific fields
+    streetAddress: process.env['CONTACT_STREET'] || 'Amir Temur Avenue',
+    city: process.env['CONTACT_CITY'] || 'Tashkent',
+    region: process.env['CONTACT_REGION'] || 'Tashkent',
+    country: process.env['CONTACT_COUNTRY'] || 'UZ',
+    openTime: process.env['CONTACT_OPEN_TIME'] || '09:00',
+    closeTime: process.env['CONTACT_CLOSE_TIME'] || '20:00',
   },
 
   // CORS configuration
   corsOrigins: process.env['CORS_ORIGIN']
-    ? process.env['CORS_ORIGIN'].split(',')
+    ? process.env['CORS_ORIGIN']
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter((origin) => origin.length > 0)
     : ['http://localhost:4200', 'http://localhost:4000'],
 
   // Database configuration
@@ -39,7 +73,9 @@ export const config = {
 
   // Session configuration
   session: {
-    secret: process.env['SESSION_SECRET'] || 'your-super-secret-key-change-in-production-min-32-chars',
+    secret: process.env['SESSION_SECRET'] || (process.env['NODE_ENV'] === 'production' 
+      ? '' // Will fail validation in production if not set
+      : 'dev-secret-key-at-least-32-characters-long-for-development'),
   },
 
   // Upload configuration

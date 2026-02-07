@@ -222,10 +222,10 @@ export class SeoService {
       email: environment.contact.email,
       address: {
         '@type': 'PostalAddress',
-        streetAddress: 'Tashkent',
-        addressLocality: 'Tashkent',
-        addressRegion: 'Tashkent',
-        addressCountry: 'UZ'
+        streetAddress: environment.contact.streetAddress,
+        addressLocality: environment.contact.city,
+        addressRegion: environment.contact.region,
+        addressCountry: environment.contact.country
       },
       geo: {
         '@type': 'GeoCoordinates',
@@ -237,8 +237,8 @@ export class SeoService {
         {
           '@type': 'OpeningHoursSpecification',
           dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-          opens: '09:00',
-          closes: '21:00'
+          opens: environment.contact.openTime,
+          closes: environment.contact.closeTime
         }
       ],
       paymentAccepted: 'Cash, Credit Card, Online Payment',
