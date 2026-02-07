@@ -2,7 +2,6 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
 import { randomBytes } from 'crypto';
-import { config } from '../../config/environment';
 
 // Rate limit time constants (in seconds)
 const FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
@@ -65,7 +64,7 @@ export function helmetConfig(req: Request, res: Response, next: NextFunction): v
       `style-src-attr 'unsafe-inline'`, // Allow inline style attributes (e.g., style="display: none")
       `font-src 'self' https://fonts.gstatic.com`,
       `img-src 'self' data: https:`,
-      `connect-src 'self' ${config.apiUrl} ${config.domain}`,
+      `connect-src 'self' http://localhost:4000 http://localhost:4200`,
     ].join('; ');
     
     res.setHeader('Content-Security-Policy', cspDirectives);

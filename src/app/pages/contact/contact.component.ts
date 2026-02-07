@@ -183,9 +183,6 @@ export class ContactComponent implements OnInit, OnDestroy {
   private seoService = inject(SeoService);
   private timers: Array<ReturnType<typeof setTimeout>> = [];
 
-  // Make environment accessible in template
-  protected readonly environment = environment;
-
   contactForm!: FormGroup;
   isSubmitting = false;
   submitSuccess = false;
