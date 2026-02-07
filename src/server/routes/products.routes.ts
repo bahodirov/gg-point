@@ -3,6 +3,7 @@ import { productsService, CreateProductDto, UpdateProductDto } from '../services
 import { requireAuth } from '../middleware/auth.middleware';
 import { productValidation, searchValidation, validateRequest } from '../middleware/validation.middleware';
 import { publicLimiter, writeLimiter } from '../middleware/security.middleware';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -40,7 +41,7 @@ router.get('/', publicLimiter, searchValidation, validateRequest, async (req: Re
 
     res.json(products);
   } catch (error) {
-    console.error('Get products error:', error);
+    logger.error('Get products error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -54,7 +55,7 @@ router.get('/categories', publicLimiter, async (req: Request, res: Response) => 
     const categories = await productsService.getCategories();
     res.json(categories);
   } catch (error) {
-    console.error('Get categories error:', error);
+    logger.error('Get categories error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -80,7 +81,7 @@ router.get('/:idOrSlug', publicLimiter, async (req: Request, res: Response) => {
 
     res.json(product);
   } catch (error) {
-    console.error('Get product error:', error);
+    logger.error('Get product error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -93,7 +94,7 @@ router.get('/:idOrSlug', publicLimiter, async (req: Request, res: Response) => {
  */
 router.post('/', writeLimiter, requireAuth, productValidation, validateRequest, async (req: Request, res: Response) => {
   try {
-    console.log('Creating product with data:', JSON.stringify(req.body, null, 2));
+    logger.debug('Creating product with data:', req.body);
     const data: CreateProductDto = req.body;
 
     // Validate required fields
@@ -111,7 +112,7 @@ router.post('/', writeLimiter, requireAuth, productValidation, validateRequest, 
     const product = await productsService.createProduct(data);
     res.status(201).json(product);
   } catch (error) {
-    console.error('Create product error:', error);
+    logger.error('Create product error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -141,7 +142,7 @@ router.put('/:id', writeLimiter, requireAuth, async (req: Request, res: Response
     const product = await productsService.updateProduct(id, data);
     res.json(product);
   } catch (error) {
-    console.error('Update product error:', error);
+    logger.error('Update product error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -164,7 +165,7 @@ router.delete('/:id', writeLimiter, requireAuth, async (req: Request, res: Respo
     await productsService.deleteProduct(id);
     res.json({ success: true });
   } catch (error) {
-    console.error('Delete product error:', error);
+    logger.error('Delete product error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

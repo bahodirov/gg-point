@@ -635,7 +635,7 @@ export class ProductFormComponent implements OnInit {
         this.snackBar.open(`Successfully uploaded ${successCount} images`, 'Close', { duration: 3000 });
       })
       .catch(error => {
-        console.error('Batch upload error:', error);
+        // Upload error handled by snackbar notification
         this.snackBar.open('Failed to upload some images', 'Close', { duration: 3000 });
       })
       .finally(() => {
@@ -657,7 +657,7 @@ export class ProductFormComponent implements OnInit {
             resolve(response.image?.url || null);
           },
           error: (error) => {
-            console.error('Upload error:', error);
+            // Upload error will be handled by promise rejection
             reject(error);
           }
         });

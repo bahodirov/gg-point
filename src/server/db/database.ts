@@ -1,5 +1,6 @@
 import { getPool, isPostgreSQLConfigured } from './pool';
 import { Pool } from 'pg';
+import { logger } from '../utils/logger';
 
 // Type definitions
 export interface UserData {
@@ -76,12 +77,12 @@ async function initializePostgreSQL(): Promise<void> {
             ? `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`
             : `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: Unknown error`;
           databaseWarning = errorMsg;
-          console.error('❌ ' + errorMsg);
+          logger.error('❌ ' + errorMsg);
         }
       }
     } else {
       databaseWarning = 'DATABASE_URL sozlanmagan';
-      console.error('❌ DATABASE_URL sozlanmagan!');
+      logger.error('❌ DATABASE_URL sozlanmagan!');
     }
   })();
 
@@ -90,7 +91,7 @@ async function initializePostgreSQL(): Promise<void> {
 
 // Initialize on module load
 initializePostgreSQL().catch(err => {
-  console.error('Database initialization failed:', err);
+  logger.error('Database initialization failed:', err);
   if (process.env['NODE_ENV'] === 'production') {
     process.exit(1);
   }
@@ -662,13 +663,13 @@ export async function initializeDatabase(): Promise<void> {
       }
 
       await pool.query(schema);
-      console.log('PostgreSQL schema initialized successfully');
+      logger.info('PostgreSQL schema initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize PostgreSQL schema:', error);
+      logger.error('Failed to initialize PostgreSQL schema:', error);
       throw error;
     }
   } else {
-    console.error('Cannot initialize database schema: Pool not available');
+    logger.error('Cannot initialize database schema: Pool not available');
   }
 }
 

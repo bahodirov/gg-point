@@ -2,6 +2,7 @@ import multer from 'multer';
 import { join } from 'node:path';
 import { v4 as uuidv4 } from 'uuid';
 import { existsSync, mkdirSync } from 'node:fs';
+import { logger } from '../utils/logger';
 
 // Configuration
 const MAX_FILE_SIZE = parseInt(process.env['MAX_FILE_SIZE'] || '5242880', 10); // 5MB default
@@ -11,7 +12,7 @@ const PRODUCTS_DIR = join(UPLOAD_DIR, 'products');
 // Ensure upload directory exists
 if (!existsSync(PRODUCTS_DIR)) {
   mkdirSync(PRODUCTS_DIR, { recursive: true });
-  console.log('Created upload directory:', PRODUCTS_DIR);
+  logger.info('Created upload directory:', { directory: PRODUCTS_DIR });
 }
 
 // Allowed MIME types

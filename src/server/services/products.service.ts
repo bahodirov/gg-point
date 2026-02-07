@@ -1,5 +1,6 @@
 import { db } from '../db/database';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 export interface ProductRow {
   id: string;
