@@ -228,9 +228,19 @@ export class ContactComponent implements OnInit {
         error: (error) => {
           let apiMessage: string | undefined;
           if (error instanceof HttpErrorResponse) {
-            const maybeMessage = error.error?.message;
-            if (typeof maybeMessage === 'string') {
-              apiMessage = maybeMessage;
+            const errorBody = error.error as
+              | { message?: string; error?: string; details?: Array<{ msg?: string }> }
+              | null
+              | undefined;
+            if (typeof errorBody?.message === 'string') {
+              apiMessage = errorBody.message;
+            } else if (typeof errorBody?.error === 'string') {
+              apiMessage = errorBody.error;
+            } else if (Array.isArray(errorBody?.details)) {
+              const firstDetail = errorBody.details[0];
+              if (typeof firstDetail?.msg === 'string') {
+                apiMessage = firstDetail.msg;
+              }
             }
           }
           const status = error instanceof HttpErrorResponse ? error.status : undefined;

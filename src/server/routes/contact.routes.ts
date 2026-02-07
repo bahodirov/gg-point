@@ -38,7 +38,10 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
   if (!pool) {
     return res
       .status(503)
-      .json({ message: 'Service temporarily unavailable. Please try again later.' });
+      .json({
+        error: 'Service temporarily unavailable',
+        message: 'Please try again later.',
+      });
   }
 
   try {
@@ -57,7 +60,10 @@ router.post('/', writeLimiter, contactValidation, validateRequest, async (req: R
     });
     return res
       .status(500)
-      .json({ message: 'Failed to process your message. Please try again later.' });
+      .json({
+        error: 'Contact form submission failed',
+        message: 'Failed to process your message. Please try again later.',
+      });
   }
 });
 
