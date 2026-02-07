@@ -18,6 +18,41 @@ export interface SEOConfig {
   languageAlternates?: { lang: string; url: string }[];
 }
 
+// Schema interfaces
+// This interface accepts Product from product.model.ts
+// Optional fields (brand, rating, reviewCount) are not in Product but used for schema generation
+interface SchemaProduct {
+  id: string;
+  name: string;
+  images: string[];
+  thumbnail: string;
+  description: string;
+  brand?: string;
+  price: number;
+  inStock: boolean;
+  rating?: number;
+  reviewCount?: number;
+}
+
+interface SchemaArticle {
+  title: string;
+  description: string;
+  image: string;
+  publishDate: string;
+  modifiedDate?: string;
+}
+
+interface SchemaBreadcrumbItem {
+  name: string;
+  url?: string;
+}
+
+interface SchemaBase {
+  '@context': string;
+  '@type': string;
+  [key: string]: unknown;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -127,7 +162,7 @@ export class SeoService {
     });
   }
 
-  addStructuredData(data: any, id?: string): void {
+  addStructuredData(data: SchemaBase, id?: string): void {
     if (!this.isBrowser) return;
 
     const scriptId = id || `structured-data-${Date.now()}`;
@@ -155,7 +190,7 @@ export class SeoService {
     }
   }
 
-  generateProductSchema(product: any): any {
+  generateProductSchema(product: SchemaProduct): SchemaBase {
     return {
       '@context': 'https://schema.org/',
       '@type': 'Product',
@@ -185,7 +220,7 @@ export class SeoService {
     };
   }
 
-  generateOrganizationSchema(): any {
+  generateOrganizationSchema(): SchemaBase {
     return {
       '@context': 'https://schema.org',
       '@type': 'Organization',
@@ -210,7 +245,7 @@ export class SeoService {
     };
   }
 
-  generateLocalBusinessSchema(): any {
+  generateLocalBusinessSchema(): SchemaBase {
     return {
       '@context': 'https://schema.org',
       '@type': 'Store',
@@ -272,7 +307,7 @@ export class SeoService {
     };
   }
 
-  generateWebSiteSchema(): any {
+  generateWebSiteSchema(): SchemaBase {
     return {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
@@ -289,7 +324,7 @@ export class SeoService {
     };
   }
 
-  generateBreadcrumbSchema(items: { name: string; url?: string }[]): any {
+  generateBreadcrumbSchema(items: SchemaBreadcrumbItem[]): SchemaBase {
     return {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -302,7 +337,7 @@ export class SeoService {
     };
   }
 
-  generateArticleSchema(article: any): any {
+  generateArticleSchema(article: SchemaArticle): SchemaBase {
     return {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -326,7 +361,7 @@ export class SeoService {
     };
   }
 
-  generateStructuredData(type: string, data: any): string {
+  generateStructuredData(type: string, data: Record<string, unknown>): string {
     const structuredData = {
       '@context': 'https://schema.org',
       '@type': type,

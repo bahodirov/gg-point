@@ -35,3 +35,21 @@ export interface ProductCategory {
   icon?: string;
   productCount?: number;
 }
+
+// Server product response interface (from API)
+export interface ServerProduct {
+  id: string;
+  slug: string;
+  name: { ru: string; uz?: string };
+  category: string;
+  price: number;
+  oldPrice?: number;
+  description: { ru: string; uz?: string };
+  specs?: Record<string, string | number | boolean>;
+  images?: string[];
+  inStock?: boolean;
+  featured?: boolean;
+  isNew?: boolean;
+  relatedProducts?: string[];
+  createdAt?: string;
+}

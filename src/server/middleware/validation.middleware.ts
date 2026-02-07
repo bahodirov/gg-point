@@ -198,7 +198,7 @@ export const searchValidation = [
  */
 export function sanitizeInput(req: Request, res: Response, next: NextFunction): void {
   // Recursively sanitize objects
-  const sanitize = (obj: any): any => {
+  const sanitize = (obj: unknown): unknown => {
     if (typeof obj === 'string') {
       // Basic XSS prevention - remove script tags and dangerous attributes
       return obj
@@ -212,9 +212,9 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
     }
 
     if (obj !== null && typeof obj === 'object') {
-      const sanitized: any = {};
+      const sanitized: Record<string, unknown> = {};
       for (const key in obj) {
-        sanitized[key] = sanitize(obj[key]);
+        sanitized[key] = sanitize((obj as Record<string, unknown>)[key]);
       }
       return sanitized;
     }
@@ -230,8 +230,8 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
 
   if (req.query) {
     const sanitizedQuery = sanitize(req.query);
-    Object.keys(req.query).forEach(key => delete (req.query as any)[key]);
-    Object.assign(req.query, sanitizedQuery);
+    Object.keys(req.query).forEach(key => delete req.query[key]);
+    Object.assign(req.query, sanitizedQuery as Record<string, unknown>);
   }
 
   next();
