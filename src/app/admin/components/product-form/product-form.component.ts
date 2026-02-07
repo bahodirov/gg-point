@@ -1,20 +1,8 @@
 import { Component, inject, signal, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HttpClient, HttpEventType } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatChipsModule } from '@angular/material/chips';
 
 interface Product {
   id: string;
@@ -67,222 +55,179 @@ const CATEGORIES = [
     CommonModule,
     RouterLink,
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatSnackBarModule,
-    MatDividerModule,
-    MatChipsModule,
   ],
   template: `
-    <div class="product-form">
-      <div class="header">
+    <div>
+      <div>
         <h1>{{ isEditMode() ? 'Edit Product' : 'Add New Product' }}</h1>
-        <a mat-button routerLink="/admin/products">
-          <mat-icon>arrow_back</mat-icon>
-          Back to Products
-        </a>
+        <a routerLink="/admin/products">Back to Products</a>
       </div>
 
       @if (isLoading()) {
-        <div class="loading">
-          <mat-spinner></mat-spinner>
+        <div>
+          <p>Loading...</p>
         </div>
       } @else {
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <div class="form-grid">
-            <!-- Basic Information -->
-            <mat-card class="form-section">
-              <mat-card-header>
-                <mat-card-title>Basic Information</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Slug (URL)</mat-label>
-                  <input matInput formControlName="slug" placeholder="product-slug">
-                  <mat-hint>Used in product URL, e.g., /product/product-slug</mat-hint>
-                  @if (form.get('slug')?.hasError('required')) {
-                    <mat-error>Slug is required</mat-error>
-                  }
-                </mat-form-field>
+          <!-- Basic Information -->
+          <fieldset>
+            <legend>Basic Information</legend>
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Name (Russian)</mat-label>
-                  <input matInput formControlName="name_ru" placeholder="Product name in Russian">
-                  @if (form.get('name_ru')?.hasError('required')) {
-                    <mat-error>Name is required</mat-error>
-                  }
-                </mat-form-field>
+            <div>
+              <label for="slug">Slug (URL)</label>
+              <input id="slug" formControlName="slug" placeholder="product-slug">
+              <small>Used in product URL, e.g., /product/product-slug</small>
+              @if (form.get('slug')?.hasError('required')) {
+                <span>Slug is required</span>
+              }
+            </div>
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Name (Uzbek)</mat-label>
-                  <input matInput formControlName="name_uz" placeholder="Product name in Uzbek">
-                </mat-form-field>
+            <div>
+              <label for="name_ru">Name (Russian)</label>
+              <input id="name_ru" formControlName="name_ru" placeholder="Product name in Russian">
+              @if (form.get('name_ru')?.hasError('required')) {
+                <span>Name is required</span>
+              }
+            </div>
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Description (Russian)</mat-label>
-                  <textarea matInput formControlName="description_ru" rows="4"
-                            placeholder="Product description in Russian"></textarea>
-                </mat-form-field>
+            <div>
+              <label for="name_uz">Name (Uzbek)</label>
+              <input id="name_uz" formControlName="name_uz" placeholder="Product name in Uzbek">
+            </div>
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Description (Uzbek)</mat-label>
-                  <textarea matInput formControlName="description_uz" rows="4"
-                            placeholder="Product description in Uzbek"></textarea>
-                </mat-form-field>
-              </mat-card-content>
-            </mat-card>
+            <div>
+              <label for="description_ru">Description (Russian)</label>
+              <textarea id="description_ru" formControlName="description_ru" rows="4"
+                        placeholder="Product description in Russian"></textarea>
+            </div>
 
-            <!-- Pricing & Category -->
-            <mat-card class="form-section">
-              <mat-card-header>
-                <mat-card-title>Pricing & Category</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="two-columns">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Price (UZS)</mat-label>
-                    <input matInput type="number" formControlName="price" placeholder="1000000">
-                    @if (form.get('price')?.hasError('required')) {
-                      <mat-error>Price is required</mat-error>
-                    }
-                    @if (form.get('price')?.hasError('min')) {
-                      <mat-error>Price must be positive</mat-error>
-                    }
-                  </mat-form-field>
+            <div>
+              <label for="description_uz">Description (Uzbek)</label>
+              <textarea id="description_uz" formControlName="description_uz" rows="4"
+                        placeholder="Product description in Uzbek"></textarea>
+            </div>
+          </fieldset>
 
-                  <mat-form-field appearance="outline">
-                    <mat-label>Old Price (UZS)</mat-label>
-                    <input matInput type="number" formControlName="old_price" placeholder="Optional">
-                    <mat-hint>Leave empty if no discount</mat-hint>
-                  </mat-form-field>
-                </div>
+          <!-- Pricing & Category -->
+          <fieldset>
+            <legend>Pricing & Category</legend>
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Category</mat-label>
-                  <mat-select formControlName="category">
-                    @for (cat of categories; track cat) {
-                      <mat-option [value]="cat">{{ cat | titlecase }}</mat-option>
-                    }
-                  </mat-select>
-                  @if (form.get('category')?.hasError('required')) {
-                    <mat-error>Category is required</mat-error>
-                  }
-                </mat-form-field>
+            <div>
+              <label for="price">Price (UZS)</label>
+              <input id="price" type="number" formControlName="price" placeholder="1000000">
+              @if (form.get('price')?.hasError('required')) {
+                <span>Price is required</span>
+              }
+              @if (form.get('price')?.hasError('min')) {
+                <span>Price must be positive</span>
+              }
+            </div>
 
-                <div class="checkboxes">
-                  <mat-checkbox formControlName="in_stock">In Stock</mat-checkbox>
-                  <mat-checkbox formControlName="featured">Featured</mat-checkbox>
-                  <mat-checkbox formControlName="is_new">New</mat-checkbox>
-                </div>
-              </mat-card-content>
-            </mat-card>
+            <div>
+              <label for="old_price">Old Price (UZS)</label>
+              <input id="old_price" type="number" formControlName="old_price" placeholder="Optional">
+              <small>Leave empty if no discount</small>
+            </div>
 
-            <!-- Images -->
-            <mat-card class="form-section">
-              <mat-card-header>
-                <mat-card-title>Images</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div formArrayName="images">
-                  @for (imageCtrl of imagesArray.controls; track $index) {
-                    <div class="image-row">
-                      <mat-form-field appearance="outline" class="image-field">
-                        <mat-label>Image URL {{ $index + 1 }}</mat-label>
-                        <input matInput [formControlName]="$index" placeholder="https://example.com/image.jpg">
-                      </mat-form-field>
-                      <button mat-icon-button color="warn" type="button" (click)="removeImage($index)">
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </div>
-                  }
-                </div>
-
-                <div class="image-actions">
-                  <input
-                    #fileInput
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    style="display: none"
-                    (change)="onFilesSelected($event)"
-                  >
-                  <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="isUploading()">
-                    <mat-icon>upload</mat-icon>
-                    Upload from PC
-                  </button>
-                  <button mat-stroked-button type="button" (click)="addImage()">
-                    <mat-icon>add</mat-icon>
-                    Add URL
-                  </button>
-                </div>
-
-                @if (isUploading()) {
-                  <div class="upload-progress">
-                    <mat-progress-bar mode="determinate" [value]="uploadProgress()"></mat-progress-bar>
-                    <span class="progress-text">{{ uploadProgress() }}% uploading...</span>
-                  </div>
+            <div>
+              <label for="category">Category</label>
+              <select id="category" formControlName="category">
+                <option value="">Select category</option>
+                @for (cat of categories; track cat) {
+                  <option [value]="cat">{{ cat }}</option>
                 }
+              </select>
+              @if (form.get('category')?.hasError('required')) {
+                <span>Category is required</span>
+              }
+            </div>
 
-                @if (imagesArray.length > 0) {
-                  <div class="image-preview">
-                    @for (imageCtrl of imagesArray.controls; track $index) {
-                      @if (imageCtrl.value) {
-                        <img [src]="imageCtrl.value" [alt]="'Preview ' + ($index + 1)" class="preview-img">
-                      }
-                    }
-                  </div>
-                }
-              </mat-card-content>
-            </mat-card>
+            <div>
+              <label>
+                <input type="checkbox" formControlName="in_stock"> In Stock
+              </label>
+              <label>
+                <input type="checkbox" formControlName="featured"> Featured
+              </label>
+              <label>
+                <input type="checkbox" formControlName="is_new"> New
+              </label>
+            </div>
+          </fieldset>
 
-            <!-- Specifications -->
-            <mat-card class="form-section">
-              <mat-card-header>
-                <mat-card-title>Specifications</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div formArrayName="specs">
-                  @for (specGroup of specsArray.controls; track $index) {
-                    <div class="spec-row" [formGroupName]="$index">
-                      <mat-form-field appearance="outline">
-                        <mat-label>Key</mat-label>
-                        <input matInput formControlName="key" placeholder="e.g., Sensor">
-                      </mat-form-field>
-                      <mat-form-field appearance="outline">
-                        <mat-label>Value</mat-label>
-                        <input matInput formControlName="value" placeholder="e.g., HERO 25K">
-                      </mat-form-field>
-                      <button mat-icon-button color="warn" type="button" (click)="removeSpec($index)">
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </div>
-                  }
+          <!-- Images -->
+          <fieldset>
+            <legend>Images</legend>
+
+            <div formArrayName="images">
+              @for (imageCtrl of imagesArray.controls; track $index) {
+                <div>
+                  <input [formControlName]="$index" placeholder="https://example.com/image.jpg">
+                  <button type="button" (click)="removeImage($index)">Remove</button>
                 </div>
-                <button mat-stroked-button type="button" (click)="addSpec()">
-                  <mat-icon>add</mat-icon>
-                  Add Specification
-                </button>
-              </mat-card-content>
-            </mat-card>
-          </div>
+              }
+            </div>
 
-          <div class="form-actions">
-            <button mat-button type="button" routerLink="/admin/products">Cancel</button>
-            <button mat-raised-button color="primary" type="submit" [disabled]="isSaving() || form.invalid">
+            <div>
+              <input
+                #fileInput
+                type="file"
+                accept="image/*"
+                multiple
+                style="display: none"
+                (change)="onFilesSelected($event)"
+              >
+              <button type="button" (click)="fileInput.click()" [disabled]="isUploading()">
+                Upload from PC
+              </button>
+              <button type="button" (click)="addImage()">
+                Add URL
+              </button>
+            </div>
+
+            @if (isUploading()) {
+              <div>
+                <progress [value]="uploadProgress()" max="100"></progress>
+                <span>{{ uploadProgress() }}% uploading...</span>
+              </div>
+            }
+
+            @if (imagesArray.length > 0) {
+              <div>
+                @for (imageCtrl of imagesArray.controls; track $index) {
+                  @if (imageCtrl.value) {
+                    <img [src]="imageCtrl.value" [alt]="'Preview ' + ($index + 1)" width="90" height="90">
+                  }
+                }
+              </div>
+            }
+          </fieldset>
+
+          <!-- Specifications -->
+          <fieldset>
+            <legend>Specifications</legend>
+
+            <div formArrayName="specs">
+              @for (specGroup of specsArray.controls; track $index) {
+                <div [formGroupName]="$index">
+                  <input formControlName="key" placeholder="e.g., Sensor">
+                  <input formControlName="value" placeholder="e.g., HERO 25K">
+                  <button type="button" (click)="removeSpec($index)">Remove</button>
+                </div>
+              }
+            </div>
+            <button type="button" (click)="addSpec()">
+              Add Specification
+            </button>
+          </fieldset>
+
+          <div>
+            <a routerLink="/admin/products">Cancel</a>
+            <button type="submit" [disabled]="isSaving() || form.invalid">
               @if (isSaving()) {
-                <mat-spinner diameter="20"></mat-spinner>
+                Saving...
               } @else {
-                <ng-container>
-                  <mat-icon>save</mat-icon>
-                  {{ isEditMode() ? 'Save Changes' : 'Create Product' }}
-                </ng-container>
+                {{ isEditMode() ? 'Save Changes' : 'Create Product' }}
               }
             </button>
           </div>
@@ -290,230 +235,13 @@ const CATEGORIES = [
       }
     </div>
   `,
-  styles: [`
-    .product-form {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 2rem;
-      font-weight: 600;
-      color: #0e4a6e;
-      letter-spacing: 0.5px;
-    }
-
-    :host-context(.dark-theme) h1 {
-      color: #cffafe;
-    }
-
-    .loading {
-      display: flex;
-      justify-content: center;
-      padding: 3rem;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-      gap: 2rem;
-    }
-
-    .form-section {
-      height: fit-content;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.08);
-      border: 1px solid rgba(14, 116, 144, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .form-section:hover {
-      box-shadow: 0 6px 20px rgba(14, 116, 144, 0.14);
-    }
-
-    :host-context(.dark-theme) .form-section {
-      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
-      border: 1px solid rgba(34, 211, 238, 0.1);
-    }
-
-    mat-card-header {
-      margin-bottom: 1.5rem;
-      padding: 1.5rem 1.5rem 0;
-    }
-
-    mat-card-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #0e4a6e;
-    }
-
-    :host-context(.dark-theme) mat-card-title {
-      color: #cffafe;
-    }
-
-    mat-card-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding: 1.5rem;
-    }
-
-    .full-width {
-      width: 100%;
-    }
-
-    .two-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .checkboxes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      margin-top: 1rem;
-      padding: 1rem;
-      background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%);
-      border-radius: 8px;
-    }
-
-    :host-context(.dark-theme) .checkboxes {
-      background: linear-gradient(135deg, rgba(14, 116, 144, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%);
-    }
-
-    .image-row,
-    .spec-row {
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-    }
-
-    .image-field {
-      flex: 1;
-    }
-
-    .image-actions {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-
-    .image-actions button {
-      border-radius: 8px;
-      font-weight: 500;
-    }
-
-    .upload-progress {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    :host-context(.dark-theme) .upload-progress {
-      background: linear-gradient(135deg, rgba(14, 116, 144, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%);
-    }
-
-    .progress-text {
-      font-size: 0.875rem;
-      color: #155e75;
-      font-weight: 600;
-    }
-
-    :host-context(.dark-theme) .progress-text {
-      color: #a5f3fc;
-    }
-
-    .spec-row mat-form-field {
-      flex: 1;
-    }
-
-    .image-preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-    }
-
-    .preview-img {
-      width: 90px;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 2px solid rgba(14, 116, 144, 0.2);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .preview-img:hover {
-      transform: scale(1.05);
-      border-color: #0891b2;
-    }
-
-    :host-context(.dark-theme) .preview-img {
-      border-color: rgba(34, 211, 238, 0.2);
-    }
-
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      margin-top: 2.5rem;
-      padding: 1.5rem 0;
-    }
-
-    .form-actions button {
-      border-radius: 8px;
-      font-weight: 500;
-      padding: 0.75rem 2rem;
-      transition: all 0.3s ease;
-    }
-
-    .form-actions button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.25);
-    }
-
-    .form-actions button mat-spinner {
-      display: inline-block;
-    }
-
-    @media (max-width: 768px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .two-columns {
-        grid-template-columns: 1fr;
-      }
-
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-    }
-  `]
+  styles: []
 })
 export class ProductFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private snackBar = inject(MatSnackBar);
 
   form: FormGroup;
   categories = CATEGORIES;
@@ -596,7 +324,7 @@ export class ProductFormComponent implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
-        this.snackBar.open('Failed to load product', 'Close', { duration: 3000 });
+        alert('Failed to load product');
         this.router.navigate(['/admin/products']);
       }
     });
@@ -632,11 +360,10 @@ export class ProductFormComponent implements OnInit {
           if (url) this.addImage(url);
         });
         const successCount = urls.filter(u => u).length;
-        this.snackBar.open(`Successfully uploaded ${successCount} images`, 'Close', { duration: 3000 });
+        alert(`Successfully uploaded ${successCount} images`);
       })
       .catch(error => {
-        // Upload error handled by snackbar notification
-        this.snackBar.open('Failed to upload some images', 'Close', { duration: 3000 });
+        alert('Failed to upload some images');
       })
       .finally(() => {
         this.isUploading.set(false);
@@ -657,7 +384,6 @@ export class ProductFormComponent implements OnInit {
             resolve(response.image?.url || null);
           },
           error: (error) => {
-            // Upload error will be handled by promise rejection
             reject(error);
           }
         });
@@ -717,20 +443,12 @@ export class ProductFormComponent implements OnInit {
     request.subscribe({
       next: () => {
         this.isSaving.set(false);
-        this.snackBar.open(
-          this.isEditMode() ? 'Product updated successfully' : 'Product created successfully',
-          'Close',
-          { duration: 3000 }
-        );
+        alert(this.isEditMode() ? 'Product updated successfully' : 'Product created successfully');
         this.router.navigate(['/admin/products']);
       },
       error: (error) => {
         this.isSaving.set(false);
-        this.snackBar.open(
-          error.error?.error || 'Failed to save product',
-          'Close',
-          { duration: 3000 }
-        );
+        alert(error.error?.error || 'Failed to save product');
       }
     });
   }
