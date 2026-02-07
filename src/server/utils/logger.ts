@@ -51,8 +51,10 @@ if (process.env['NODE_ENV'] !== 'production') {
       winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
       winston.format.printf(({ level, message, timestamp, ...metadata }) => {
         let msg = `${timestamp} [${level}]: ${message}`;
-        if (Object.keys(metadata).length > 0) {
-          msg += ` ${JSON.stringify(metadata)}`;
+        // Exclude winston-internal metadata fields (service, timestamp, level)
+        const { service, ...customMetadata } = metadata;
+        if (Object.keys(customMetadata).length > 0) {
+          msg += ` ${JSON.stringify(customMetadata)}`;
         }
         return msg;
       })
