@@ -73,9 +73,7 @@ export const config = {
 
   // Session configuration
   session: {
-    secret: process.env['SESSION_SECRET'] || (process.env['NODE_ENV'] === 'production' 
-      ? '' // Will fail validation in production if not set
-      : 'dev-secret-key-at-least-32-characters-long-for-development'),
+    secret: process.env['SESSION_SECRET'] || 'dev-secret-key-at-least-32-characters-long-for-development',
   },
 
   // Upload configuration
