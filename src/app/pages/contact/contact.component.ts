@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -183,9 +183,10 @@ import { SeoService } from '../../shared/services/seo.service';
     }
   `]
 })
-export class ContactComponent implements OnInit {
+export class ContactComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private seoService = inject(SeoService);
+  private timers: Array<ReturnType<typeof setTimeout>> = [];
 
   contactForm!: FormGroup;
   isSubmitting = false;
@@ -212,17 +213,24 @@ export class ContactComponent implements OnInit {
       this.submitError = false;
 
       // Simulate form submission
-      setTimeout(() => {
+      const submitTimer = setTimeout(() => {
         this.isSubmitting = false;
         this.submitSuccess = true;
         this.contactForm.reset();
         
         // Hide success message after 5 seconds
-        setTimeout(() => {
+        const hideTimer = setTimeout(() => {
           this.submitSuccess = false;
         }, 5000);
+        this.timers.push(hideTimer);
       }, 1000);
+      this.timers.push(submitTimer);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.timers.forEach((timer) => clearTimeout(timer));
+    this.timers = [];
   }
 
   private updateSEO(): void {
