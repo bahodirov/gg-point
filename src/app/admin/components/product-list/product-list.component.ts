@@ -36,14 +36,14 @@ interface Product {
       @if (errorMessage()) {
         <div style="background-color: #fee; border: 1px solid #fcc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #c33;">
           <strong>Error:</strong> {{ errorMessage() }}
-          <button (click)="errorMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;">&times;</button>
+          <button (click)="errorMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;" aria-label="Close error message">&times;</button>
         </div>
       }
 
       @if (successMessage()) {
         <div style="background-color: #efe; border: 1px solid #cfc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #3c3;">
           <strong>Success:</strong> {{ successMessage() }}
-          <button (click)="successMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;">&times;</button>
+          <button (click)="successMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;" aria-label="Close success message">&times;</button>
         </div>
       }
 
@@ -136,6 +136,7 @@ interface Product {
 })
 export class ProductListComponent implements OnInit {
   private http = inject(HttpClient);
+  private readonly AUTO_DISMISS_DELAY_MS = 3000;
 
   isLoading = signal(true);
   products = signal<Product[]>([]);
@@ -236,7 +237,7 @@ export class ProductListComponent implements OnInit {
         this.onSearch(); // Re-apply filter
         this.successMessage.set('Product deleted successfully');
         // Auto-dismiss success message after 3 seconds
-        setTimeout(() => this.successMessage.set(null), 3000);
+        setTimeout(() => this.successMessage.set(null), this.AUTO_DISMISS_DELAY_MS);
       },
       error: () => {
         this.errorMessage.set('Failed to delete product. Please try again.');

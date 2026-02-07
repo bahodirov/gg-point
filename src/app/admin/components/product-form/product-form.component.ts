@@ -66,14 +66,14 @@ const CATEGORIES = [
       @if (errorMessage()) {
         <div style="background-color: #fee; border: 1px solid #fcc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #c33;">
           <strong>Error:</strong> {{ errorMessage() }}
-          <button (click)="errorMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;">&times;</button>
+          <button (click)="errorMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;" aria-label="Close error message">&times;</button>
         </div>
       }
 
       @if (successMessage()) {
         <div style="background-color: #efe; border: 1px solid #cfc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #3c3;">
           <strong>Success:</strong> {{ successMessage() }}
-          <button (click)="successMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;">&times;</button>
+          <button (click)="successMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;" aria-label="Close success message">&times;</button>
         </div>
       }
 
@@ -257,6 +257,10 @@ export class ProductFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
+  private readonly AUTO_DISMISS_DELAY_MS = 3000;
+  private readonly REDIRECT_DELAY_MS = 2000;
+  private readonly SUCCESS_REDIRECT_DELAY_MS = 1500;
+
   form: FormGroup;
   categories = CATEGORIES;
 
@@ -341,7 +345,7 @@ export class ProductFormComponent implements OnInit {
       error: () => {
         this.isLoading.set(false);
         this.errorMessage.set('Failed to load product. Redirecting to product list...');
-        setTimeout(() => this.router.navigate(['/admin/products']), 2000);
+        setTimeout(() => this.router.navigate(['/admin/products']), this.REDIRECT_DELAY_MS);
       }
     });
   }
@@ -378,7 +382,7 @@ export class ProductFormComponent implements OnInit {
         const successCount = urls.filter(u => u).length;
         this.successMessage.set(`Successfully uploaded ${successCount} image${successCount !== 1 ? 's' : ''}`);
         // Auto-dismiss after 3 seconds
-        setTimeout(() => this.successMessage.set(null), 3000);
+        setTimeout(() => this.successMessage.set(null), this.AUTO_DISMISS_DELAY_MS);
       })
       .catch(error => {
         this.errorMessage.set('Failed to upload some images. Please try again.');
@@ -463,7 +467,7 @@ export class ProductFormComponent implements OnInit {
         this.isSaving.set(false);
         this.successMessage.set(this.isEditMode() ? 'Product updated successfully' : 'Product created successfully');
         // Redirect after showing success message
-        setTimeout(() => this.router.navigate(['/admin/products']), 1500);
+        setTimeout(() => this.router.navigate(['/admin/products']), this.SUCCESS_REDIRECT_DELAY_MS);
       },
       error: (error) => {
         this.isSaving.set(false);
