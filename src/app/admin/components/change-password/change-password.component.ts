@@ -119,13 +119,13 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
       padding: 2rem;
       background: white;
       border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(30, 60, 114, 0.1);
-      border: 1px solid rgba(30, 60, 114, 0.1);
+      box-shadow: 0 4px 16px rgba(14, 116, 144, 0.1);
+      border: 1px solid rgba(14, 116, 144, 0.1);
     }
 
     :host-context(.dark-theme) mat-card {
-      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
+      border: 1px solid rgba(34, 211, 238, 0.1);
     }
 
     mat-card-header {
@@ -135,11 +135,11 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
     mat-card-title {
       font-size: 1.75rem;
       font-weight: 600;
-      color: #1e3c72;
+      color: #0e4a6e;
     }
 
     :host-context(.dark-theme) mat-card-title {
-      color: #e3f2fd;
+      color: #cffafe;
     }
 
     mat-card-subtitle {
@@ -212,7 +212,7 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
 
     .form-actions button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.2);
+      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.25);
     }
 
     .form-actions button mat-spinner {

@@ -110,7 +110,7 @@ interface DatabaseHealth {
       align-items: center;
       justify-content: center;
       gap: 1rem;
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      background: linear-gradient(135deg, #0e2a47 0%, #0c4a6e 50%, #155e75 100%);
       color: white;
     }
 
@@ -126,8 +126,8 @@ interface DatabaseHealth {
       left: 0;
       right: 0;
       z-index: 1000;
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      background: linear-gradient(135deg, #0e2a47 0%, #155e75 100%) !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
     }
 
     .toolbar-title {
@@ -148,22 +148,22 @@ interface DatabaseHealth {
 
     .sidenav {
       width: 260px;
-      background: linear-gradient(180deg, #1a2f5c 0%, #1e3c72 100%);
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(180deg, #0c2d48 0%, #0e3b5c 50%, #0f4c6e 100%);
+      border-right: 1px solid rgba(34, 211, 238, 0.08);
     }
 
     :host-context(.dark-theme) .sidenav {
-      background: linear-gradient(180deg, #1a2f5c 0%, #1e3c72 100%);
+      background: linear-gradient(180deg, #0c2d48 0%, #0e3b5c 50%, #0f4c6e 100%);
     }
 
     .content {
       padding: 2rem;
-      background: linear-gradient(135deg, #e8f0f8 0%, #f5f8fc 100%);
+      background: linear-gradient(135deg, #ecfeff 0%, #f0f9ff 50%, #f5f8fc 100%);
       min-height: calc(100vh - 64px);
     }
 
     :host-context(.dark-theme) .content {
-      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      background: linear-gradient(135deg, #0a1929 0%, #0f1f33 50%, #132d46 100%);
     }
 
     mat-nav-list {
@@ -171,35 +171,35 @@ interface DatabaseHealth {
     }
 
     mat-nav-list a {
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.8);
       margin: 0.25rem 0.75rem;
       border-radius: 8px;
       transition: all 0.3s ease;
     }
 
     mat-nav-list a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(34, 211, 238, 0.1);
       color: white;
     }
 
     mat-nav-list a.active {
-      background: linear-gradient(135deg, #3b5998 0%, #4a6fb8 100%);
-      border-left: 3px solid #64b5f6;
+      background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
+      border-left: 3px solid #22d3ee;
       color: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 12px rgba(14, 116, 144, 0.35);
     }
 
     mat-nav-list a mat-icon {
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.8);
     }
 
     mat-nav-list a.active mat-icon {
-      color: #64b5f6;
+      color: #67e8f9;
     }
 
     mat-divider {
       margin: 1rem 0.75rem;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(34, 211, 238, 0.12);
     }
 
     @media (max-width: 768px) {

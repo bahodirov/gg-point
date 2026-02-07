@@ -136,23 +136,23 @@ interface CategoryCount {
       margin-bottom: 2rem;
       font-size: 2rem;
       font-weight: 600;
-      color: #1e3c72;
+      color: #0e4a6e;
       letter-spacing: 0.5px;
     }
 
     :host-context(.dark-theme) h1 {
-      color: #e3f2fd;
+      color: #cffafe;
     }
 
     h2 {
       margin-bottom: 1.25rem;
       font-size: 1.5rem;
       font-weight: 600;
-      color: #2a5298;
+      color: #155e75;
     }
 
     :host-context(.dark-theme) h2 {
-      color: #bbdefb;
+      color: #a5f3fc;
     }
 
     .loading {
@@ -171,19 +171,19 @@ interface CategoryCount {
     .stat-card {
       background: white;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.08);
+      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.08);
       transition: all 0.3s ease;
-      border: 1px solid rgba(30, 60, 114, 0.1);
+      border: 1px solid rgba(14, 116, 144, 0.1);
     }
 
     .stat-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(30, 60, 114, 0.15);
+      box-shadow: 0 8px 24px rgba(14, 116, 144, 0.18);
     }
 
     :host-context(.dark-theme) .stat-card {
-      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
+      border: 1px solid rgba(34, 211, 238, 0.1);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
@@ -212,7 +212,7 @@ interface CategoryCount {
     }
 
     .stat-icon.products {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background: linear-gradient(135deg, #0e7490, #06b6d4);
     }
 
     .stat-icon.featured {
@@ -237,7 +237,7 @@ interface CategoryCount {
       font-size: 2rem;
       font-weight: 700;
       line-height: 1;
-      color: #1e3c72;
+      color: #0e4a6e;
     }
 
     :host-context(.dark-theme) .stat-value {
@@ -279,7 +279,7 @@ interface CategoryCount {
     .actions-grid button:hover,
     .actions-grid a:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.2);
+      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.25);
     }
 
     .categories-section {
@@ -295,18 +295,18 @@ interface CategoryCount {
     .category-card {
       background: white;
       border-radius: 12px;
-      border: 1px solid rgba(30, 60, 114, 0.1);
+      border: 1px solid rgba(14, 116, 144, 0.1);
       transition: all 0.3s ease;
     }
 
     .category-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(30, 60, 114, 0.1);
+      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.12);
     }
 
     :host-context(.dark-theme) .category-card {
-      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
+      border: 1px solid rgba(34, 211, 238, 0.1);
     }
 
     .category-card mat-card-content {
@@ -320,7 +320,7 @@ interface CategoryCount {
     .category-name {
       font-weight: 600;
       text-transform: capitalize;
-      color: #1e3c72;
+      color: #0e4a6e;
       font-size: 1rem;
     }
 
