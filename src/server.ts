@@ -1,6 +1,6 @@
 // Load environment variables first
-import { config } from 'dotenv';
-config();
+import { config as dotenvConfig } from 'dotenv';
+dotenvConfig();
 
 import {
   AngularNodeAppEngine,
@@ -137,7 +137,7 @@ app.use((req, res, next) => {
  * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
-  const port = process.env['PORT'] || 4000;
+  const port = config.port;
   app.listen(port, (error) => {
     if (error) {
       throw error;

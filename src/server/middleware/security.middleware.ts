@@ -167,9 +167,7 @@ export const writeLimiter = rateLimit({
  * CORS configuration
  */
 export function corsMiddleware(req: Request, res: Response, next: NextFunction): void {
-  const allowedOrigins = process.env['CORS_ORIGIN']
-    ? process.env['CORS_ORIGIN'].split(',')
-    : ['http://localhost:4200', 'http://localhost:4000'];
+  const allowedOrigins = config.corsOrigins;
 
   const origin = req.headers.origin;
   const isAllowedOrigin = !origin || allowedOrigins.includes(origin);
