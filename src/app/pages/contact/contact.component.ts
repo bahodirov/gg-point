@@ -208,6 +208,7 @@ export class ContactComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     if (this.contactForm.valid) {
+      this.clearTimers();
       this.isSubmitting = true;
       this.submitSuccess = false;
       this.submitError = false;
@@ -229,6 +230,10 @@ export class ContactComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearTimers();
+  }
+
+  private clearTimers(): void {
     this.timers.forEach((timer) => clearTimeout(timer));
     this.timers = [];
   }
