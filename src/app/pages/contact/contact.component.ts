@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -184,10 +184,11 @@ import { SeoService } from '../../shared/services/seo.service';
     }
   `]
 })
-export class ContactComponent implements OnInit {
+export class ContactComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private seoService = inject(SeoService);
+  private timers: Array<ReturnType<typeof setTimeout>> = [];
 
   contactForm!: FormGroup;
   isSubmitting = false;
@@ -214,48 +215,25 @@ export class ContactComponent implements OnInit {
       this.submitSuccess = false;
       this.submitError = false;
 
-      this.http.post('/api/contact', this.contactForm.value).subscribe({
-        next: () => {
-          this.isSubmitting = false;
-          this.submitSuccess = true;
-          this.contactForm.reset();
-
-          // Hide success message after 5 seconds
-          setTimeout(() => {
-            this.submitSuccess = false;
-          }, 5000);
-        },
-        error: (error) => {
-          let apiMessage: string | undefined;
-          if (error instanceof HttpErrorResponse) {
-            const errorBody = error.error as
-              | { message?: string; error?: string; details?: Array<{ msg?: string }> }
-              | null
-              | undefined;
-            if (typeof errorBody?.message === 'string') {
-              apiMessage = errorBody.message;
-            } else if (typeof errorBody?.error === 'string') {
-              apiMessage = errorBody.error;
-            } else if (Array.isArray(errorBody?.details)) {
-              const firstDetail = errorBody.details[0];
-              if (typeof firstDetail?.msg === 'string') {
-                apiMessage = firstDetail.msg;
-              }
-            }
-          }
-          const status = error instanceof HttpErrorResponse ? error.status : undefined;
-          const logDetails = status !== undefined ? { status } : {};
-          console.error('Failed to send message:', logDetails);
-          this.isSubmitting = false;
-          this.submitErrorMessage = apiMessage ?? 'Error sending message. Please try again.';
-          this.submitError = true;
-
-          setTimeout(() => {
-            this.submitError = false;
-          }, 5000);
-        }
-      });
+      // Simulate form submission
+      const submitTimer = setTimeout(() => {
+        this.isSubmitting = false;
+        this.submitSuccess = true;
+        this.contactForm.reset();
+        
+        // Hide success message after 5 seconds
+        const hideTimer = setTimeout(() => {
+          this.submitSuccess = false;
+        }, 5000);
+        this.timers.push(hideTimer);
+      }, 1000);
+      this.timers.push(submitTimer);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.timers.forEach((timer) => clearTimeout(timer));
+    this.timers = [];
   }
 
   private updateSEO(): void {

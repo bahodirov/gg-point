@@ -14,8 +14,13 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN DEFAULT false;
+
 -- Create index on username for faster lookups
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at DESC);
 
 -- Products table
 CREATE TABLE IF NOT EXISTS products (
@@ -40,10 +45,20 @@ CREATE TABLE IF NOT EXISTS products (
 
 -- Create indexes for products
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
+CREATE INDEX IF NOT EXISTS idx_products_category_lower ON products(LOWER(category));
 CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
 CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);
 CREATE INDEX IF NOT EXISTS idx_products_in_stock ON products(in_stock);
 CREATE INDEX IF NOT EXISTS idx_products_created_at ON products(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_products_images_gin ON products USING GIN (images);
+CREATE INDEX IF NOT EXISTS idx_products_search ON products USING GIN (
+    to_tsvector('simple',
+      COALESCE(name_ru, '') || ' ' ||
+      COALESCE(name_uz, '') || ' ' ||
+      COALESCE(description_ru, '') || ' ' ||
+      COALESCE(description_uz, '')
+    )
+);
 
 -- Sessions table
 CREATE TABLE IF NOT EXISTS sessions (

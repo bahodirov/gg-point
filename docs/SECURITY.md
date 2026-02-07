@@ -36,13 +36,13 @@ export const passwordValidation = [
 ];
 ```
 
-### Change Default Credentials
+### Change Admin Credentials
 
-⚠️ **CRITICAL**: Change the default admin password immediately after deployment!
+⚠️ **CRITICAL**: Set a strong admin password immediately after deployment!
 
-Default credentials:
-- Username: `admin`
-- Password: `admin123`
+Admin credentials are configured via environment variables:
+- `ADMIN_USERNAME` (defaults to `admin`)
+- `ADMIN_PASSWORD` (if omitted, a random password is generated and logged on first setup)
 
 **Change password via Admin Panel:**
 1. Login to `/admin`
@@ -55,7 +55,7 @@ curl -X POST https://yourdomain.com/api/auth/change-password \
   -H "Content-Type: application/json" \
   -H "Cookie: ggpoint_session=YOUR_SESSION_ID" \
   -d '{
-    "currentPassword": "admin123",
+    "currentPassword": "<current-password>",
     "newPassword": "YourNewStrongPassword123!"
   }'
 ```
@@ -109,12 +109,36 @@ REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 
 **3. Use SSL/TLS for Connections**
 
-In production, always use SSL for database connections:
+In production, always use SSL for database connections with certificate verification enabled:
 
 `.env`:
 ```env
 DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require
 ```
+
+**🔒 CRITICAL SECURITY FEATURE**: 
+- SSL certificate verification is **ALWAYS ENABLED** in production (`NODE_ENV=production`)
+- **IMPORTANT**: If `NODE_ENV` is undefined or empty, it's treated as production for security (fail-safe to secure configuration)
+- Setting `DB_SSL_REJECT_UNAUTHORIZED=false` in production will **fail application startup** with a critical error
+- This prevents man-in-the-middle (MITM) attacks on database connections
+- Use `DB_SSL_REJECT_UNAUTHORIZED=false` only in `NODE_ENV=development` environments with self-signed certificates
+
+**Development/Staging with Self-Signed Certificates:**
+```env
+NODE_ENV=development
+DATABASE_URL=postgresql://user:pass@host:5432/db
+DB_SSL_REJECT_UNAUTHORIZED=false  # Only allowed in non-production
+```
+
+**Production (Secure):**
+```env
+NODE_ENV=production
+DATABASE_URL=postgresql://user:pass@host:5432/db
+# DB_SSL_REJECT_UNAUTHORIZED must NOT be set to 'false'
+# SSL verification is automatically enabled
+```
+
+**⚠️ Security Note:** If `NODE_ENV` is not set or is empty, the application treats it as production to ensure secure defaults.
 
 **4. Restrict Network Access**
 
@@ -193,17 +217,52 @@ export function sanitizeInput(req, res, next) {
 
 **2. Content Security Policy (CSP)**
 
-Helmet middleware configures CSP headers:
+The application uses a strict nonce-based CSP configuration to prevent XSS attacks:
 
 ```typescript
-contentSecurityPolicy: {
-  directives: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-    styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-    imgSrc: ["'self'", 'data:', 'https:'],
-  },
+// Import crypto module for nonce generation
+import { randomBytes } from 'crypto';
+
+// Middleware to generate unique nonce for each request
+export function cspNonceMiddleware(req: Request, res: Response, next: NextFunction): void {
+  const nonce = randomBytes(16).toString('base64');
+  // Store nonce in res.locals to pass it to helmet config
+  res.locals.cspNonce = nonce;
+  next();
 }
+
+// Helmet configuration that uses the nonce from res.locals
+export function helmetConfig(req: Request, res: Response, next: NextFunction): void {
+  const nonce = res.locals.cspNonce;
+  
+  // Set CSP header with nonce
+  const cspDirectives = [
+    `default-src 'self'`,
+    `script-src 'self' 'nonce-${nonce}'`,  // Nonce-based, no unsafe-inline
+    `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
+    `style-src-attr 'unsafe-inline'`,  // Allow inline style attributes only
+    `img-src 'self' data: https:`,
+    `font-src 'self' https://fonts.gstatic.com`,
+    `connect-src 'self' http://localhost:4000 http://localhost:4200`,
+  ].join('; ');
+  
+  res.setHeader('Content-Security-Policy', cspDirectives);
+  next();
+}
+```
+
+**Key Security Features:**
+- ✅ **Removed `'unsafe-inline'` and `'unsafe-eval'`** from script-src - Prevents arbitrary script execution
+- ✅ **Nonce-based CSP** - Each request gets a unique nonce for inline scripts/styles
+- ✅ **Strict directives** - Only allows scripts and styles from trusted sources
+- ✅ **Per-request nonces** - Fresh cryptographically random nonce for each HTTP request
+- ✅ **Granular style control** - Inline style attributes allowed via `style-src-attr`, while `<style>` tags require nonce
+
+**Note:** The nonce must be added to any inline `<script>` or `<style>` tags:
+```html
+<script nonce="${cspNonce}">
+  // Inline script code
+</script>
 ```
 
 ### CORS Configuration
@@ -458,8 +517,9 @@ res.status(500).json({
 - [ ] Change default admin password
 - [ ] Generate strong SESSION_SECRET
 - [ ] Configure DATABASE_URL with strong password
-- [ ] Enable PostgreSQL SSL connections
-- [ ] Set NODE_ENV=production
+- [ ] **CRITICAL**: Ensure NODE_ENV is explicitly set to 'production' (if undefined, SSL verification is enforced but NODE_ENV should be set)
+- [ ] Enable PostgreSQL SSL connections (verify DB_SSL_REJECT_UNAUTHORIZED is NOT set to 'false' in production)
+- [ ] Set NODE_ENV=production (this enforces SSL certificate verification)
 - [ ] Review and configure CORS_ORIGIN
 - [ ] Set up HTTPS/TLS certificates
 - [ ] Configure firewall rules
@@ -519,4 +579,4 @@ We take security seriously and will respond within 48 hours.
 
 This document should be reviewed and updated regularly as new security features are added or vulnerabilities are discovered.
 
-Last updated: 2026-02-01
+Last updated: 2026-02-06

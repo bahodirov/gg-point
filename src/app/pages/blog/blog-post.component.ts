@@ -208,9 +208,14 @@ export class BlogPostComponent implements OnInit {
   relatedPosts = signal<BlogPost[]>([]);
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const slug = params['slug'];
-      this.loadPost(slug);
+    this.route.params.subscribe({
+      next: (params) => {
+        const slug = params['slug'];
+        this.loadPost(slug);
+      },
+      error: (error) => {
+        console.error('Failed to load route params:', error);
+      }
     });
   }
 

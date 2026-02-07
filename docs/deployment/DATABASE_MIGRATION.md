@@ -197,7 +197,8 @@ SELECT slug, name_ru, price FROM products LIMIT 5;
 
 2. **Test login:**
    - Navigate to `http://localhost:4000/admin`
-   - Login with credentials (default: admin / admin123)
+   - Login with the credentials configured via `ADMIN_USERNAME`/`ADMIN_PASSWORD`
+   - If `ADMIN_PASSWORD` was omitted, use the generated password from the startup logs
    - Verify you can access the admin panel
 
 3. **Test product CRUD:**

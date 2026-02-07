@@ -8,6 +8,7 @@ export interface User {
   username: string;
   email: string | null;
   role: string;
+  must_change_password?: boolean;
 }
 
 export interface LoginResponse {
@@ -85,9 +86,12 @@ export class AuthService {
     this.isLoadingSignal.set(true);
     this.http.get<SessionResponse>('/api/auth/session')
       .pipe(
-        catchError(() => of({ authenticated: false, user: undefined } as SessionResponse))
+        catchError((error) => {
+          console.error('Failed to check session:', error);
+          return of({ authenticated: false, user: undefined } as SessionResponse);
+        })
       )
-      .subscribe(response => {
+      .subscribe((response) => {
         this.isAuthenticatedSignal.set(response.authenticated);
         this.currentUserSignal.set(response.user || null);
         this.isLoadingSignal.set(false);
@@ -101,6 +105,13 @@ export class AuthService {
     return this.http.post<{ success: boolean }>('/api/auth/change-password', {
       currentPassword,
       newPassword
-    });
+    }).pipe(
+      tap(() => {
+        const currentUser = this.currentUserSignal();
+        if (currentUser?.must_change_password) {
+          this.currentUserSignal.set({ ...currentUser, must_change_password: false });
+        }
+      })
+    );
   }
 }
