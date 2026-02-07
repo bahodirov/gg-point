@@ -241,9 +241,10 @@ ggpoint/
 ### Access the Admin Panel
 
 1. Navigate to `/admin` or `/admin/login`
-2. Default credentials (change immediately!):
-   - Username: `admin`
-   - Password: `admin123`
+2. Configure admin credentials via environment variables:
+   - `ADMIN_USERNAME` (defaults to `admin`)
+   - `ADMIN_PASSWORD` (if omitted, a random password is generated and logged on first setup)
+3. Change the password after your first login.
 
 ### Features
 
@@ -293,14 +294,14 @@ ggpoint/
 
 ### Security Best Practices
 
-1. **Change default admin password immediately:**
+1. **Set a strong admin password immediately:**
    ```bash
-   # Login to admin panel and navigate to settings
-   # Or use API:
-   curl -X POST http://localhost:4000/api/auth/change-password \
-     -H "Content-Type: application/json" \
-     -d '{"currentPassword":"admin123","newPassword":"YourStrongPassword123!"}'
-   ```
+    # Login to admin panel and navigate to settings
+    # Or use API:
+    curl -X POST http://localhost:4000/api/auth/change-password \
+      -H "Content-Type: application/json" \
+      -d '{"currentPassword":"<current-password>","newPassword":"YourStrongPassword123!"}'
+    ```
 
 2. **Use strong passwords:** Minimum 12 characters with uppercase, lowercase, numbers, and special characters
 
@@ -309,11 +310,13 @@ ggpoint/
 4. **Use HTTPS in production:** Set up SSL/TLS certificates
 
 5. **Configure environment variables:**
-   ```env
-   NODE_ENV=production
-   SESSION_SECRET=<generate-random-32-char-string>
-   DATABASE_URL=<your-postgresql-url>
-   ```
+    ```env
+    NODE_ENV=production
+    SESSION_SECRET=<generate-random-32-char-string>
+    DATABASE_URL=<your-postgresql-url>
+    ADMIN_USERNAME=admin
+    ADMIN_PASSWORD=<strong-admin-password>
+    ```
 
 6. **Set up firewall rules:** Restrict access to admin panel by IP if possible
 

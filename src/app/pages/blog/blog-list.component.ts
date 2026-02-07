@@ -11,7 +11,7 @@ import { BlogCardComponent } from '../../shared/components/blog-card/blog-card.c
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { BlogService } from '../../shared/services/blog.service';
 import { SeoService } from '../../shared/services/seo.service';
-import { BlogPost } from '../../shared/models/blog.model';
+import { BlogPost, BlogCategory } from '../../shared/models/blog.model';
 
 @Component({
   selector: 'app-blog-list',
@@ -114,7 +114,7 @@ export class BlogListComponent implements OnInit {
   allPosts: BlogPost[] = [];
   filteredPosts = signal<BlogPost[]>([]);
   pinnedPosts = signal<BlogPost[]>([]);
-  categories: any[] = [];
+  categories: BlogCategory[] = [];
 
   searchQuery: string = '';
   selectedCategory: string = '';
