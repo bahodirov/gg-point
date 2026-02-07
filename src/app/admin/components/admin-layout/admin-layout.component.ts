@@ -50,7 +50,7 @@ interface DatabaseHealth {
               <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
               <a routerLink="/admin/products" routerLinkActive="active">Products</a>
               <hr>
-              <a routerLink="/" target="_blank">View Store</a>
+              <a routerLink="/" target="_blank" rel="noopener noreferrer">View Store</a>
             </nav>
           }
 

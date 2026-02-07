@@ -56,7 +56,7 @@ interface CategoryCount {
           <div>
             <a routerLink="/admin/products/new">Add New Product</a>
             <a routerLink="/admin/products">View All Products</a>
-            <a href="/" target="_blank">View Store</a>
+            <a href="/" target="_blank" rel="noopener noreferrer">View Store</a>
           </div>
         </div>
 
