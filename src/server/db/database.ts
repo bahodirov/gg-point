@@ -71,7 +71,7 @@ async function initializePostgreSQL(): Promise<void> {
           // Test connection
           await pool.query('SELECT 1');
           databaseWarning = null;
-          logger.info('✅ Using PostgreSQL database');
+          console.log('✅ Using PostgreSQL database');
         } catch (error: unknown) {
           const errorMsg = error instanceof Error 
             ? `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`

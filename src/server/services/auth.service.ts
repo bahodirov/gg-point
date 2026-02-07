@@ -60,7 +60,7 @@ export class AuthService {
    */
   async validateSession(sessionId: string): Promise<User | null> {
     const now = new Date().toISOString();
-logger.debug(`Validating session ${sessionId}, now=${now}`);
+    console.log(`Validating session ${sessionId}, now=${now}`);
     const session = await db.sessions.findBySid(sessionId);
 
     if (!session) {

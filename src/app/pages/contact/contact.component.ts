@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -92,12 +93,12 @@ import { SeoService } from '../../shared/services/seo.service';
                   </div>
                 }
 
-                @if (submitError) {
-                  <div class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-4 rounded-lg">
-                    <mat-icon class="align-middle mr-2">error</mat-icon>
-                    Error sending message. Please try again.
-                  </div>
-                }
+                 @if (submitError) {
+                   <div class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-4 rounded-lg">
+                     <mat-icon class="align-middle mr-2">error</mat-icon>
+                     {{ submitErrorMessage }}
+                   </div>
+                 }
               </div>
             </form>
           </mat-card>
@@ -185,6 +186,7 @@ import { SeoService } from '../../shared/services/seo.service';
 })
 export class ContactComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
   private seoService = inject(SeoService);
   private timers: Array<ReturnType<typeof setTimeout>> = [];
 
@@ -192,6 +194,7 @@ export class ContactComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   submitSuccess = false;
   submitError = false;
+  submitErrorMessage = 'Error sending message. Please try again.';
 
   ngOnInit(): void {
     this.initForm();

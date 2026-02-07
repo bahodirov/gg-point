@@ -1,7 +1,6 @@
 import { db } from './database';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import { logger } from '../utils/logger';
 import { createHash, randomBytes } from 'node:crypto';
 
 const DEFAULT_ADMIN_USERNAME = 'admin';
@@ -26,25 +25,25 @@ export async function migrateData(): Promise<void> {
     const userCount = await db.users.count();
 
     if (userCount === 0) {
-logger.info('No users found. Creating admin user...');
+      console.log('No users found. Creating admin user...');
       const adminUsername = process.env['ADMIN_USERNAME']?.trim() || DEFAULT_ADMIN_USERNAME;
       const envAdminPassword = process.env['ADMIN_PASSWORD']?.trim();
       const adminPassword = envAdminPassword ?? generateAdminPassword();
       const isProduction = process.env['NODE_ENV'] === 'production';
 
       if (!envAdminPassword) {
-        logger.warn(
+        console.warn(
           `ADMIN_PASSWORD not set. Generated admin password for ${adminUsername}: ${adminPassword}. Change after first login.`
         );
         if (isProduction) {
-          logger.warn('Set ADMIN_PASSWORD in production to avoid logging credentials.');
+          console.warn('Set ADMIN_PASSWORD in production to avoid logging credentials.');
         }
       } else if (
         isProduction &&
         adminUsername === DEFAULT_ADMIN_USERNAME &&
         hashForLegacyAdminPasswordCheck(envAdminPassword) === LEGACY_ADMIN_PASSWORD_SHA256
       ) {
-        logger.warn('Default admin credentials detected in production. Update ADMIN_PASSWORD immediately.');
+        console.warn('Default admin credentials detected in production. Update ADMIN_PASSWORD immediately.');
       }
 
       const passwordHash = await bcrypt.hash(adminPassword, 12);
@@ -62,7 +61,7 @@ logger.info('No users found. Creating admin user...');
         updated_at: now,
       });
 
-logger.info(`Admin user created for ${adminUsername}. Password change required on first login.`);
+      console.log(`Admin user created for ${adminUsername}. Password change required on first login.`);
     } else {
       logger.info(`Database has ${userCount} users.`);
     }

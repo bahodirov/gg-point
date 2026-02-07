@@ -34,6 +34,39 @@ function getSSLConfig(): PoolConfig['ssl'] {
   return sslConfig;
 }
 
+// Validate and get SSL configuration
+function getSSLConfig(): PoolConfig['ssl'] {
+  const nodeEnv = process.env['NODE_ENV'];
+  
+  // Treat undefined/unset NODE_ENV as production for security (fail-safe to secure configuration)
+  const isProduction = !nodeEnv || nodeEnv === 'production';
+  const isDevelopment = nodeEnv === 'development';
+  
+  // Fail startup if insecure SSL configuration detected in production
+  if (isProduction && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
+    throw new Error(
+      'CRITICAL SECURITY ERROR: SSL certificate verification is disabled in production (DB_SSL_REJECT_UNAUTHORIZED=false). ' +
+      'This makes the connection vulnerable to man-in-the-middle attacks. ' +
+      'Remove DB_SSL_REJECT_UNAUTHORIZED or set it to "true" in production. ' +
+      'Use rejectUnauthorized=false only in development environments with self-signed certificates.'
+    );
+  }
+
+  const sslConfig = isProduction
+    ? true  // Always enable SSL verification in production (including when NODE_ENV is undefined)
+    : process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false'
+      ? { rejectUnauthorized: false }
+      : undefined;
+  
+  // Warn if SSL verification is disabled in development
+  if (isDevelopment && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
+    console.warn('WARNING: SSL is configured with rejectUnauthorized: false');
+    console.warn('This is insecure and should only be used in development');
+  }
+
+  return sslConfig;
+}
+
 // Environment variable validation
 function validateEnvironment(): void {
   const isDev = process.env['NODE_ENV'] !== 'production';
@@ -54,7 +87,6 @@ function getPoolConfig(): PoolConfig | null {
 
   // Option 1: Use DATABASE_URL
   if (process.env['DATABASE_URL']) {
-
     return {
       connectionString: process.env['DATABASE_URL'],
       ssl: getSSLConfig(),
@@ -66,7 +98,6 @@ function getPoolConfig(): PoolConfig | null {
 
   // Option 2: Use individual settings
   if (process.env['DB_NAME']) {
-
     return {
       host: process.env['DB_HOST'] || 'localhost',
       port: parseInt(process.env['DB_PORT'] || '5432', 10),

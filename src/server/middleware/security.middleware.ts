@@ -1,7 +1,6 @@
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '../utils/logger';
 import { randomBytes } from 'crypto';
 
 // Rate limit time constants (in seconds)
@@ -48,7 +47,7 @@ export function helmetConfig(req: Request, res: Response, next: NextFunction): v
   const nonce = res.locals.cspNonce;
   
   if (!nonce) {
-    logger.error('CSP nonce is missing! Ensure cspNonceMiddleware is applied before helmetConfig.');
+    console.error('CSP nonce is missing! Ensure cspNonceMiddleware is applied before helmetConfig.');
     return next(new Error('CSP nonce not initialized'));
   }
   
