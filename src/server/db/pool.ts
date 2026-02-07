@@ -1,4 +1,38 @@
 import { Pool, PoolConfig } from 'pg';
+import { logger } from '../utils/logger';
+
+// Validate and get SSL configuration
+function getSSLConfig(): PoolConfig['ssl'] {
+  const nodeEnv = process.env['NODE_ENV'];
+  
+  // Treat undefined/unset NODE_ENV as production for security (fail-safe to secure configuration)
+  const isProduction = !nodeEnv || nodeEnv === 'production';
+  const isDevelopment = nodeEnv === 'development';
+  
+  // Fail startup if insecure SSL configuration detected in production
+  if (isProduction && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
+    throw new Error(
+      'CRITICAL SECURITY ERROR: SSL certificate verification is disabled in production (DB_SSL_REJECT_UNAUTHORIZED=false). ' +
+      'This makes the connection vulnerable to man-in-the-middle attacks. ' +
+      'Remove DB_SSL_REJECT_UNAUTHORIZED or set it to "true" in production. ' +
+      'Use rejectUnauthorized=false only in development environments with self-signed certificates.'
+    );
+  }
+
+  const sslConfig = isProduction
+    ? true  // Always enable SSL verification in production (including when NODE_ENV is undefined)
+    : process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false'
+      ? { rejectUnauthorized: false }
+      : undefined;
+  
+  // Warn if SSL verification is disabled in development
+  if (isDevelopment && process.env['DB_SSL_REJECT_UNAUTHORIZED'] === 'false') {
+    logger.warn('WARNING: SSL is configured with rejectUnauthorized: false');
+    logger.warn('This is insecure and should only be used in development');
+  }
+
+  return sslConfig;
+}
 
 // Validate and get SSL configuration
 function getSSLConfig(): PoolConfig['ssl'] {
@@ -39,8 +73,8 @@ function validateEnvironment(): void {
   
   if (!process.env['DATABASE_URL'] && !process.env['DB_NAME']) {
     if (isDev) {
-      console.warn('WARNING: No database configuration found. Please set DATABASE_URL or DB_* environment variables.');
-      console.warn('Falling back to JSON file storage for development.');
+      logger.warn('WARNING: No database configuration found. Please set DATABASE_URL or DB_* environment variables.');
+      logger.warn('Falling back to JSON file storage for development.');
     } else {
       throw new Error('DATABASE_URL or DB_* environment variables must be set in production');
     }
@@ -97,13 +131,13 @@ export function getPool(): Pool | null {
 
   // Error handler
   pool.on('error', (err) => {
-    console.error('Unexpected error on idle PostgreSQL client', err);
+    logger.error('Unexpected error on idle PostgreSQL client', err);
   });
 
   // Log successful connection in development
   if (process.env['NODE_ENV'] !== 'production') {
     pool.on('connect', () => {
-      console.log('PostgreSQL client connected to pool');
+      logger.debug('PostgreSQL client connected to pool');
     });
   }
 
@@ -120,7 +154,7 @@ export async function closePool(): Promise<void> {
   if (pool) {
     await pool.end();
     pool = null;
-    console.log('PostgreSQL pool closed');
+    logger.info('PostgreSQL pool closed');
   }
 }
 
@@ -135,10 +169,10 @@ export async function testConnection(): Promise<boolean> {
     const client = await poolInstance.connect();
     await client.query('SELECT NOW()');
     client.release();
-    console.log('PostgreSQL connection test successful');
+    logger.info('PostgreSQL connection test successful');
     return true;
   } catch (error) {
-    console.error('PostgreSQL connection test failed:', error);
+    logger.error('PostgreSQL connection test failed:', error);
     return false;
   }
 }

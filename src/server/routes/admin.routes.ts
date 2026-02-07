@@ -6,6 +6,7 @@ import { uploadLimiter, apiLimiter, writeLimiter } from '../middleware/security.
 import { paginationValidation, uuidValidation, validateRequest } from '../middleware/validation.middleware';
 import { join } from 'node:path';
 import { getDatabaseWarning, isDatabaseHealthy } from '../db/database';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -32,7 +33,7 @@ router.get('/health', apiLimiter, requireAuth, async (req: Request, res: Respons
       database: usingPostgreSQL ? 'postgresql' : 'not-connected'
     });
   } catch (error) {
-    console.error('Health check error:', error);
+    logger.error('Health check error:', error);
     res.status(500).json({ error: 'Health check failed' });
   }
 });
@@ -82,7 +83,7 @@ router.post('/upload-image', uploadLimiter, requireAuth, uploadMemory.single('im
       },
     });
   } catch (error) {
-    console.error('Image upload error:', error);
+    logger.error('Image upload error:', error);
     res.status(500).json({ error: 'Failed to upload image' });
   }
 });
@@ -119,7 +120,7 @@ router.get('/images', apiLimiter, requireAuth, paginationValidation, validateReq
       },
     });
   } catch (error) {
-    console.error('List images error:', error);
+    logger.error('List images error:', error);
     res.status(500).json({ error: 'Failed to list images' });
   }
 });
@@ -140,7 +141,7 @@ router.get('/images/:id', apiLimiter, requireAuth, uuidValidation, validateReque
 
     res.json(image);
   } catch (error) {
-    console.error('Get image error:', error);
+    logger.error('Get image error:', error);
     res.status(500).json({ error: 'Failed to get image' });
   }
 });
@@ -177,7 +178,7 @@ router.delete('/images/:id', writeLimiter, requireAuth, uuidValidation, validate
 
     res.json({ success: true, message: 'Image deleted successfully' });
   } catch (error) {
-    console.error('Delete image error:', error);
+    logger.error('Delete image error:', error);
     res.status(500).json({ error: 'Failed to delete image' });
   }
 });

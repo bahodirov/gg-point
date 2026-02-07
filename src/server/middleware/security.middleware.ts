@@ -220,7 +220,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
 
     // Only log errors and admin actions
     if (res.statusCode >= 400 || req.url.includes('/admin') || req.url.includes('/auth')) {
-      console.log(JSON.stringify(responseLog));
+      logger.info(responseLog);
     }
   });
 
@@ -231,7 +231,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
  * Error handling middleware
  */
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {
-  console.error('Error:', {
+  logger.error('Error:', {
     message: err.message,
     stack: err.stack,
     url: req.url,

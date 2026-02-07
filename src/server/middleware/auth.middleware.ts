@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { authService, User } from '../services/auth.service';
+import { logger } from '../utils/logger';
 
 // Extend Express Request interface to include user
 declare global {
@@ -20,7 +21,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   const sessionId = req.cookies?.[SESSION_COOKIE_NAME];
 
   if (!sessionId) {
-    console.warn('requireAuth: No session ID found in cookies');
+    logger.warn('requireAuth: No session ID found in cookies');
     res.status(401).json({ error: 'Authentication required' });
     return;
   }
@@ -28,13 +29,13 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   const user = await authService.validateSession(sessionId);
 
   if (!user) {
-    console.warn(`requireAuth: Invalid or expired session: ${sessionId}`);
+    logger.warn(`requireAuth: Invalid or expired session: ${sessionId}`);
     res.clearCookie(SESSION_COOKIE_NAME);
     res.status(401).json({ error: 'Session expired or invalid' });
     return;
   }
 
-  console.log(`requireAuth: User ${user.username} authenticated`);
+  logger.debug(`requireAuth: User ${user.username} authenticated`);
   req.user = user;
   req.sessionId = sessionId;
   next();

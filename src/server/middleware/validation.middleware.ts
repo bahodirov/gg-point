@@ -1,5 +1,6 @@
 import { body, param, query, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
 
 /**
  * Middleware to check validation results
@@ -8,7 +9,7 @@ export function validateRequest(req: Request, res: Response, next: NextFunction)
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.warn('Validation failed for request:', req.url, JSON.stringify(errors.array(), null, 2));
+    logger.warn('Validation failed for request:', { url: req.url, errors: errors.array() });
     res.status(400).json({
       error: 'Validation failed',
       details: errors.array(),

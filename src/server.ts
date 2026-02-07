@@ -11,7 +11,7 @@ import {
 import express, { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import { join } from 'node:path';
-import { config } from './config/environment';
+import { logger } from './server/utils/logger';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -39,11 +39,11 @@ async function initializeSecurity() {
     app.use(sanitizeInput);
 
     securityInitialized = true;
-    console.log('Security middleware initialized');
+    logger.info('Security middleware initialized');
   } catch (error) {
-    console.error('FATAL: Failed to initialize security middleware:', error);
-    console.error('Application cannot start without security protections.');
-    console.error('Please check that all security middleware modules are available.');
+    logger.error('FATAL: Failed to initialize security middleware:', error);
+    logger.error('Application cannot start without security protections.');
+    logger.error('Please check that all security middleware modules are available.');
     // Fail fast: do not start the application without security middleware
     throw error;
   }
@@ -68,12 +68,13 @@ async function initializeApi(): Promise<express.Router> {
   }
 
   apiInitializationPromise = (async () => {
-    const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }, { default: adminRoutes }] = await Promise.all([
+    const [{ initializeDatabase }, { default: migrateData }, { default: authRoutes }, { default: productsRoutes }, { default: adminRoutes }, { default: contactRoutes }] = await Promise.all([
       import('./server/db/database'),
       import('./server/db/migrate'),
       import('./server/routes/auth.routes'),
       import('./server/routes/products.routes'),
       import('./server/routes/admin.routes'),
+      import('./server/routes/contact.routes'),
     ]);
 
     // Initialize database and migrate data
@@ -85,8 +86,9 @@ async function initializeApi(): Promise<express.Router> {
     router.use('/auth', authRoutes);
     router.use('/products', productsRoutes);
     router.use('/admin', adminRoutes);
+    router.use('/contact', contactRoutes);
 
-    console.log('API initialized successfully');
+    logger.info('API initialized successfully');
 
     return router;
   })();
@@ -102,7 +104,7 @@ app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
     const router = await initializeApi();
     router(req, res, next);
   } catch (error) {
-    console.error('Failed to initialize API:', error);
+    logger.error('Failed to initialize API:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -141,11 +143,7 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
       throw error;
     }
 
-    // Log the appropriate URL based on the environment
-    const serverUrl = config.production 
-      ? config.apiUrl 
-      : `http://localhost:${port}`;
-    console.log(`Node Express server listening on ${serverUrl}`);
+    logger.info(`Node Express server listening on http://localhost:${port}`);
   });
 }
 

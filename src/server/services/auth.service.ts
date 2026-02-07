@@ -1,6 +1,7 @@
 import { db } from '../db/database';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 export interface User {
   id: string;
@@ -63,12 +64,12 @@ export class AuthService {
     const session = await db.sessions.findBySid(sessionId);
 
     if (!session) {
-      console.warn(`Session ${sessionId} not found in database`);
+      logger.warn(`Session ${sessionId} not found in database`);
       return null;
     }
 
     if (session.expires_at <= now) {
-      console.warn(`Session ${sessionId} expired at ${session.expires_at}`);
+      logger.warn(`Session ${sessionId} expired at ${session.expires_at}`);
       return null;
     }
 

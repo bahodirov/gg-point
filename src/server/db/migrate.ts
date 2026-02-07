@@ -18,7 +18,7 @@ function generateAdminPassword(): string {
  * Seed initial data if database is empty
  */
 export async function migrateData(): Promise<void> {
-  console.log('Checking database status...');
+  logger.info('Checking database status...');
 
   try {
     // Check if users already exist
@@ -63,14 +63,14 @@ export async function migrateData(): Promise<void> {
 
       console.log(`Admin user created for ${adminUsername}. Password change required on first login.`);
     } else {
-      console.log(`Database has ${userCount} users.`);
+      logger.info(`Database has ${userCount} users.`);
     }
 
     // Check if products already exist
     const productCount = await db.products.count();
-    console.log(`Database has ${productCount} products.`);
+    logger.info(`Database has ${productCount} products.`);
   } catch (error) {
-    console.error('Migration/Seeding failed:', error);
+    logger.error('Migration/Seeding failed:', error);
   }
 }
 
