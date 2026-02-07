@@ -264,8 +264,11 @@ const pgDb = {
       const whereClause =
         conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-      const limitClause =
-        options.limit !== undefined ? `LIMIT $${values.push(options.limit)}` : '';
+      let limitClause = '';
+      if (options.limit !== undefined) {
+        values.push(options.limit);
+        limitClause = `LIMIT $${values.length}`;
+      }
 
       const query = `
         SELECT id, slug, name_ru, name_uz, description_ru, description_uz,
