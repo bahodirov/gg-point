@@ -2,29 +2,31 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger';
+import { randomBytes } from 'crypto';
 
 // Rate limit time constants (in seconds)
 const FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
 const ONE_MINUTE_IN_SECONDS = 60;
 
 /**
- * Helmet configuration for security headers
+ * Middleware to generate and attach a CSP nonce to each request
  */
-export const helmetConfig = helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc: ["'self'", 'data:', 'https:'],
-      // NOTE: 'unsafe-inline' and 'unsafe-eval' significantly weaken XSS protection
-      // Angular production builds don't require 'unsafe-eval'
-      // Consider migrating to nonce-based or hash-based CSP for inline scripts
-      // and removing 'unsafe-eval' entirely for production builds
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      connectSrc: ["'self'", "http://localhost:4000", "http://localhost:4200"],
-    },
-  },
+export function cspNonceMiddleware(req: Request, res: Response, next: NextFunction): void {
+  // Generate a unique nonce for this request
+  const nonce = randomBytes(16).toString('base64');
+  
+  // Make the nonce available to the application
+  res.locals.cspNonce = nonce;
+  
+  next();
+}
+
+/**
+ * Base Helmet configuration for non-CSP security headers
+ * Created once at module level to avoid per-request overhead
+ */
+const baseHelmetConfig = helmet({
+  contentSecurityPolicy: false, // CSP is handled separately per-request
   hsts: {
     maxAge: 31536000, // 1 year
     includeSubDomains: true,
@@ -36,6 +38,40 @@ export const helmetConfig = helmet({
   noSniff: true,
   xssFilter: true,
 });
+
+/**
+ * Helmet configuration for security headers with nonce-based CSP
+ * Note: The nonce must be generated per request and injected into the middleware
+ */
+export function helmetConfig(req: Request, res: Response, next: NextFunction): void {
+  // Get the nonce from res.locals (set by cspNonceMiddleware)
+  const nonce = res.locals.cspNonce;
+  
+  if (!nonce) {
+    console.error('CSP nonce is missing! Ensure cspNonceMiddleware is applied before helmetConfig.');
+    return next(new Error('CSP nonce not initialized'));
+  }
+  
+  // Apply base helmet config first
+  baseHelmetConfig(req, res, (err) => {
+    if (err) return next(err);
+    
+    // Then set CSP header with the nonce
+    const cspDirectives = [
+      `default-src 'self'`,
+      `script-src 'self' 'nonce-${nonce}'`,
+      // Allow <style> tags with nonce, but keep inline style attributes allowed for existing UI
+      `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
+      `style-src-attr 'unsafe-inline'`, // Allow inline style attributes (e.g., style="display: none")
+      `font-src 'self' https://fonts.gstatic.com`,
+      `img-src 'self' data: https:`,
+      `connect-src 'self' http://localhost:4000 http://localhost:4200`,
+    ].join('; ');
+    
+    res.setHeader('Content-Security-Policy', cspDirectives);
+    next();
+  });
+}
 
 /**
  * General API rate limiter
@@ -217,6 +253,7 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
 }
 
 export default {
+  cspNonceMiddleware,
   helmetConfig,
   apiLimiter,
   authLimiter,

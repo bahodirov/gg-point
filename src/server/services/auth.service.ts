@@ -8,6 +8,7 @@ export interface User {
   username: string;
   email: string | null;
   role: string;
+  must_change_password: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -26,7 +27,7 @@ export class AuthService {
    * Authenticate user with username and password
    */
   async login(username: string, password: string): Promise<{ user: User; sessionId: string } | null> {
-    const userRow = await db.users.find(u => u.username === username);
+    const userRow = await db.users.findByUsername(username);
 
     if (!userRow) {
       return null;
@@ -59,8 +60,8 @@ export class AuthService {
    */
   async validateSession(sessionId: string): Promise<User | null> {
     const now = new Date().toISOString();
-    logger.debug(`Validating session ${sessionId}, now=${now}`);
-    const session = await db.sessions.find(s => s.sid === sessionId);
+logger.debug(`Validating session ${sessionId}, now=${now}`);
+    const session = await db.sessions.findBySid(sessionId);
 
     if (!session) {
       logger.warn(`Session ${sessionId} not found in database`);
@@ -72,7 +73,7 @@ export class AuthService {
       return null;
     }
 
-    const userRow = await db.users.find(u => u.id === session.user_id);
+    const userRow = await db.users.findById(session.user_id);
     if (!userRow) {
       return null;
     }
@@ -92,7 +93,7 @@ export class AuthService {
    * Change user password
    */
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<boolean> {
-    const userRow = await db.users.find(u => u.id === userId);
+    const userRow = await db.users.findById(userId);
 
     if (!userRow) {
       return false;
@@ -106,6 +107,7 @@ export class AuthService {
     const newPasswordHash = await bcrypt.hash(newPassword, 12);
     await db.users.update(userId, {
       password_hash: newPasswordHash,
+      must_change_password: false,
       updated_at: new Date().toISOString(),
     });
 

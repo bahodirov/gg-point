@@ -24,11 +24,16 @@ async function initializeSecurity() {
   if (securityInitialized) return;
 
   try {
-    const { helmetConfig, requestLogger, corsMiddleware } = await import('./server/middleware/security.middleware');
+    const { cspNonceMiddleware, helmetConfig, requestLogger, corsMiddleware } = await import('./server/middleware/security.middleware');
     const { sanitizeInput } = await import('./server/middleware/validation.middleware');
 
-    // Apply security middleware
+    // Apply CSP nonce middleware first (must come before helmetConfig)
+    app.use(cspNonceMiddleware);
+    
+    // Apply helmet security middleware with nonce support
     app.use(helmetConfig);
+    
+    // Apply CORS and other security middleware
     app.use(corsMiddleware);
     app.use(requestLogger);
     app.use(sanitizeInput);

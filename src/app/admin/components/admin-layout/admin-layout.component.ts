@@ -1,4 +1,4 @@
-import { Component, inject, PLATFORM_ID, signal, OnInit } from '@angular/core';
+import { Component, inject, PLATFORM_ID, signal, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -263,11 +263,12 @@ interface DatabaseHealth {
     }
   `]
 })
-export class AdminLayoutComponent implements OnInit {
+export class AdminLayoutComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   private http = inject(HttpClient);
+  private healthCheckInterval?: ReturnType<typeof setInterval>;
 
   dbHealth = signal<DatabaseHealth | null>(null);
   isDarkMode = signal(false);
@@ -299,7 +300,13 @@ export class AdminLayoutComponent implements OnInit {
     if (this.isBrowser) {
       this.checkDatabaseHealth();
       // Har 30 soniyada tekshirish
-      setInterval(() => this.checkDatabaseHealth(), 30000);
+      this.healthCheckInterval = setInterval(() => this.checkDatabaseHealth(), 30000);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.healthCheckInterval !== undefined) {
+      clearInterval(this.healthCheckInterval);
     }
   }
 

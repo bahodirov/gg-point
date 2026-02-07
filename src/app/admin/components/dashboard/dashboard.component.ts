@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ServerProduct } from '../../../shared/models/product.model';
 
 interface DashboardStats {
   totalProducts: number;
@@ -356,7 +357,7 @@ export class DashboardComponent implements OnInit {
 
   private loadStats(): void {
     // Load products
-    this.http.get<any[]>('/api/products').subscribe({
+    this.http.get<ServerProduct[]>('/api/products').subscribe({
       next: (products) => {
         const totalProducts = products.length;
         const featuredProducts = products.filter(p => p.featured).length;

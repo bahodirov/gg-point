@@ -246,14 +246,8 @@ export class ImageService {
   /**
    * Check if image is used in any products
    * 
-   * Performance note: Uses LIKE on JSONB cast to text, which performs full table scan.
-   * For better performance with large product catalogs (1000+ products), consider:
-   * - Using PostgreSQL JSONB operators (@>, ?, ?|) with proper queries
-   * - Adding a GIN index: CREATE INDEX idx_products_images ON products USING GIN (images);
-   * - Using jsonb_array_elements to query array elements directly
-   * Example optimized query:
-   *   SELECT EXISTS(SELECT 1 FROM products WHERE images @> $1::jsonb)
-   *   with parameter: JSON.stringify([imageUrl])
+   * Performance note: Uses JSONB operators with a GIN index for fast lookups.
+   * Recommended index: CREATE INDEX idx_products_images_gin ON products USING GIN (images);
    */
   async isImageUsedInProducts(imageUrl: string): Promise<boolean> {
     if (isUsingPostgreSQL()) {
@@ -266,7 +260,7 @@ export class ImageService {
           `SELECT EXISTS(
             SELECT 1
             FROM products
-            WHERE images::text LIKE '%' || $1 || '%'
+            WHERE images ? $1
           ) AS exists`,
           [imageUrl]
         );

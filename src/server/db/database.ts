@@ -9,6 +9,7 @@ export interface UserData {
   password_hash: string;
   email: string | null;
   role: string;
+  must_change_password: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -71,8 +72,10 @@ async function initializePostgreSQL(): Promise<void> {
           await pool.query('SELECT 1');
           databaseWarning = null;
           logger.info('✅ Using PostgreSQL database');
-        } catch (error: any) {
-          const errorMsg = `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`;
+        } catch (error: unknown) {
+          const errorMsg = error instanceof Error 
+            ? `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: ${error.message}`
+            : `PostgreSQL ma'lumotlar bazasiga ulanib bo'lmadi: Unknown error`;
           databaseWarning = errorMsg;
           logger.error('❌ ' + errorMsg);
         }
@@ -127,18 +130,19 @@ const pgDb = {
       );
       return result.rows;
     },
-    find: async (predicate: (u: UserData) => boolean): Promise<UserData | undefined> => {
-      if (!pool) throw new Error('PostgreSQL not initialized');
-      // Note: This loads all users and filters in memory
-      // For production, use specific methods like findByUsername or findById
-      const allUsers = await pgDb.users.all();
-      return allUsers.find(predicate);
-    },
     findByUsername: async (username: string): Promise<UserData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
         'SELECT * FROM users WHERE username = $1',
         [username]
+      );
+      return result.rows[0] || null;
+    },
+    findByEmail: async (email: string): Promise<UserData | null> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const result = await pool.query(
+        'SELECT * FROM users WHERE email = $1 ORDER BY created_at DESC LIMIT 1',
+        [email]
       );
       return result.rows[0] || null;
     },
@@ -153,15 +157,24 @@ const pgDb = {
     insert: async (user: UserData): Promise<void> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       await pool.query(
-        `INSERT INTO users (id, username, password_hash, email, role, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [user.id, user.username, user.password_hash, user.email, user.role, user.created_at, user.updated_at]
+        `INSERT INTO users (id, username, password_hash, email, role, must_change_password, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [
+          user.id,
+          user.username,
+          user.password_hash,
+          user.email,
+          user.role,
+          user.must_change_password,
+          user.created_at,
+          user.updated_at,
+        ]
       );
     },
     update: async (id: string, updates: Partial<UserData>): Promise<void> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const fields: string[] = [];
-      const values: any[] = [];
+      const values: (string | null)[] = [];
       let paramCount = 1;
 
       Object.entries(updates).forEach(([key, value]) => {
@@ -199,11 +212,6 @@ const pgDb = {
         is_new: boolToInt(row.is_new),
       }));
     },
-    find: async (predicate: (p: ProductData) => boolean): Promise<ProductData | undefined> => {
-      if (!pool) throw new Error('PostgreSQL not initialized');
-      const allProducts = await pgDb.products.all();
-      return allProducts.find(predicate);
-    },
     findById: async (id: string): Promise<ProductData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
@@ -234,23 +242,17 @@ const pgDb = {
         is_new: boolToInt(row.is_new),
       };
     },
-    filter: async (predicate: (p: ProductData) => boolean): Promise<ProductData[]> => {
-      if (!pool) throw new Error('PostgreSQL not initialized');
-      // Note: This is a simplified filter that loads all products
-      // For production with large datasets, use specific query methods like filterByCategory
-      const allProducts = await pgDb.products.all();
-      return allProducts.filter(predicate);
-    },
     filterByOptions: async (options: {
       category?: string;
       inStock?: boolean;
       featured?: boolean;
       isNew?: boolean;
+      limit?: number;
     }): Promise<ProductData[]> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
 
       const conditions: string[] = [];
-      const values: any[] = [];
+      const values: (string | boolean)[] = [];
 
       if (options.category !== undefined) {
         values.push(options.category);
@@ -275,6 +277,12 @@ const pgDb = {
       const whereClause =
         conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
+      let limitClause = '';
+      if (options.limit !== undefined) {
+        values.push(options.limit);
+        limitClause = `LIMIT $${values.length}`;
+      }
+
       const query = `
         SELECT id, slug, name_ru, name_uz, description_ru, description_uz,
                price, old_price, category, images::text, specs::text,
@@ -283,6 +291,7 @@ const pgDb = {
         FROM products
         ${whereClause}
         ORDER BY created_at DESC
+        ${limitClause}
       `;
 
       const result = await pool.query(query, values);
@@ -299,6 +308,33 @@ const pgDb = {
       const result = await pool.query(
         'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products WHERE LOWER(category) = LOWER($1) ORDER BY created_at DESC',
         [category]
+      );
+      return result.rows.map(row => ({
+        ...row,
+        in_stock: boolToInt(row.in_stock),
+        featured: boolToInt(row.featured),
+        is_new: boolToInt(row.is_new),
+      }));
+    },
+    searchByText: async (queryText: string): Promise<ProductData[]> => {
+      if (!pool) throw new Error('PostgreSQL not initialized');
+      const trimmedQuery = queryText.trim();
+      if (!trimmedQuery) {
+        return [];
+      }
+      const result = await pool.query(
+        `SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category,
+                images::text, specs::text, in_stock, featured, is_new, related_products::text,
+                created_at, updated_at
+         FROM products
+         WHERE to_tsvector('simple',
+           COALESCE(name_ru, '') || ' ' ||
+           COALESCE(name_uz, '') || ' ' ||
+           COALESCE(description_ru, '') || ' ' ||
+           COALESCE(description_uz, '')
+         ) @@ plainto_tsquery('simple', $1)
+         ORDER BY created_at DESC`,
+        [trimmedQuery]
       );
       return result.rows.map(row => ({
         ...row,
@@ -374,7 +410,7 @@ const pgDb = {
     update: async (id: string, updates: Partial<ProductData>): Promise<void> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const fields: string[] = [];
-      const values: any[] = [];
+      const values: (string | number | boolean | null)[] = [];
       let paramCount = 1;
 
       Object.entries(updates).forEach(([key, value]) => {
@@ -420,11 +456,6 @@ const pgDb = {
         'SELECT * FROM sessions ORDER BY created_at DESC'
       );
       return result.rows;
-    },
-    find: async (predicate: (s: SessionData) => boolean): Promise<SessionData | undefined> => {
-      if (!pool) throw new Error('PostgreSQL not initialized');
-      const allSessions = await pgDb.sessions.all();
-      return allSessions.find(predicate);
     },
     findBySid: async (sid: string): Promise<SessionData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
@@ -512,8 +543,14 @@ export const db = {
     all: (): Promise<UserData[]> => {
       return pgDb.users.all();
     },
-    find: (predicate: (u: UserData) => boolean): Promise<UserData | undefined> => {
-      return pgDb.users.find(predicate);
+    findByUsername: (username: string): Promise<UserData | null> => {
+      return pgDb.users.findByUsername(username);
+    },
+    findByEmail: (email: string): Promise<UserData | null> => {
+      return pgDb.users.findByEmail(email);
+    },
+    findById: (id: string): Promise<UserData | null> => {
+      return pgDb.users.findById(id);
     },
     insert: (user: UserData): Promise<void> => {
       return pgDb.users.insert(user);
@@ -529,11 +566,26 @@ export const db = {
     all: (): Promise<ProductData[]> => {
       return pgDb.products.all();
     },
-    find: (predicate: (p: ProductData) => boolean): Promise<ProductData | undefined> => {
-      return pgDb.products.find(predicate);
+    findById: (id: string): Promise<ProductData | null> => {
+      return pgDb.products.findById(id);
     },
-    filter: (predicate: (p: ProductData) => boolean): Promise<ProductData[]> => {
-      return pgDb.products.filter(predicate);
+    findBySlug: (slug: string): Promise<ProductData | null> => {
+      return pgDb.products.findBySlug(slug);
+    },
+    filterByOptions: (options: {
+      category?: string;
+      inStock?: boolean;
+      featured?: boolean;
+      isNew?: boolean;
+      limit?: number;
+    }): Promise<ProductData[]> => {
+      return pgDb.products.filterByOptions(options);
+    },
+    filterByCategory: (category: string): Promise<ProductData[]> => {
+      return pgDb.products.filterByCategory(category);
+    },
+    searchByText: (queryText: string): Promise<ProductData[]> => {
+      return pgDb.products.searchByText(queryText);
     },
     insert: (product: ProductData): Promise<void> => {
       return pgDb.products.insert(product);
@@ -555,8 +607,8 @@ export const db = {
     all: (): Promise<SessionData[]> => {
       return pgDb.sessions.all();
     },
-    find: (predicate: (s: SessionData) => boolean): Promise<SessionData | undefined> => {
-      return pgDb.sessions.find(predicate);
+    findBySid: (sid: string): Promise<SessionData | null> => {
+      return pgDb.sessions.findBySid(sid);
     },
     insert: (session: SessionData): Promise<void> => {
       return pgDb.sessions.insert(session);

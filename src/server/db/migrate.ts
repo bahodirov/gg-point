@@ -2,10 +2,18 @@ import { db } from './database';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../utils/logger';
+import { createHash, randomBytes } from 'node:crypto';
 
-// Default admin credentials
 const DEFAULT_ADMIN_USERNAME = 'admin';
-const DEFAULT_ADMIN_PASSWORD = 'admin123';
+const LEGACY_ADMIN_PASSWORD_SHA256 = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+
+function hashForLegacyAdminPasswordCheck(value: string): string {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function generateAdminPassword(): string {
+  return randomBytes(32).toString('hex');
+}
 
 /**
  * Seed initial data if database is empty
@@ -18,22 +26,43 @@ export async function migrateData(): Promise<void> {
     const userCount = await db.users.count();
 
     if (userCount === 0) {
-      logger.info('No users found. Creating default admin user...');
-      const passwordHash = await bcrypt.hash(DEFAULT_ADMIN_PASSWORD, 12);
+logger.info('No users found. Creating admin user...');
+      const adminUsername = process.env['ADMIN_USERNAME']?.trim() || DEFAULT_ADMIN_USERNAME;
+      const envAdminPassword = process.env['ADMIN_PASSWORD']?.trim();
+      const adminPassword = envAdminPassword ?? generateAdminPassword();
+      const isProduction = process.env['NODE_ENV'] === 'production';
+
+      if (!envAdminPassword) {
+        logger.warn(
+          `ADMIN_PASSWORD not set. Generated admin password for ${adminUsername}: ${adminPassword}. Change after first login.`
+        );
+        if (isProduction) {
+          logger.warn('Set ADMIN_PASSWORD in production to avoid logging credentials.');
+        }
+      } else if (
+        isProduction &&
+        adminUsername === DEFAULT_ADMIN_USERNAME &&
+        hashForLegacyAdminPasswordCheck(envAdminPassword) === LEGACY_ADMIN_PASSWORD_SHA256
+      ) {
+        logger.warn('Default admin credentials detected in production. Update ADMIN_PASSWORD immediately.');
+      }
+
+      const passwordHash = await bcrypt.hash(adminPassword, 12);
       const userId = uuidv4();
       const now = new Date().toISOString();
 
       await db.users.insert({
         id: userId,
-        username: DEFAULT_ADMIN_USERNAME,
+        username: adminUsername,
         password_hash: passwordHash,
         email: null,
         role: 'admin',
+        must_change_password: true,
         created_at: now,
         updated_at: now,
       });
 
-      logger.info('Default admin user created (username: admin, password: admin123)');
+logger.info(`Admin user created for ${adminUsername}. Password change required on first login.`);
     } else {
       logger.info(`Database has ${userCount} users.`);
     }

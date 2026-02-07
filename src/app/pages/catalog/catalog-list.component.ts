@@ -173,10 +173,15 @@ export class CatalogListComponent implements OnInit {
     this.updateSEO();
     
     // Check for category query param
-    this.route.queryParams.subscribe(params => {
-      if (params['category']) {
-        this.selectedCategory = params['category'];
-        this.applyFilters();
+    this.route.queryParams.subscribe({
+      next: (params) => {
+        if (params['category']) {
+          this.selectedCategory = params['category'];
+          this.applyFilters();
+        }
+      },
+      error: (error) => {
+        console.error('Failed to load query params:', error);
       }
     });
   }

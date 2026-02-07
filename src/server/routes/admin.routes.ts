@@ -10,6 +10,13 @@ import { logger } from '../utils/logger';
 
 const router = Router();
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_PER_PAGE = 50;
+const MIN_PAGE = 1;
+const MAX_PAGE = 10000;
+const MIN_PER_PAGE = 1;
+const MAX_PER_PAGE = 100;
+
 /**
  * GET /api/admin/health
  * Database health check
@@ -87,8 +94,17 @@ router.post('/upload-image', uploadLimiter, requireAuth, uploadMemory.single('im
  */
 router.get('/images', apiLimiter, requireAuth, paginationValidation, validateRequest, async (req: Request, res: Response) => {
   try {
-    const page = parseInt(String(req.query['page'] || '1'), 10);
-    const perPage = parseInt(String(req.query['per_page'] || '50'), 10);
+    const pageParam = req.query['page'];
+    const perPageParam = req.query['per_page'];
+    const rawPage = typeof pageParam === 'string' ? Number.parseInt(pageParam, 10) : Number.NaN;
+    const rawPerPage =
+      typeof perPageParam === 'string' ? Number.parseInt(perPageParam, 10) : Number.NaN;
+    const page = Number.isFinite(rawPage)
+      ? Math.min(Math.max(rawPage, MIN_PAGE), MAX_PAGE)
+      : DEFAULT_PAGE;
+    const perPage = Number.isFinite(rawPerPage)
+      ? Math.min(Math.max(rawPerPage, MIN_PER_PAGE), MAX_PER_PAGE)
+      : DEFAULT_PER_PAGE;
     const offset = (page - 1) * perPage;
 
     const images = await imageService.getAllImages(perPage, offset);
