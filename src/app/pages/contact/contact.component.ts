@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -95,7 +96,7 @@ import { SeoService } from '../../shared/services/seo.service';
                 @if (submitError) {
                   <div class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-4 rounded-lg">
                     <mat-icon class="align-middle mr-2">error</mat-icon>
-                    Error sending message. Please try again.
+                    {{ submitErrorMessage }}
                   </div>
                 }
               </div>
@@ -185,6 +186,7 @@ import { SeoService } from '../../shared/services/seo.service';
 })
 export class ContactComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
   private seoService = inject(SeoService);
   private timers: Array<ReturnType<typeof setTimeout>> = [];
 
@@ -192,6 +194,7 @@ export class ContactComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   submitSuccess = false;
   submitError = false;
+  submitErrorMessage = 'Error sending message. Please try again.';
 
   ngOnInit(): void {
     this.initForm();
@@ -212,19 +215,49 @@ export class ContactComponent implements OnInit, OnDestroy {
       this.submitSuccess = false;
       this.submitError = false;
 
-      // Simulate form submission
-      const submitTimer = setTimeout(() => {
-        this.isSubmitting = false;
-        this.submitSuccess = true;
-        this.contactForm.reset();
-        
-        // Hide success message after 5 seconds
-        const hideTimer = setTimeout(() => {
-          this.submitSuccess = false;
-        }, 5000);
-        this.timers.push(hideTimer);
-      }, 1000);
-      this.timers.push(submitTimer);
+      this.http.post('/api/contact', this.contactForm.value).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.submitSuccess = true;
+          this.contactForm.reset();
+
+          // Hide success message after 5 seconds
+          const hideTimer = setTimeout(() => {
+            this.submitSuccess = false;
+          }, 5000);
+          this.timers.push(hideTimer);
+        },
+        error: (error) => {
+          let apiMessage: string | undefined;
+          if (error instanceof HttpErrorResponse) {
+            const errorBody = error.error as
+              | { message?: string; error?: string; details?: Array<{ msg?: string }> }
+              | null
+              | undefined;
+            if (typeof errorBody?.message === 'string') {
+              apiMessage = errorBody.message;
+            } else if (typeof errorBody?.error === 'string') {
+              apiMessage = errorBody.error;
+            } else if (Array.isArray(errorBody?.details)) {
+              const firstDetail = errorBody.details[0];
+              if (typeof firstDetail?.msg === 'string') {
+                apiMessage = firstDetail.msg;
+              }
+            }
+          }
+          const status = error instanceof HttpErrorResponse ? error.status : undefined;
+          const logDetails = status !== undefined ? { status } : {};
+          console.error('Failed to send message:', logDetails);
+          this.isSubmitting = false;
+          this.submitErrorMessage = apiMessage ?? 'Error sending message. Please try again.';
+          this.submitError = true;
+
+          const hideTimer = setTimeout(() => {
+            this.submitError = false;
+          }, 5000);
+          this.timers.push(hideTimer);
+        }
+      });
     }
   }
 
