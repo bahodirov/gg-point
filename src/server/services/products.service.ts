@@ -1,5 +1,6 @@
 import { db } from '../db/database';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 export interface ProductRow {
   id: string;
@@ -99,7 +100,7 @@ function safeJsonParse<T>(
     return resolve(JSON.parse(value));
   } catch (error) {
     const message = error instanceof Error ? error.message : 'invalid JSON';
-    console.warn(`Failed to parse JSON field: ${label} - ${message}`);
+    logger.warn(`Failed to parse JSON field: ${label} - ${message}`);
     return fallback;
   }
 }

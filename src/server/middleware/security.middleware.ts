@@ -48,7 +48,7 @@ export function helmetConfig(req: Request, res: Response, next: NextFunction): v
   const nonce = res.locals.cspNonce;
   
   if (!nonce) {
-    console.error('CSP nonce is missing! Ensure cspNonceMiddleware is applied before helmetConfig.');
+    logger.error('CSP nonce is missing! Ensure cspNonceMiddleware is applied before helmetConfig.');
     return next(new Error('CSP nonce not initialized'));
   }
   
