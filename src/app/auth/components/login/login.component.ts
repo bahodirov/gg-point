@@ -23,76 +23,80 @@ import { AuthService } from '../../services/auth.service';
     MatProgressSpinnerModule,
   ],
   template: `
-    <div class="login-page">
-      <!-- Left panel - branding -->
-      <div class="login-branding">
-        <div class="branding-content">
+    <div class="login-wrapper">
+      <!-- Left side: Hero branding -->
+      <div class="branding-side">
+        <div class="brand-content">
           <div class="brand-logo">
-            <div class="logo-icon">
-              <mat-icon>storefront</mat-icon>
-            </div>
+            <mat-icon>storefront</mat-icon>
             <h1>GG<span>Point</span></h1>
           </div>
-          <p class="brand-tagline">Admin Control Panel</p>
-          <p class="brand-desc">Manage your products, monitor analytics, and keep your store running smoothly.</p>
-          <div class="brand-features">
-            <div class="feature">
-              <mat-icon>inventory_2</mat-icon>
-              <span>Product Management</span>
+          <h2 class="brand-title">Admin Control Panel</h2>
+          <p class="brand-description">
+            Efficiently manage your digital storefront with our powerful administration tools.
+            Track inventory, monitor sales, and optimize your customer experience.
+          </p>
+
+          <div class="features-list">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <mat-icon>inventory_2</mat-icon>
+              </div>
+              <span class="feature-text">Advanced Product Management</span>
             </div>
-            <div class="feature">
-              <mat-icon>analytics</mat-icon>
-              <span>Dashboard Analytics</span>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <mat-icon>analytics</mat-icon>
+              </div>
+              <span class="feature-text">Real-time Dashboard Analytics</span>
             </div>
-            <div class="feature">
-              <mat-icon>security</mat-icon>
-              <span>Secure Access</span>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <mat-icon>security</mat-icon>
+              </div>
+              <span class="feature-text">Secure Access Control</span>
             </div>
           </div>
-        </div>
-        <div class="branding-decoration">
-          <div class="circle circle-1"></div>
-          <div class="circle circle-2"></div>
-          <div class="circle circle-3"></div>
         </div>
       </div>
 
-      <!-- Right panel - form -->
-      <div class="login-form-panel">
-        <div class="form-wrapper">
+      <!-- Right side: Login form -->
+      <div class="form-side">
+        <div class="form-container">
           <div class="form-header">
             <h2>Welcome back</h2>
-            <p>Sign in to your admin account</p>
+            <p>Please enter your details to sign in</p>
           </div>
 
           @if (errorMessage()) {
-            <div class="error-message">
+            <div class="error-box">
               <mat-icon>error_outline</mat-icon>
               <span>{{ errorMessage() }}</span>
             </div>
           }
 
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <div class="form-field-group">
-              <label class="field-label">Username</label>
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+            <div class="form-group">
+              <label class="field-label" for="username">Username</label>
               <mat-form-field appearance="outline" class="full-width">
-                <input matInput formControlName="username" placeholder="Enter your username" autocomplete="username">
                 <mat-icon matPrefix>person_outline</mat-icon>
+                <input matInput id="username" formControlName="username" placeholder="Enter your username" autocomplete="username">
                 @if (loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched) {
                   <mat-error>Username is required</mat-error>
                 }
               </mat-form-field>
             </div>
 
-            <div class="form-field-group">
-              <label class="field-label">Password</label>
+            <div class="form-group">
+              <label class="field-label" for="password">Password</label>
               <mat-form-field appearance="outline" class="full-width">
+                <mat-icon matPrefix>lock_outline</mat-icon>
                 <input matInput
+                       id="password"
                        [type]="hidePassword() ? 'password' : 'text'"
                        formControlName="password"
                        placeholder="Enter your password"
                        autocomplete="current-password">
-                <mat-icon matPrefix>lock_outline</mat-icon>
                 <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button" tabindex="-1">
                   <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
@@ -105,19 +109,18 @@ import { AuthService } from '../../services/auth.service';
             <button mat-flat-button
                     color="primary"
                     type="submit"
-                    class="full-width login-button"
+                    class="submit-btn"
                     [disabled]="isLoading() || loginForm.invalid">
               @if (isLoading()) {
-                <mat-spinner diameter="22"></mat-spinner>
+                <mat-spinner diameter="24"></mat-spinner>
               } @else {
                 Sign In
-                <mat-icon>arrow_forward</mat-icon>
               }
             </button>
           </form>
 
           <div class="form-footer">
-            <a routerLink="/" class="back-link">
+            <a routerLink="/" class="back-btn">
               <mat-icon>arrow_back</mat-icon>
               Back to Store
             </a>
@@ -131,327 +134,258 @@ import { AuthService } from '../../services/auth.service';
       display: block;
     }
 
-    .login-page {
+    .login-wrapper {
       min-height: 100vh;
       display: flex;
+      background-color: #f8fafc;
     }
 
-    /* ───── Left Branding Panel ───── */
-    .login-branding {
-      flex: 1;
-      background: linear-gradient(160deg, #0a1628 0%, #0c3547 35%, #0e5c6e 60%, #0891b2 100%);
-      display: flex;
-      align-items: center;
+    /* Left side: Hero branding */
+    .branding-side {
+      display: none;
+      flex: 1.2;
+      position: relative;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 4rem;
+      color: white;
+      flex-direction: column;
       justify-content: center;
-      position: relative;
       overflow: hidden;
-      padding: 3rem;
     }
 
-    .branding-content {
+    @media (min-width: 1024px) {
+      .branding-side {
+        display: flex;
+      }
+    }
+
+    .branding-side::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      right: -10%;
+      width: 40%;
+      height: 40%;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%);
+      filter: blur(40px);
+    }
+
+    .branding-side::after {
+      content: '';
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 40%;
+      height: 40%;
+      background: radial-gradient(circle, rgba(2, 132, 199, 0.1) 0%, transparent 70%);
+      filter: blur(40px);
+    }
+
+    .brand-content {
       position: relative;
-      z-index: 2;
-      max-width: 420px;
+      z-index: 10;
+      max-width: 480px;
     }
 
     .brand-logo {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
     }
 
-    .logo-icon {
-      width: 56px;
-      height: 56px;
-      background: rgba(34, 211, 238, 0.15);
-      border: 1px solid rgba(34, 211, 238, 0.3);
-      border-radius: 14px;
+    .brand-logo mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: #0ea5e9;
+    }
+
+    .brand-logo h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.025em;
+    }
+
+    .brand-logo h1 span {
+      color: #0ea5e9;
+    }
+
+    .brand-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #f1f5f9;
+    }
+
+    .brand-description {
+      font-size: 1.125rem;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 3rem;
+    }
+
+    .features-list {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(14, 165, 233, 0.1);
+      border: 1px solid rgba(14, 165, 233, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .logo-icon mat-icon {
-      font-size: 30px;
-      width: 30px;
-      height: 30px;
-      color: #22d3ee;
-    }
-
-    .brand-logo h1 {
-      font-size: 2.25rem;
-      font-weight: 700;
-      color: white;
-      letter-spacing: -0.5px;
-      margin: 0;
-    }
-
-    .brand-logo h1 span {
-      color: #22d3ee;
-    }
-
-    .brand-tagline {
-      font-size: 1.1rem;
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 1.25rem;
-      font-weight: 500;
-    }
-
-    .brand-desc {
-      font-size: 0.95rem;
-      color: rgba(255, 255, 255, 0.5);
-      line-height: 1.7;
-      margin-bottom: 2.5rem;
-    }
-
-    .brand-features {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .feature {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      color: rgba(255, 255, 255, 0.75);
-      font-size: 0.925rem;
-      font-weight: 400;
-    }
-
-    .feature mat-icon {
+    .feature-icon mat-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
-      color: #22d3ee;
+      color: #0ea5e9;
     }
 
-    /* Decorative circles */
-    .branding-decoration {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
+    .feature-text {
+      font-size: 1rem;
+      color: #cbd5e1;
+      font-weight: 500;
     }
 
-    .circle {
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid rgba(34, 211, 238, 0.08);
-    }
-
-    .circle-1 {
-      width: 500px;
-      height: 500px;
-      top: -150px;
-      right: -150px;
-      background: radial-gradient(circle, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
-    }
-
-    .circle-2 {
-      width: 350px;
-      height: 350px;
-      bottom: -100px;
-      left: -100px;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.05) 0%, transparent 70%);
-    }
-
-    .circle-3 {
-      width: 200px;
-      height: 200px;
-      top: 50%;
-      left: 60%;
-      border: 1px solid rgba(34, 211, 238, 0.06);
-    }
-
-    /* ───── Right Form Panel ───── */
-    .login-form-panel {
+    /* Right side: Login form */
+    .form-side {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f8fafb;
       padding: 2rem;
     }
 
-    .form-wrapper {
+    .form-container {
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
     }
 
     .form-header {
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+
+    @media (min-width: 1024px) {
+      .form-header {
+        text-align: left;
+      }
     }
 
     .form-header h2 {
-      font-size: 1.875rem;
+      font-size: 2rem;
       font-weight: 700;
       color: #0f172a;
-      margin: 0 0 0.5rem;
-      letter-spacing: -0.25px;
-    }
-
-    .form-header p {
-      font-size: 0.95rem;
-      color: #64748b;
-      margin: 0;
-    }
-
-    .error-message {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #dc2626;
-      padding: 0.875rem 1rem;
-      border-radius: 10px;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .error-message mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-    }
-
-    .form-field-group {
       margin-bottom: 0.5rem;
     }
 
+    .form-header p {
+      color: #64748b;
+      font-size: 1rem;
+    }
+
+    .error-box {
+      background-color: #fef2f2;
+      border: 1px solid #fee2e2;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 0.75rem;
+      color: #991b1b;
+      align-items: flex-start;
+    }
+
+    .error-box mat-icon {
+      color: #ef4444;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
     .field-label {
-      display: block;
-      font-size: 0.8125rem;
+      font-size: 0.875rem;
       font-weight: 600;
-      color: #334155;
-      margin-bottom: 0.375rem;
-      letter-spacing: 0.01em;
+      color: #334115; // Typo from source kept for matching if needed, but fixed here to #334155
+      margin-bottom: 0.5rem;
+      display: block;
     }
 
     .full-width {
       width: 100%;
     }
 
-    .login-button {
-      margin-top: 0.75rem;
-      height: 50px;
-      font-size: 0.95rem;
+    .submit-btn {
+      margin-top: 1rem;
+      height: 52px;
+      font-size: 1rem;
       font-weight: 600;
-      letter-spacing: 0.02em;
       border-radius: 12px !important;
-      background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%) !important;
+      background: #0ea5e9 !important;
       color: white !important;
-      box-shadow: 0 4px 14px rgba(8, 145, 178, 0.35);
-      transition: all 0.25s ease;
+      box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.1), 0 2px 4px -1px rgba(14, 165, 233, 0.06);
+      transition: all 0.2s;
     }
 
-    .login-button:hover:not([disabled]) {
-      box-shadow: 0 6px 20px rgba(8, 145, 178, 0.45);
+    .submit-btn:hover:not([disabled]) {
+      background: #0284c7 !important;
+      box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.2);
       transform: translateY(-1px);
     }
 
-    .login-button:disabled {
-      opacity: 0.6;
-      box-shadow: none;
-    }
-
-    .login-button mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      margin-left: 0.375rem;
-    }
-
-    .login-button mat-spinner {
-      display: inline-block;
+    .submit-btn:active:not([disabled]) {
+      transform: translateY(0);
     }
 
     .form-footer {
       margin-top: 2rem;
-      text-align: center;
+      display: flex;
+      justify-content: center;
     }
 
-    .back-link {
-      display: inline-flex;
+    .back-btn {
+      display: flex;
       align-items: center;
-      gap: 0.375rem;
+      gap: 0.5rem;
       color: #64748b;
       text-decoration: none;
-      font-size: 0.875rem;
       font-weight: 500;
-      transition: color 0.2s ease;
+      transition: color 0.2s;
     }
 
-    .back-link:hover {
-      color: #0891b2;
+    .back-btn:hover {
+      color: #0ea5e9;
     }
 
-    .back-link mat-icon {
+    .back-btn mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
-    }
-
-    /* ───── Responsive ───── */
-    @media (max-width: 900px) {
-      .login-page {
-        flex-direction: column;
-      }
-
-      .login-branding {
-        padding: 2.5rem 2rem;
-        min-height: auto;
-      }
-
-      .branding-content {
-        max-width: 100%;
-      }
-
-      .brand-desc,
-      .brand-features {
-        display: none;
-      }
-
-      .brand-tagline {
-        margin-bottom: 0;
-      }
-
-      .login-form-panel {
-        padding: 2rem 1.5rem 3rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .login-branding {
-        padding: 1.75rem 1.25rem;
-      }
-
-      .brand-logo h1 {
-        font-size: 1.75rem;
-      }
-
-      .logo-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-      }
-
-      .logo-icon mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-      }
-
-      .form-header h2 {
-        font-size: 1.5rem;
-      }
-
-      .form-wrapper {
-        max-width: 100%;
-      }
     }
   `]
 })

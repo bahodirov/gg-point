@@ -1,7 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
-
-// Import Angular Material theme (must come before @tailwind directives)
+// Import Angular Material
+@use '@angular/material' as mat;
 @use './styles/material-theme' as theme;
+
+// Include Material Core styles (required)
+@include mat.core();
+
+// Include Material themes
+html {
+  @include mat.all-component-themes(theme.$ggpoint-theme);
+  @include mat.typography-hierarchy(theme.$ggpoint-theme);
+}
+
+html.dark,
+html.dark-theme {
+  @include mat.all-component-themes(theme.$ggpoint-dark-theme);
+}
 
 // Import Tailwind CSS
 @tailwind base;

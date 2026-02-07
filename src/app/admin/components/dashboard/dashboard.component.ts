@@ -134,129 +134,116 @@ interface CategoryCount {
 
     h1 {
       margin-bottom: 2rem;
-      font-size: 2rem;
-      font-weight: 600;
-      color: #0e4a6e;
-      letter-spacing: 0.5px;
-    }
-
-    :host-context(.dark-theme) h1 {
-      color: #cffafe;
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.025em;
     }
 
     h2 {
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
       font-size: 1.5rem;
-      font-weight: 600;
-      color: #155e75;
-    }
-
-    :host-context(.dark-theme) h2 {
-      color: #a5f3fc;
+      font-weight: 700;
+      color: #1e293b;
+      letter-spacing: -0.025em;
     }
 
     .loading {
       display: flex;
       justify-content: center;
-      padding: 3rem;
+      padding: 4rem;
     }
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
       margin-bottom: 3rem;
     }
 
     .stat-card {
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.08);
-      transition: all 0.3s ease;
-      border: 1px solid rgba(14, 116, 144, 0.1);
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .stat-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(14, 116, 144, 0.18);
-    }
-
-    :host-context(.dark-theme) .stat-card {
-      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
-      border: 1px solid rgba(34, 211, 238, 0.1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1);
+      border-color: #0ea5e9;
     }
 
     .stat-card mat-card-content {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
-      padding: 1.5rem;
+      gap: 1.5rem;
+      padding: 1.75rem;
     }
 
     .stat-icon {
-      width: 70px;
-      height: 70px;
-      border-radius: 16px;
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .stat-icon mat-icon {
-      font-size: 36px;
-      width: 36px;
-      height: 36px;
-      color: white;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
     }
 
     .stat-icon.products {
-      background: linear-gradient(135deg, #0e7490, #06b6d4);
+      background-color: #f0f9ff;
+      color: #0ea5e9;
     }
 
     .stat-icon.featured {
-      background: linear-gradient(135deg, #f59e0b, #f97316);
+      background-color: #fffbeb;
+      color: #f59e0b;
     }
 
     .stat-icon.out-of-stock {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
+      background-color: #fef2f2;
+      color: #ef4444;
     }
 
     .stat-icon.categories {
-      background: linear-gradient(135deg, #10b981, #059669);
+      background-color: #f0fdf4;
+      color: #10b981;
     }
 
     .stat-info {
       display: flex;
       flex-direction: column;
-      flex: 1;
     }
 
     .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      line-height: 1;
-      color: #0e4a6e;
-    }
-
-    :host-context(.dark-theme) .stat-value {
-      color: white;
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #0f172a;
     }
 
     .stat-label {
       font-size: 0.875rem;
       color: #64748b;
-      margin-top: 0.5rem;
-      font-weight: 500;
-    }
-
-    :host-context(.dark-theme) .stat-label {
-      color: rgba(255, 255, 255, 0.7);
+      margin-top: 0.25rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
     }
 
     .actions-section {
-      margin-bottom: 3rem;
+      margin-bottom: 4rem;
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
     }
 
     .actions-grid {
@@ -267,75 +254,55 @@ interface CategoryCount {
 
     .actions-grid button,
     .actions-grid a {
+      height: 48px;
+      padding: 0 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .actions-grid button:hover,
-    .actions-grid a:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.25);
     }
 
     .categories-section {
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
     }
 
     .categories-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.25rem;
     }
 
     .category-card {
       background: white;
-      border-radius: 12px;
-      border: 1px solid rgba(14, 116, 144, 0.1);
-      transition: all 0.3s ease;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
     }
 
     .category-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(14, 116, 144, 0.12);
-    }
-
-    :host-context(.dark-theme) .category-card {
-      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
-      border: 1px solid rgba(34, 211, 238, 0.1);
+      border-color: #0ea5e9;
+      background-color: #f0f9ff;
     }
 
     .category-card mat-card-content {
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
-      padding: 1.25rem;
     }
 
     .category-name {
-      font-weight: 600;
-      text-transform: capitalize;
-      color: #0e4a6e;
-      font-size: 1rem;
-    }
-
-    :host-context(.dark-theme) .category-name {
-      color: white;
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 1.125rem;
+      margin-bottom: 0.25rem;
     }
 
     .category-count {
       font-size: 0.875rem;
       color: #64748b;
-      margin-top: 0.25rem;
-    }
-
-    :host-context(.dark-theme) .category-count {
-      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
     }
   `]
 })
@@ -362,10 +329,10 @@ export class DashboardComponent implements OnInit {
         const totalProducts = products.length;
         const featuredProducts = products.filter(p => p.featured).length;
         const outOfStock = products.filter(p => !p.inStock).length;
-        
+
         // Get unique categories
         const categories = new Set(products.map(p => p.category));
-        
+
         this.stats.set({
           totalProducts,
           featuredProducts,
@@ -378,11 +345,11 @@ export class DashboardComponent implements OnInit {
         products.forEach(p => {
           catCounts[p.category] = (catCounts[p.category] || 0) + 1;
         });
-        
+
         this.categoryStats.set(
           Object.entries(catCounts).map(([category, count]) => ({ category, count }))
         );
-        
+
         this.isLoading.set(false);
       },
       error: () => {

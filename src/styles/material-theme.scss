@@ -1,13 +1,15 @@
 @use '@angular/material' as mat;
 
-@include mat.core();
+// Create palettes for Material 3
+$primary-palette: mat.generate-palette(#0ea5e9);
+$tertiary-palette: mat.generate-palette(#00bcd4);
 
-// Create light theme with new M3 theme API
+// Create light theme
 $ggpoint-theme: mat.define-theme((
   color: (
     theme-type: light,
-    primary: mat.$cyan-palette,
-    tertiary: mat.$azure-palette,
+    primary: $primary-palette,
+    tertiary: $tertiary-palette,
   ),
   typography: (
     brand-family: 'Roboto, "Helvetica Neue", sans-serif',
@@ -22,18 +24,7 @@ $ggpoint-theme: mat.define-theme((
 $ggpoint-dark-theme: mat.define-theme((
   color: (
     theme-type: dark,
-    primary: mat.$cyan-palette,
-    tertiary: mat.$azure-palette,
+    primary: $primary-palette,
+    tertiary: $tertiary-palette,
   ),
 ));
-
-// Apply the light theme by default
-html {
-  @include mat.all-component-themes($ggpoint-theme);
-}
-
-// Apply dark theme when .dark or .dark-theme class is present
-html.dark,
-html.dark-theme {
-  @include mat.all-component-themes($ggpoint-dark-theme);
-}

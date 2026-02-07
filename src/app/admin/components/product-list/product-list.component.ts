@@ -130,15 +130,15 @@ interface Product {
                 <td mat-cell *matCellDef="let product">
                   <div class="status-badges">
                     @if (product.inStock) {
-                      <mat-chip class="in-stock">In Stock</mat-chip>
+                      <span class="status-badge badge-in-stock">In Stock</span>
                     } @else {
-                      <mat-chip class="out-of-stock">Out of Stock</mat-chip>
+                      <span class="status-badge badge-out-of-stock">Out of Stock</span>
                     }
                     @if (product.featured) {
-                      <mat-chip class="featured">Featured</mat-chip>
+                      <span class="status-badge badge-featured">Featured</span>
                     }
                     @if (product.isNew) {
-                      <mat-chip class="new">New</mat-chip>
+                      <span class="status-badge badge-new">New</span>
                     }
                   </div>
                 </td>
@@ -152,7 +152,7 @@ interface Product {
                     <a mat-icon-button [routerLink]="['/admin/products', product.id, 'edit']" matTooltip="Edit">
                       <mat-icon>edit</mat-icon>
                     </a>
-                    <button mat-icon-button color="warn" (click)="deleteProduct(product)" matTooltip="Delete">
+                    <button mat-icon-button class="delete-btn" (click)="deleteProduct(product)" matTooltip="Delete">
                       <mat-icon>delete</mat-icon>
                     </button>
                     <a mat-icon-button [href]="'/product/' + product.slug" target="_blank" matTooltip="View in store">
@@ -180,7 +180,7 @@ interface Product {
   `,
   styles: [`
     .product-list {
-      max-width: 1600px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -193,89 +193,39 @@ interface Product {
 
     h1 {
       margin: 0;
-      font-size: 2rem;
-      font-weight: 600;
-      color: #0e4a6e;
-      letter-spacing: 0.5px;
-    }
-
-    :host-context(.dark-theme) h1 {
-      color: #cffafe;
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.025em;
     }
 
     .filter-card {
-      margin-bottom: 1.5rem;
-      padding: 1.25rem;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(14, 116, 144, 0.08);
-      border: 1px solid rgba(14, 116, 144, 0.1);
-    }
-
-    :host-context(.dark-theme) .filter-card {
-      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
-      border: 1px solid rgba(34, 211, 238, 0.1);
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .search-field {
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
     }
 
     .loading {
       display: flex;
       justify-content: center;
-      padding: 3rem;
-    }
-
-    .empty-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 4rem;
-      text-align: center;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(14, 116, 144, 0.08);
-    }
-
-    :host-context(.dark-theme) .empty-card {
-      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
-    }
-
-    .empty-card mat-icon {
-      font-size: 64px;
-      width: 64px;
-      height: 64px;
-      color: #cbd5e1;
-      margin-bottom: 1rem;
-    }
-
-    :host-context(.dark-theme) .empty-card mat-icon {
-      color: rgba(255, 255, 255, 0.3);
-    }
-
-    .empty-card p {
-      color: #64748b;
-      font-size: 1.125rem;
-      margin-bottom: 1.5rem;
-    }
-
-    :host-context(.dark-theme) .empty-card p {
-      color: rgba(255, 255, 255, 0.7);
+      padding: 5rem;
     }
 
     .table-card {
       overflow: hidden;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(14, 116, 144, 0.08);
-      border: 1px solid rgba(14, 116, 144, 0.1);
-    }
-
-    :host-context(.dark-theme) .table-card {
-      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
-      border: 1px solid rgba(34, 211, 238, 0.1);
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 0;
     }
 
     .table-container {
@@ -284,134 +234,131 @@ interface Product {
 
     table {
       width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th.mat-mdc-header-cell {
+      background-color: #f8fafc;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    td.mat-mdc-cell {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: #0f172a;
+    }
+
+    tr.mat-mdc-row:hover {
+      background-color: #f8fafc;
     }
 
     .product-thumbnail {
-      width: 60px;
-      height: 60px;
+      width: 52px;
+      height: 52px;
       object-fit: cover;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
     }
 
     .no-image {
-      width: 60px;
-      height: 60px;
+      width: 52px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-      border-radius: 8px;
-    }
-
-    :host-context(.dark-theme) .no-image {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    }
-
-    .no-image mat-icon {
+      background-color: #f1f5f9;
+      border-radius: 12px;
       color: #94a3b8;
     }
 
     .product-name {
-      font-weight: 600;
-      color: #0e4a6e;
-      font-size: 0.95rem;
-    }
-
-    :host-context(.dark-theme) .product-name {
-      color: white;
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 1rem;
     }
 
     .product-slug {
-      font-size: 0.75rem;
+      font-size: 0.8125rem;
       color: #64748b;
-      margin-top: 0.25rem;
-    }
-
-    :host-context(.dark-theme) .product-slug {
-      color: rgba(255, 255, 255, 0.5);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
     .category-badge {
-      background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
-      color: #155e75;
-      padding: 0.375rem 0.75rem;
-      border-radius: 6px;
+      display: inline-block;
+      background-color: #f1f5f9;
+      color: #475569;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
       font-size: 0.75rem;
-      text-transform: capitalize;
       font-weight: 600;
-      box-shadow: 0 2px 4px rgba(14, 116, 144, 0.1);
-    }
-
-    :host-context(.dark-theme) .category-badge {
-      background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
-      color: #cffafe;
     }
 
     .price {
-      font-weight: 600;
-      color: #0e4a6e;
-      font-size: 0.95rem;
-    }
-
-    :host-context(.dark-theme) .price {
-      color: white;
+      font-weight: 700;
+      color: #0f172a;
     }
 
     .old-price {
       font-size: 0.75rem;
       color: #94a3b8;
       text-decoration: line-through;
-      margin-top: 0.125rem;
     }
 
     .status-badges {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.375rem;
+      gap: 0.5rem;
     }
 
-    .status-badges mat-chip {
-      font-size: 0.7rem;
-      min-height: 26px;
-      padding: 0 10px;
-      font-weight: 600;
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.125rem 0.5rem;
+      border-radius: 6px;
+      text-transform: uppercase;
     }
 
-    .in-stock {
-      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
-      color: #065f46 !important;
-    }
-
-    .out-of-stock {
-      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
-      color: #991b1b !important;
-    }
-
-    .featured {
-      background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%) !important;
-      color: #9a3412 !important;
-    }
-
-    .new {
-      background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%) !important;
-      color: #155e75 !important;
-    }
+    .badge-in-stock { background-color: #dcfce7; color: #166534; }
+    .badge-out-of-stock { background-color: #fee2e2; color: #991b1b; }
+    .badge-featured { background-color: #fef3c7; color: #92400e; }
+    .badge-new { background-color: #e0f2fe; color: #075985; }
 
     .actions {
       display: flex;
-      gap: 0.375rem;
+      gap: 0.25rem;
+    }
+
+    .actions button, .actions a {
+      color: #64748b;
+    }
+
+    .actions button:hover, .actions a:hover {
+      color: #0ea5e9;
+      background-color: #f0f9ff;
+    }
+
+    .actions button.delete-btn:hover {
+      color: #ef4444;
+      background-color: #fef2f2;
+    }
+
+    mat-paginator {
+      background: transparent;
+      border-top: 1px solid #e2e8f0;
     }
 
     @media (max-width: 768px) {
       .header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 1rem;
-      }
-
-      .search-field {
-        max-width: 100%;
       }
     }
   `]
@@ -425,7 +372,7 @@ export class ProductListComponent implements OnInit {
   products = signal<Product[]>([]);
   filteredProducts = signal<Product[]>([]);
   paginatedProducts = signal<Product[]>([]);
-  
+
   searchQuery = '';
   pageSize = 10;
   pageIndex = 0;
@@ -451,12 +398,12 @@ export class ProductListComponent implements OnInit {
 
   onSearch(): void {
     const query = this.searchQuery.toLowerCase().trim();
-    
+
     if (!query) {
       this.filteredProducts.set(this.products());
     } else {
       this.filteredProducts.set(
-        this.products().filter(p => 
+        this.products().filter(p =>
           p.name.ru.toLowerCase().includes(query) ||
           p.name.uz.toLowerCase().includes(query) ||
           p.category.toLowerCase().includes(query) ||
@@ -464,7 +411,7 @@ export class ProductListComponent implements OnInit {
         )
       );
     }
-    
+
     this.pageIndex = 0;
     this.updatePagination();
   }
@@ -482,10 +429,10 @@ export class ProductListComponent implements OnInit {
   }
 
   formatPrice(price: number): string {
-    return new Intl.NumberFormat('uz-UZ', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('uz-UZ', {
+      style: 'currency',
       currency: 'UZS',
-      maximumFractionDigits: 0 
+      maximumFractionDigits: 0
     }).format(price);
   }
 

@@ -52,17 +52,17 @@ interface DatabaseHealth {
             <span class="db-status">({{ dbHealth()?.database }})</span>
           </div>
         }
-        <mat-toolbar color="primary" class="admin-toolbar">
+        <mat-toolbar class="admin-toolbar">
           <button mat-icon-button (click)="toggleSidenav()">
             <mat-icon>menu</mat-icon>
           </button>
           <span class="toolbar-title">GGPoint Admin</span>
           <span class="spacer"></span>
 
-          <button mat-button [matMenuTriggerFor]="userMenu">
+          <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile-btn">
             <mat-icon>account_circle</mat-icon>
-            {{ authService.currentUser()?.username }}
-            <mat-icon>arrow_drop_down</mat-icon>
+            <span class="hidden sm:inline ml-2">{{ authService.currentUser()?.username }}</span>
+            <mat-icon class="ml-1">arrow_drop_down</mat-icon>
           </button>
           <mat-menu #userMenu="matMenu">
             <button mat-menu-item routerLink="/admin/change-password">
@@ -109,8 +109,8 @@ interface DatabaseHealth {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      background: linear-gradient(135deg, #0e2a47 0%, #0c4a6e 50%, #155e75 100%);
+      gap: 1.5rem;
+      background: #0f172a;
       color: white;
     }
 
@@ -118,6 +118,7 @@ interface DatabaseHealth {
       display: flex;
       flex-direction: column;
       height: 100vh;
+      background-color: #f8fafc;
     }
 
     .admin-toolbar {
@@ -126,15 +127,18 @@ interface DatabaseHealth {
       left: 0;
       right: 0;
       z-index: 1000;
-      background: linear-gradient(135deg, #0e2a47 0%, #155e75 100%) !important;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+      background: white !important;
+      color: #0f172a !important;
+      border-bottom: 1px solid #e2e8f0;
+      height: 64px;
     }
 
     .toolbar-title {
-      margin-left: 0.5rem;
-      font-weight: 600;
+      margin-left: 0.75rem;
+      font-weight: 700;
       font-size: 1.25rem;
-      letter-spacing: 0.5px;
+      letter-spacing: -0.025em;
+      color: #0f172a;
     }
 
     .spacer {
@@ -147,70 +151,75 @@ interface DatabaseHealth {
     }
 
     .sidenav {
-      width: 260px;
-      background: linear-gradient(180deg, #0c2d48 0%, #0e3b5c 50%, #0f4c6e 100%);
-      border-right: 1px solid rgba(34, 211, 238, 0.08);
-    }
-
-    :host-context(.dark-theme) .sidenav {
-      background: linear-gradient(180deg, #0c2d48 0%, #0e3b5c 50%, #0f4c6e 100%);
+      width: 280px;
+      background: #1e293b;
+      border-right: none;
+      color: #cbd5e1;
     }
 
     .content {
-      padding: 2rem;
-      background: linear-gradient(135deg, #ecfeff 0%, #f0f9ff 50%, #f5f8fc 100%);
+      padding: 1.5rem;
+      background-color: #f8fafc;
       min-height: calc(100vh - 64px);
     }
 
     :host-context(.dark-theme) .content {
-      background: linear-gradient(135deg, #0a1929 0%, #0f1f33 50%, #132d46 100%);
+      background-color: #0f172a;
+    }
+
+    .nav-header {
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
     }
 
     mat-nav-list {
-      padding-top: 1rem;
+      padding: 0.5rem;
     }
 
     mat-nav-list a {
-      color: rgba(255, 255, 255, 0.8);
-      margin: 0.25rem 0.75rem;
-      border-radius: 8px;
-      transition: all 0.3s ease;
+      height: 48px;
+      margin: 4px 8px;
+      border-radius: 10px;
+      color: #94a3b8;
+      transition: all 0.2s ease;
+      font-weight: 500;
     }
 
     mat-nav-list a:hover {
-      background-color: rgba(34, 211, 238, 0.1);
-      color: white;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #f8fafc;
     }
 
     mat-nav-list a.active {
-      background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
-      border-left: 3px solid #22d3ee;
+      background-color: #0ea5e9;
       color: white;
-      box-shadow: 0 2px 12px rgba(14, 116, 144, 0.35);
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
     }
 
     mat-nav-list a mat-icon {
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    mat-nav-list a.active mat-icon {
-      color: #67e8f9;
+      color: inherit;
+      margin-right: 12px;
     }
 
     mat-divider {
-      margin: 1rem 0.75rem;
-      background-color: rgba(34, 211, 238, 0.12);
+      margin: 1rem;
+      border-top-color: rgba(255, 255, 255, 0.1);
     }
 
-    @media (max-width: 768px) {
-      .sidenav-container {
-        margin-top: 56px;
-      }
+    .user-profile-btn {
+      border-radius: 12px;
+      padding: 0 12px;
+      height: 44px;
+      font-weight: 600;
+      color: #1e293b;
+    }
 
-      .content {
-        min-height: calc(100vh - 56px);
-        padding: 1rem;
-      }
+    .user-profile-btn:hover {
+      background-color: #f1f5f9;
     }
 
     .database-warning {
@@ -218,47 +227,27 @@ interface DatabaseHealth {
       top: 64px;
       left: 0;
       right: 0;
-      background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
-      color: #856404;
+      background-color: #fffbeb;
+      color: #92400e;
       padding: 0.75rem 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
       z-index: 999;
-      border-bottom: 2px solid #ffc107;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-
-    :host-context(.dark-theme) .database-warning {
-      background: linear-gradient(135deg, #664d03 0%, #7a5c04 100%);
-      color: #ffecb5;
-      border-bottom-color: #8a6d05;
-    }
-
-    .database-warning mat-icon {
-      color: #ff9800;
-    }
-
-    .database-warning .db-status {
-      margin-left: auto;
+      border-bottom: 1px solid #fde68a;
       font-size: 0.875rem;
-      opacity: 0.9;
       font-weight: 500;
     }
 
-    .sidenav-container.has-warning {
-      margin-top: calc(64px + 50px);
-    }
-
     @media (max-width: 768px) {
+      .admin-toolbar {
+        height: 56px;
+      }
+      .sidenav-container {
+        margin-top: 56px;
+      }
       .database-warning {
         top: 56px;
-        font-size: 0.875rem;
-        padding: 0.5rem 1rem;
-      }
-
-      .sidenav-container.has-warning {
-        margin-top: calc(56px + 45px);
       }
     }
   `]
