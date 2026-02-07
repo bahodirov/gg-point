@@ -126,7 +126,6 @@ export class ProductsService {
    */
   async getProductsByCategory(category: string): Promise<Product[]> {
     const rows = await db.products.filterByCategory(category);
-    rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return rows.map(rowToProduct);
   }
 
@@ -134,9 +133,8 @@ export class ProductsService {
    * Get featured products
    */
   async getFeaturedProducts(limit: number = 6): Promise<Product[]> {
-    const rows = await db.products.filterByOptions({ featured: true });
-    rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
-    return rows.slice(0, limit).map(rowToProduct);
+    const rows = await db.products.filterByOptions({ featured: true, limit });
+    return rows.map(rowToProduct);
   }
 
   /**
@@ -144,7 +142,6 @@ export class ProductsService {
    */
   async searchProducts(query: string): Promise<Product[]> {
     const rows = await db.products.searchByText(query);
-    rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return rows.map(rowToProduct);
   }
 

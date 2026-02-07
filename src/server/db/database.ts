@@ -137,7 +137,7 @@ const pgDb = {
     findByEmail: async (email: string): Promise<UserData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
-        'SELECT * FROM users WHERE email = $1',
+        'SELECT * FROM users WHERE email = $1 ORDER BY created_at DESC LIMIT 1',
         [email]
       );
       return result.rows[0] || null;
@@ -234,6 +234,7 @@ const pgDb = {
       inStock?: boolean;
       featured?: boolean;
       isNew?: boolean;
+      limit?: number;
     }): Promise<ProductData[]> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
 
@@ -263,6 +264,9 @@ const pgDb = {
       const whereClause =
         conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
+      const limitClause =
+        options.limit !== undefined ? `LIMIT $${values.push(options.limit)}` : '';
+
       const query = `
         SELECT id, slug, name_ru, name_uz, description_ru, description_uz,
                price, old_price, category, images::text, specs::text,
@@ -271,6 +275,7 @@ const pgDb = {
         FROM products
         ${whereClause}
         ORDER BY created_at DESC
+        ${limitClause}
       `;
 
       const result = await pool.query(query, values);
@@ -556,6 +561,7 @@ export const db = {
       inStock?: boolean;
       featured?: boolean;
       isNew?: boolean;
+      limit?: number;
     }): Promise<ProductData[]> => {
       return pgDb.products.filterByOptions(options);
     },
