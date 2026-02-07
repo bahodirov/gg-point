@@ -1,4 +1,5 @@
 import { db } from './database';
+import { logger } from '../utils/logger';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { createHash, randomBytes } from 'node:crypto';

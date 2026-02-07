@@ -15,6 +15,10 @@ import { logger } from './server/utils/logger';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
+const config = {
+  port: parseInt(process.env['PORT'] || '4000', 10),
+};
+
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 

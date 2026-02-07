@@ -2,10 +2,16 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
 import { randomBytes } from 'crypto';
+import { logger } from '../utils/logger';
 
 // Rate limit time constants (in seconds)
 const FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
 const ONE_MINUTE_IN_SECONDS = 60;
+
+// Config for CORS and other settings
+const config = {
+  corsOrigins: process.env['CORS_ORIGINS']?.split(',').map(o => o.trim()) || ['http://localhost:4200', 'http://localhost:4000'],
+};
 
 /**
  * Middleware to generate and attach a CSP nonce to each request
@@ -13,10 +19,10 @@ const ONE_MINUTE_IN_SECONDS = 60;
 export function cspNonceMiddleware(req: Request, res: Response, next: NextFunction): void {
   // Generate a unique nonce for this request
   const nonce = randomBytes(16).toString('base64');
-  
+
   // Make the nonce available to the application
-  res.locals.cspNonce = nonce;
-  
+  res.locals['cspNonce'] = nonce;
+
   next();
 }
 
@@ -44,10 +50,10 @@ const baseHelmetConfig = helmet({
  */
 export function helmetConfig(req: Request, res: Response, next: NextFunction): void {
   // Get the nonce from res.locals (set by cspNonceMiddleware)
-  const nonce = res.locals.cspNonce;
-  
+  const nonce = res.locals['cspNonce'];
+
   if (!nonce) {
-    console.error('CSP nonce is missing! Ensure cspNonceMiddleware is applied before helmetConfig.');
+    logger.error('CSP nonce is missing! Ensure cspNonceMiddleware is applied before helmetConfig.');
     return next(new Error('CSP nonce not initialized'));
   }
   

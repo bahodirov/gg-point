@@ -185,6 +185,7 @@ export class ContactComponent implements OnInit, OnDestroy {
   private seoService = inject(SeoService);
   private timers: Array<ReturnType<typeof setTimeout>> = [];
 
+  environment = environment;
   contactForm!: FormGroup;
   isSubmitting = false;
   submitSuccess = false;
