@@ -21,6 +21,24 @@ export function cspNonceMiddleware(req: Request, res: Response, next: NextFuncti
 }
 
 /**
+ * Base Helmet configuration for non-CSP security headers
+ * Created once at module level to avoid per-request overhead
+ */
+const baseHelmetConfig = helmet({
+  contentSecurityPolicy: false, // CSP is handled separately per-request
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true,
+  },
+  frameguard: {
+    action: 'deny',
+  },
+  noSniff: true,
+  xssFilter: true,
+});
+
+/**
  * Helmet configuration for security headers with nonce-based CSP
  * Note: The nonce must be generated per request and injected into the middleware
  */
@@ -33,31 +51,25 @@ export function helmetConfig(req: Request, res: Response, next: NextFunction): v
     return next(new Error('CSP nonce not initialized'));
   }
   
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        // Use nonce for styles instead of unsafe-inline
-        styleSrc: ["'self'", `'nonce-${nonce}'`, 'https://fonts.googleapis.com'],
-        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-        imgSrc: ["'self'", 'data:', 'https:'],
-        // Use nonce for scripts instead of unsafe-inline and unsafe-eval
-        // Removed 'unsafe-inline' and 'unsafe-eval' to prevent XSS attacks
-        scriptSrc: ["'self'", `'nonce-${nonce}'`],
-        connectSrc: ["'self'", "http://localhost:4000", "http://localhost:4200"],
-      },
-    },
-    hsts: {
-      maxAge: 31536000, // 1 year
-      includeSubDomains: true,
-      preload: true,
-    },
-    frameguard: {
-      action: 'deny',
-    },
-    noSniff: true,
-    xssFilter: true,
-  })(req, res, next);
+  // Apply base helmet config first
+  baseHelmetConfig(req, res, (err) => {
+    if (err) return next(err);
+    
+    // Then set CSP header with the nonce
+    const cspDirectives = [
+      `default-src 'self'`,
+      `script-src 'self' 'nonce-${nonce}'`,
+      // Allow <style> tags with nonce, but keep inline style attributes allowed for existing UI
+      `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
+      `style-src-attr 'unsafe-inline'`, // Allow inline style attributes (e.g., style="display: none")
+      `font-src 'self' https://fonts.gstatic.com`,
+      `img-src 'self' data: https:`,
+      `connect-src 'self' http://localhost:4000 http://localhost:4200`,
+    ].join('; ');
+    
+    res.setHeader('Content-Security-Policy', cspDirectives);
+    next();
+  });
 }
 
 /**

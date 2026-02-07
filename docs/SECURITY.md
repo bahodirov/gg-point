@@ -196,31 +196,43 @@ export function sanitizeInput(req, res, next) {
 The application uses a strict nonce-based CSP configuration to prevent XSS attacks:
 
 ```typescript
-// Generate unique nonce for each request
-export function cspNonceMiddleware(req, res, next) {
+// Import crypto module for nonce generation
+import { randomBytes } from 'crypto';
+
+// Middleware to generate unique nonce for each request
+export function cspNonceMiddleware(req: Request, res: Response, next: NextFunction): void {
   const nonce = randomBytes(16).toString('base64');
+  // Store nonce in res.locals to pass it to helmet config
   res.locals.cspNonce = nonce;
   next();
 }
 
-// Configure CSP with nonce
-contentSecurityPolicy: {
-  directives: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", `'nonce-${nonce}'`],  // Nonce-based, no unsafe-inline
-    styleSrc: ["'self'", `'nonce-${nonce}'`, 'https://fonts.googleapis.com'],
-    imgSrc: ["'self'", 'data:', 'https:'],
-    fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-    connectSrc: ["'self'", "http://localhost:4000", "http://localhost:4200"],
-  },
+// Helmet configuration that uses the nonce from res.locals
+export function helmetConfig(req: Request, res: Response, next: NextFunction): void {
+  const nonce = res.locals.cspNonce;
+  
+  // Set CSP header with nonce
+  const cspDirectives = [
+    `default-src 'self'`,
+    `script-src 'self' 'nonce-${nonce}'`,  // Nonce-based, no unsafe-inline
+    `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
+    `style-src-attr 'unsafe-inline'`,  // Allow inline style attributes only
+    `img-src 'self' data: https:`,
+    `font-src 'self' https://fonts.gstatic.com`,
+    `connect-src 'self' http://localhost:4000 http://localhost:4200`,
+  ].join('; ');
+  
+  res.setHeader('Content-Security-Policy', cspDirectives);
+  next();
 }
 ```
 
 **Key Security Features:**
-- ✅ **Removed `'unsafe-inline'` and `'unsafe-eval'`** - Prevents arbitrary script execution
+- ✅ **Removed `'unsafe-inline'` and `'unsafe-eval'`** from script-src - Prevents arbitrary script execution
 - ✅ **Nonce-based CSP** - Each request gets a unique nonce for inline scripts/styles
 - ✅ **Strict directives** - Only allows scripts and styles from trusted sources
 - ✅ **Per-request nonces** - Fresh cryptographically random nonce for each HTTP request
+- ✅ **Granular style control** - Inline style attributes allowed via `style-src-attr`, while `<style>` tags require nonce
 
 **Note:** The nonce must be added to any inline `<script>` or `<style>` tags:
 ```html
