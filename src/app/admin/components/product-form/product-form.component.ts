@@ -63,6 +63,20 @@ const CATEGORIES = [
         <a routerLink="/admin/products">Back to Products</a>
       </div>
 
+      @if (errorMessage()) {
+        <div style="background-color: #fee; border: 1px solid #fcc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #c33;">
+          <strong>Error:</strong> {{ errorMessage() }}
+          <button (click)="errorMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;">&times;</button>
+        </div>
+      }
+
+      @if (successMessage()) {
+        <div style="background-color: #efe; border: 1px solid #cfc; padding: 12px; margin-bottom: 16px; border-radius: 4px; color: #3c3;">
+          <strong>Success:</strong> {{ successMessage() }}
+          <button (click)="successMessage.set(null)" style="float: right; background: none; border: none; cursor: pointer; font-size: 18px;">&times;</button>
+        </div>
+      }
+
       @if (isLoading()) {
         <div>
           <p>Loading...</p>
@@ -252,6 +266,8 @@ export class ProductFormComponent implements OnInit {
   uploadProgress = signal(0);
   isEditMode = signal(false);
   productId = signal<string | null>(null);
+  errorMessage = signal<string | null>(null);
+  successMessage = signal<string | null>(null);
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -324,8 +340,8 @@ export class ProductFormComponent implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
-        alert('Failed to load product');
-        this.router.navigate(['/admin/products']);
+        this.errorMessage.set('Failed to load product. Redirecting to product list...');
+        setTimeout(() => this.router.navigate(['/admin/products']), 2000);
       }
     });
   }
@@ -360,10 +376,12 @@ export class ProductFormComponent implements OnInit {
           if (url) this.addImage(url);
         });
         const successCount = urls.filter(u => u).length;
-        alert(`Successfully uploaded ${successCount} images`);
+        this.successMessage.set(`Successfully uploaded ${successCount} image${successCount !== 1 ? 's' : ''}`);
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => this.successMessage.set(null), 3000);
       })
       .catch(error => {
-        alert('Failed to upload some images');
+        this.errorMessage.set('Failed to upload some images. Please try again.');
       })
       .finally(() => {
         this.isUploading.set(false);
@@ -443,12 +461,13 @@ export class ProductFormComponent implements OnInit {
     request.subscribe({
       next: () => {
         this.isSaving.set(false);
-        alert(this.isEditMode() ? 'Product updated successfully' : 'Product created successfully');
-        this.router.navigate(['/admin/products']);
+        this.successMessage.set(this.isEditMode() ? 'Product updated successfully' : 'Product created successfully');
+        // Redirect after showing success message
+        setTimeout(() => this.router.navigate(['/admin/products']), 1500);
       },
       error: (error) => {
         this.isSaving.set(false);
-        alert(error.error?.error || 'Failed to save product');
+        this.errorMessage.set(error.error?.error || 'Failed to save product. Please try again.');
       }
     });
   }
