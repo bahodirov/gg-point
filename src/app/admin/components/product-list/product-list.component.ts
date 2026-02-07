@@ -195,12 +195,12 @@ interface Product {
       margin: 0;
       font-size: 2rem;
       font-weight: 600;
-      color: #1e3c72;
+      color: #0e4a6e;
       letter-spacing: 0.5px;
     }
 
     :host-context(.dark-theme) h1 {
-      color: #e3f2fd;
+      color: #cffafe;
     }
 
     .filter-card {
@@ -208,13 +208,13 @@ interface Product {
       padding: 1.25rem;
       background: white;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(30, 60, 114, 0.08);
-      border: 1px solid rgba(30, 60, 114, 0.1);
+      box-shadow: 0 2px 8px rgba(14, 116, 144, 0.08);
+      border: 1px solid rgba(14, 116, 144, 0.1);
     }
 
     :host-context(.dark-theme) .filter-card {
-      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
+      border: 1px solid rgba(34, 211, 238, 0.1);
     }
 
     .search-field {
@@ -236,11 +236,11 @@ interface Product {
       text-align: center;
       background: white;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(30, 60, 114, 0.08);
+      box-shadow: 0 2px 8px rgba(14, 116, 144, 0.08);
     }
 
     :host-context(.dark-theme) .empty-card {
-      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
+      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
     }
 
     .empty-card mat-icon {
@@ -269,13 +269,13 @@ interface Product {
       overflow: hidden;
       background: white;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(30, 60, 114, 0.08);
-      border: 1px solid rgba(30, 60, 114, 0.1);
+      box-shadow: 0 2px 8px rgba(14, 116, 144, 0.08);
+      border: 1px solid rgba(14, 116, 144, 0.1);
     }
 
     :host-context(.dark-theme) .table-card {
-      background: linear-gradient(135deg, #1a2f5c 0%, #1e3c72 100%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, #0c2d48 0%, #0e3b5c 100%);
+      border: 1px solid rgba(34, 211, 238, 0.1);
     }
 
     .table-container {
@@ -314,7 +314,7 @@ interface Product {
 
     .product-name {
       font-weight: 600;
-      color: #1e3c72;
+      color: #0e4a6e;
       font-size: 0.95rem;
     }
 
@@ -333,24 +333,24 @@ interface Product {
     }
 
     .category-badge {
-      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-      color: #1e3c72;
+      background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+      color: #155e75;
       padding: 0.375rem 0.75rem;
       border-radius: 6px;
       font-size: 0.75rem;
       text-transform: capitalize;
       font-weight: 600;
-      box-shadow: 0 2px 4px rgba(30, 60, 114, 0.1);
+      box-shadow: 0 2px 4px rgba(14, 116, 144, 0.1);
     }
 
     :host-context(.dark-theme) .category-badge {
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-      color: #bfdbfe;
+      background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
+      color: #cffafe;
     }
 
     .price {
       font-weight: 600;
-      color: #1e3c72;
+      color: #0e4a6e;
       font-size: 0.95rem;
     }
 
@@ -394,8 +394,8 @@ interface Product {
     }
 
     .new {
-      background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
-      color: #1e3a8a !important;
+      background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%) !important;
+      color: #155e75 !important;
     }
 
     .actions {

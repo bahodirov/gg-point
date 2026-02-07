@@ -100,18 +100,21 @@ import { AuthService } from '../../services/auth.service';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0e2a47 0%, #0c4a6e 40%, #155e75 70%, #0891b2 100%);
       padding: 1rem;
     }
 
     .login-card {
       width: 100%;
-      max-width: 400px;
-      padding: 2rem;
+      max-width: 420px;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(34, 211, 238, 0.1);
     }
 
     mat-card-header {
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       text-align: center;
       display: block;
     }
@@ -122,12 +125,14 @@ import { AuthService } from '../../services/auth.service';
       justify-content: center;
       gap: 0.5rem;
       font-size: 1.5rem;
+      color: #0e4a6e;
     }
 
     .login-icon {
       font-size: 2rem;
       width: 2rem;
       height: 2rem;
+      color: #0891b2;
     }
 
     .full-width {
@@ -142,6 +147,7 @@ import { AuthService } from '../../services/auth.service';
       margin-top: 1rem;
       height: 48px;
       font-size: 1rem;
+      border-radius: 10px;
     }
 
     .login-button mat-spinner {
@@ -149,14 +155,16 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .error-message {
-      background-color: #ffebee;
-      color: #c62828;
-      padding: 0.75rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      color: #991b1b;
+      padding: 0.875rem;
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      border-left: 4px solid #dc2626;
+      font-weight: 500;
     }
 
     mat-card-actions {
