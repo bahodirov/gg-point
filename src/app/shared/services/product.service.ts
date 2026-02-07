@@ -32,10 +32,13 @@ export class ProductService {
 
   private transformProduct(p: ServerProduct): Product {
     // Transform from server representation ({ru, uz} objects) to frontend representation
-    const specifications: ProductSpecification[] = Object.entries(p.specs || {}).map(
+    const rawSpecs = p?.specs;
+    const safeSpecs =
+      rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs) ? rawSpecs : {};
+    const specifications: ProductSpecification[] = Object.entries(safeSpecs).map(
       ([key, value]) => ({
         key,
-        value: String(value)
+        value: String(value ?? '')
       })
     );
 
