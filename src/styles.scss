@@ -57,13 +57,19 @@ html.dark-theme {
   // Form fields dark theme
   .mat-mdc-form-field {
     .mat-mdc-text-field-wrapper {
-      background-color: rgba(255, 255, 255, 0.05);
+      background-color: rgba(0, 0, 0, 0.3) !important;
+    }
+
+    // Override Material's default background
+    .mat-mdc-input-element {
+      background-color: transparent !important;
     }
 
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
     .mdc-notched-outline__trailing {
-      border-color: rgba(255, 255, 255, 0.2) !important;
+      border-color: rgba(255, 255, 255, 0.5) !important;
+      border-width: 1.5px !important;
     }
 
     &.mat-focused {
@@ -71,6 +77,74 @@ html.dark-theme {
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
         border-color: #667eea !important;
+        border-width: 2px !important;
+      }
+    }
+
+    &:hover:not(.mat-focused) {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(255, 255, 255, 0.7) !important;
+      }
+    }
+
+    // Input text color
+    input.mat-mdc-input-element,
+    textarea.mat-mdc-input-element {
+      color: rgba(255, 255, 255, 0.87) !important;
+      caret-color: rgba(255, 255, 255, 0.87);
+    }
+
+    // Label color
+    .mat-mdc-form-field-label,
+    .mat-mdc-floating-label {
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    // Placeholder color
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    // Hint and error text
+    .mat-mdc-form-field-hint,
+    .mat-mdc-form-field-error {
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+  }
+
+  // Select dropdown
+  .mat-mdc-select {
+    .mat-mdc-select-value,
+    .mat-mdc-select-value-text {
+      color: rgba(255, 255, 255, 0.87) !important;
+    }
+
+    .mat-mdc-select-placeholder {
+      color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .mat-mdc-select-arrow {
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+  }
+
+  // Select panel/dropdown options
+  .mat-mdc-select-panel {
+    background-color: #1e1e1e !important;
+
+    .mat-mdc-option {
+      color: rgba(255, 255, 255, 0.87) !important;
+
+      &:hover,
+      &.mat-mdc-option-active {
+        background-color: rgba(102, 126, 234, 0.1) !important;
+      }
+
+      &.mat-mdc-option-selected {
+        background-color: rgba(102, 126, 234, 0.15) !important;
       }
     }
   }
