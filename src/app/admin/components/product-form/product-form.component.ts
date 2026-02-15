@@ -3,6 +3,17 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface Product {
   id: string;
@@ -55,179 +66,221 @@ const CATEGORIES = [
     CommonModule,
     RouterLink,
     ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatCardModule,
+    MatDividerModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule,
   ],
   template: `
-    <div>
-      <div>
-        <h1>{{ isEditMode() ? 'Edit Product' : 'Add New Product' }}</h1>
-        <a routerLink="/admin/products">Back to Products</a>
+    <div style="padding: 24px; max-width: 1200px; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h1 style="margin: 0; font-size: 32px; font-weight: 400;">{{ isEditMode() ? 'Edit Product' : 'Add New Product' }}</h1>
+        <a mat-button routerLink="/admin/products">
+          <mat-icon style="margin-right: 4px;">arrow_back</mat-icon>
+          Back to Products
+        </a>
       </div>
 
       @if (isLoading()) {
-        <div>
-          <p>Loading...</p>
+        <div style="display: flex; justify-content: center; padding: 48px;">
+          <mat-spinner></mat-spinner>
         </div>
       } @else {
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <!-- Basic Information -->
-          <fieldset>
-            <legend>Basic Information</legend>
-
-            <div>
-              <label for="slug">Slug (URL)</label>
-              <input id="slug" formControlName="slug" placeholder="product-slug">
-              <small>Used in product URL, e.g., /product/product-slug</small>
-              @if (form.get('slug')?.hasError('required')) {
-                <span>Slug is required</span>
-              }
-            </div>
-
-            <div>
-              <label for="name_ru">Name (Russian)</label>
-              <input id="name_ru" formControlName="name_ru" placeholder="Product name in Russian">
-              @if (form.get('name_ru')?.hasError('required')) {
-                <span>Name is required</span>
-              }
-            </div>
-
-            <div>
-              <label for="name_uz">Name (Uzbek)</label>
-              <input id="name_uz" formControlName="name_uz" placeholder="Product name in Uzbek">
-            </div>
-
-            <div>
-              <label for="description_ru">Description (Russian)</label>
-              <textarea id="description_ru" formControlName="description_ru" rows="4"
-                        placeholder="Product description in Russian"></textarea>
-            </div>
-
-            <div>
-              <label for="description_uz">Description (Uzbek)</label>
-              <textarea id="description_uz" formControlName="description_uz" rows="4"
-                        placeholder="Product description in Uzbek"></textarea>
-            </div>
-          </fieldset>
-
-          <!-- Pricing & Category -->
-          <fieldset>
-            <legend>Pricing & Category</legend>
-
-            <div>
-              <label for="price">Price (UZS)</label>
-              <input id="price" type="number" formControlName="price" placeholder="1000000">
-              @if (form.get('price')?.hasError('required')) {
-                <span>Price is required</span>
-              }
-              @if (form.get('price')?.hasError('min')) {
-                <span>Price must be positive</span>
-              }
-            </div>
-
-            <div>
-              <label for="old_price">Old Price (UZS)</label>
-              <input id="old_price" type="number" formControlName="old_price" placeholder="Optional">
-              <small>Leave empty if no discount</small>
-            </div>
-
-            <div>
-              <label for="category">Category</label>
-              <select id="category" formControlName="category">
-                <option value="">Select category</option>
-                @for (cat of categories; track cat) {
-                  <option [value]="cat">{{ cat }}</option>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 24px;">
+          <!-- Basic Information Card -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Basic Information</mat-card-title>
+            </mat-card-header>
+            <mat-card-content style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+              <mat-form-field appearance="outline">
+                <mat-label>Slug (URL)</mat-label>
+                <input matInput formControlName="slug" placeholder="product-slug">
+                <mat-hint>Used in product URL, e.g., /product/product-slug</mat-hint>
+                @if (form.get('slug')?.hasError('required')) {
+                  <mat-error>Slug is required</mat-error>
                 }
-              </select>
-              @if (form.get('category')?.hasError('required')) {
-                <span>Category is required</span>
-              }
-            </div>
+              </mat-form-field>
 
-            <div>
-              <label>
-                <input type="checkbox" formControlName="in_stock"> In Stock
-              </label>
-              <label>
-                <input type="checkbox" formControlName="featured"> Featured
-              </label>
-              <label>
-                <input type="checkbox" formControlName="is_new"> New
-              </label>
-            </div>
-          </fieldset>
+              <mat-form-field appearance="outline">
+                <mat-label>Name (Russian)</mat-label>
+                <input matInput formControlName="name_ru" placeholder="Product name in Russian">
+                @if (form.get('name_ru')?.hasError('required')) {
+                  <mat-error>Name is required</mat-error>
+                }
+              </mat-form-field>
 
-          <!-- Images -->
-          <fieldset>
-            <legend>Images</legend>
+              <mat-form-field appearance="outline">
+                <mat-label>Name (Uzbek)</mat-label>
+                <input matInput formControlName="name_uz" placeholder="Product name in Uzbek">
+              </mat-form-field>
 
-            <div formArrayName="images">
-              @for (imageCtrl of imagesArray.controls; track $index) {
-                <div>
-                  <input [formControlName]="$index" placeholder="https://example.com/image.jpg">
-                  <button type="button" (click)="removeImage($index)">Remove</button>
-                </div>
-              }
-            </div>
+              <mat-form-field appearance="outline">
+                <mat-label>Description (Russian)</mat-label>
+                <textarea matInput formControlName="description_ru" rows="4"
+                          placeholder="Product description in Russian"></textarea>
+              </mat-form-field>
 
-            <div>
-              <input
-                #fileInput
-                type="file"
-                accept="image/*"
-                multiple
-                style="display: none"
-                (change)="onFilesSelected($event)"
-              >
-              <button type="button" (click)="fileInput.click()" [disabled]="isUploading()">
-                Upload from PC
-              </button>
-              <button type="button" (click)="addImage()">
-                Add URL
-              </button>
-            </div>
+              <mat-form-field appearance="outline">
+                <mat-label>Description (Uzbek)</mat-label>
+                <textarea matInput formControlName="description_uz" rows="4"
+                          placeholder="Product description in Uzbek"></textarea>
+              </mat-form-field>
+            </mat-card-content>
+          </mat-card>
 
-            @if (isUploading()) {
-              <div>
-                <progress [value]="uploadProgress()" max="100"></progress>
-                <span>{{ uploadProgress() }}% uploading...</span>
-              </div>
-            }
-
-            @if (imagesArray.length > 0) {
-              <div>
-                @for (imageCtrl of imagesArray.controls; track $index) {
-                  @if (imageCtrl.value) {
-                    <img [src]="imageCtrl.value" [alt]="'Preview ' + ($index + 1)" width="90" height="90">
+          <!-- Pricing & Category Card -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Pricing & Category</mat-card-title>
+            </mat-card-header>
+            <mat-card-content style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <mat-form-field appearance="outline">
+                  <mat-label>Price (UZS)</mat-label>
+                  <input matInput type="number" formControlName="price" placeholder="1000000">
+                  <mat-icon matPrefix>attach_money</mat-icon>
+                  @if (form.get('price')?.hasError('required')) {
+                    <mat-error>Price is required</mat-error>
                   }
+                  @if (form.get('price')?.hasError('min')) {
+                    <mat-error>Price must be positive</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Old Price (UZS)</mat-label>
+                  <input matInput type="number" formControlName="old_price" placeholder="Optional">
+                  <mat-hint>Leave empty if no discount</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Category</mat-label>
+                <mat-select formControlName="category">
+                  <mat-option value="">Select category</mat-option>
+                  @for (cat of categories; track cat) {
+                    <mat-option [value]="cat">{{ cat }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('category')?.hasError('required')) {
+                  <mat-error>Category is required</mat-error>
+                }
+              </mat-form-field>
+
+              <div style="display: flex; gap: 24px;">
+                <mat-checkbox formControlName="in_stock">In Stock</mat-checkbox>
+                <mat-checkbox formControlName="featured">Featured</mat-checkbox>
+                <mat-checkbox formControlName="is_new">New</mat-checkbox>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Images Card -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Images</mat-card-title>
+              <mat-card-subtitle>Upload product images or add URLs</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content style="margin-top: 16px;">
+              <div formArrayName="images" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+                @for (imageCtrl of imagesArray.controls; track $index) {
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <mat-form-field appearance="outline" style="flex: 1;">
+                      <mat-label>Image URL {{ $index + 1 }}</mat-label>
+                      <input matInput [formControlName]="$index" placeholder="https://example.com/image.jpg">
+                    </mat-form-field>
+                    <button mat-icon-button color="warn" type="button" (click)="removeImage($index)" matTooltip="Remove image">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                    @if (imageCtrl.value) {
+                      <img [src]="imageCtrl.value" [alt]="'Preview ' + ($index + 1)"
+                           style="width: 52px; height: 52px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.12);">
+                    }
+                  </div>
                 }
               </div>
-            }
-          </fieldset>
 
-          <!-- Specifications -->
-          <fieldset>
-            <legend>Specifications</legend>
+              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <input
+                  #fileInput
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  style="display: none"
+                  (change)="onFilesSelected($event)"
+                >
+                <button mat-raised-button color="primary" type="button" (click)="fileInput.click()" [disabled]="isUploading()">
+                  <mat-icon style="margin-right: 4px;">cloud_upload</mat-icon>
+                  Upload from PC
+                </button>
+                <button mat-stroked-button type="button" (click)="addImage()">
+                  <mat-icon style="margin-right: 4px;">add_link</mat-icon>
+                  Add URL
+                </button>
+              </div>
 
-            <div formArrayName="specs">
-              @for (specGroup of specsArray.controls; track $index) {
-                <div [formGroupName]="$index">
-                  <input formControlName="key" placeholder="e.g., Sensor">
-                  <input formControlName="value" placeholder="e.g., HERO 25K">
-                  <button type="button" (click)="removeSpec($index)">Remove</button>
+              @if (isUploading()) {
+                <div style="margin-bottom: 16px;">
+                  <mat-progress-bar mode="determinate" [value]="uploadProgress()"></mat-progress-bar>
+                  <span style="font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 4px; display: block;">
+                    {{ uploadProgress() }}% uploading...
+                  </span>
                 </div>
               }
-            </div>
-            <button type="button" (click)="addSpec()">
-              Add Specification
-            </button>
-          </fieldset>
+            </mat-card-content>
+          </mat-card>
 
-          <div>
-            <a routerLink="/admin/products">Cancel</a>
-            <button type="submit" [disabled]="isSaving() || form.invalid">
+          <!-- Specifications Card -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Specifications</mat-card-title>
+              <mat-card-subtitle>Add product technical details</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content style="margin-top: 16px;">
+              <div formArrayName="specs" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+                @for (specGroup of specsArray.controls; track $index) {
+                  <div [formGroupName]="$index" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: start;">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Property</mat-label>
+                      <input matInput formControlName="key" placeholder="e.g., Sensor">
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Value</mat-label>
+                      <input matInput formControlName="value" placeholder="e.g., HERO 25K">
+                    </mat-form-field>
+                    <button mat-icon-button color="warn" type="button" (click)="removeSpec($index)" matTooltip="Remove specification">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+              <button mat-stroked-button type="button" (click)="addSpec()">
+                <mat-icon style="margin-right: 4px;">add</mat-icon>
+                Add Specification
+              </button>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Form Actions -->
+          <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px; background-color: rgba(255, 255, 255, 0.05); border-radius: 4px;">
+            <a mat-button routerLink="/admin/products">Cancel</a>
+            <button mat-raised-button color="primary" type="submit" [disabled]="isSaving() || form.invalid">
               @if (isSaving()) {
-                Saving...
+                <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+                <span>Saving...</span>
               } @else {
-                {{ isEditMode() ? 'Save Changes' : 'Create Product' }}
+                <ng-container>
+                  <mat-icon style="margin-right: 4px;">{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+                  <span>{{ isEditMode() ? 'Save Changes' : 'Create Product' }}</span>
+                </ng-container>
               }
             </button>
           </div>
