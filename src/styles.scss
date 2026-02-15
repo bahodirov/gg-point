@@ -14,6 +14,90 @@ html {
 html.dark,
 html.dark-theme {
   @include mat.all-component-themes(theme.$ggpoint-dark-theme);
+
+  // Dark theme background colors
+  background-color: #121212;
+  color: rgba(255, 255, 255, 0.87);
+
+  body {
+    background-color: #121212;
+  }
+
+  // Material cards in dark theme
+  .mat-mdc-card {
+    background-color: #1e1e1e;
+    color: rgba(255, 255, 255, 0.87);
+    border-radius: 12px;
+  }
+
+  // Toolbar
+  .mat-toolbar.mat-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  // Sidenav
+  .mat-drawer {
+    background-color: #1e1e1e;
+  }
+
+  .mat-drawer-container {
+    background-color: #121212;
+  }
+
+  // Active nav items
+  .mat-mdc-list-item.active {
+    background-color: rgba(102, 126, 234, 0.1);
+    border-left: 4px solid #667eea;
+
+    .mat-icon {
+      color: #667eea;
+    }
+  }
+
+  // Form fields dark theme
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    &.mat-focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: #667eea !important;
+      }
+    }
+  }
+
+  // Buttons
+  .mat-mdc-raised-button.mat-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+  }
+
+  // Table
+  .mat-mdc-table {
+    background-color: #1e1e1e;
+  }
+
+  .mat-mdc-header-cell {
+    color: rgba(255, 255, 255, 0.87) !important;
+    font-weight: 600;
+  }
+
+  .mat-mdc-cell {
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .mat-mdc-row:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
 }
 
 // Import Tailwind CSS

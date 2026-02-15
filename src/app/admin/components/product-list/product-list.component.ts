@@ -165,7 +165,18 @@ interface Product {
       }
     </div>
   `,
-  styles: []
+  styles: [`
+    :host ::ng-deep {
+      .mat-sort-header-arrow {
+        transform: scale(0.5) !important;
+        margin: 0 4px !important;
+      }
+
+      .mat-sort-header-container {
+        align-items: center;
+      }
+    }
+  `]
 })
 export class ProductListComponent implements OnInit, AfterViewInit {
   private http = inject(HttpClient);
