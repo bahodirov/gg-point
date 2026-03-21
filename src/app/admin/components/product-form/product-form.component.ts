@@ -3,17 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface Product {
   id: string;
@@ -48,242 +37,246 @@ interface ProductFormData {
   related_products: string[];
 }
 
-const CATEGORIES = [
-  'mice',
-  'keyboards',
-  'headsets',
-  'monitors',
-  'mousepads',
-  'webcams',
-  'cables',
-  'other'
-];
+const CATEGORIES = ['mice', 'keyboards', 'headsets', 'monitors', 'mousepads', 'webcams', 'cables', 'other'];
 
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressBarModule,
-    MatCardModule,
-    MatDividerModule,
-    MatTooltipModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule],
   template: `
-    <div style="padding: 24px; max-width: 1200px; margin: 0 auto;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h1 style="margin: 0; font-size: 32px; font-weight: 400;">{{ isEditMode() ? 'Edit Product' : 'Add New Product' }}</h1>
-        <a mat-button routerLink="/admin/products">
-          <mat-icon style="margin-right: 4px;">arrow_back</mat-icon>
-          Back to Products
+    <div class="max-w-4xl mx-auto space-y-6">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-white">{{ isEditMode() ? 'Edit Product' : 'Add New Product' }}</h1>
+          <p class="text-gray-400 text-sm mt-0.5">{{ isEditMode() ? 'Update product information' : 'Fill in the details below' }}</p>
+        </div>
+        <a routerLink="/admin/products"
+           class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Back
         </a>
       </div>
 
       @if (isLoading()) {
-        <div style="display: flex; justify-content: center; padding: 48px;">
-          <mat-spinner></mat-spinner>
+        <div class="flex justify-center py-20">
+          <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
         </div>
       } @else {
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 24px;">
-          <!-- Basic Information Card -->
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>Basic Information</mat-card-title>
-            </mat-card-header>
-            <mat-card-content style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-              <mat-form-field appearance="outline">
-                <mat-label>Slug (URL)</mat-label>
-                <input matInput formControlName="slug" placeholder="product-slug">
-                <mat-hint>Used in product URL, e.g., /product/product-slug</mat-hint>
-                @if (form.get('slug')?.hasError('required')) {
-                  <mat-error>Slug is required</mat-error>
-                }
-              </mat-form-field>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
 
-              <mat-form-field appearance="outline">
-                <mat-label>Name (Russian)</mat-label>
-                <input matInput formControlName="name_ru" placeholder="Product name in Russian">
-                @if (form.get('name_ru')?.hasError('required')) {
-                  <mat-error>Name is required</mat-error>
-                }
-              </mat-form-field>
+          <!-- Basic Information -->
+          <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-700">
+              <h2 class="font-semibold text-white">Basic Information</h2>
+            </div>
+            <div class="p-5 space-y-4">
 
-              <mat-form-field appearance="outline">
-                <mat-label>Name (Uzbek)</mat-label>
-                <input matInput formControlName="name_uz" placeholder="Product name in Uzbek">
-              </mat-form-field>
 
-              <mat-form-field appearance="outline">
-                <mat-label>Description (Russian)</mat-label>
-                <textarea matInput formControlName="description_ru" rows="4"
-                          placeholder="Product description in Russian"></textarea>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Description (Uzbek)</mat-label>
-                <textarea matInput formControlName="description_uz" rows="4"
-                          placeholder="Product description in Uzbek"></textarea>
-              </mat-form-field>
-            </mat-card-content>
-          </mat-card>
-
-          <!-- Pricing & Category Card -->
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>Pricing & Category</mat-card-title>
-            </mat-card-header>
-            <mat-card-content style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                <mat-form-field appearance="outline">
-                  <mat-label>Price (UZS)</mat-label>
-                  <input matInput type="number" formControlName="price" placeholder="1000000">
-                  <mat-icon matPrefix>attach_money</mat-icon>
-                  @if (form.get('price')?.hasError('required')) {
-                    <mat-error>Price is required</mat-error>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Name (Russian) <span class="text-red-400">*</span></label>
+                  <input type="text" formControlName="name_ru" placeholder="Product name in Russian"
+                         class="w-full bg-gray-700 border text-white text-sm rounded-lg px-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                         [ngClass]="form.get('name_ru')?.invalid && form.get('name_ru')?.touched ? 'border-red-500' : 'border-gray-600'">
+                  @if (form.get('name_ru')?.hasError('required') && form.get('name_ru')?.touched) {
+                    <p class="text-xs text-red-400 mt-1">Name is required</p>
                   }
-                  @if (form.get('price')?.hasError('min')) {
-                    <mat-error>Price must be positive</mat-error>
-                  }
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>Old Price (UZS)</mat-label>
-                  <input matInput type="number" formControlName="old_price" placeholder="Optional">
-                  <mat-hint>Leave empty if no discount</mat-hint>
-                </mat-form-field>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Name (Uzbek)</label>
+                  <input type="text" formControlName="name_uz" placeholder="Product name in Uzbek"
+                         class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                </div>
               </div>
 
-              <mat-form-field appearance="outline">
-                <mat-label>Category</mat-label>
-                <mat-select formControlName="category">
-                  <mat-option value="">Select category</mat-option>
-                  @for (cat of categories; track cat) {
-                    <mat-option [value]="cat">{{ cat }}</mat-option>
-                  }
-                </mat-select>
-                @if (form.get('category')?.hasError('required')) {
-                  <mat-error>Category is required</mat-error>
-                }
-              </mat-form-field>
-
-              <div style="display: flex; gap: 24px;">
-                <mat-checkbox formControlName="in_stock">In Stock</mat-checkbox>
-                <mat-checkbox formControlName="featured">Featured</mat-checkbox>
-                <mat-checkbox formControlName="is_new">New</mat-checkbox>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Description (Russian)</label>
+                <textarea formControlName="description_ru" rows="3" placeholder="Product description in Russian"
+                          class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none"></textarea>
               </div>
-            </mat-card-content>
-          </mat-card>
 
-          <!-- Images Card -->
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>Images</mat-card-title>
-              <mat-card-subtitle>Upload product images or add URLs</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content style="margin-top: 16px;">
-              <div formArrayName="images" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-                @for (imageCtrl of imagesArray.controls; track $index) {
-                  <div style="display: flex; gap: 8px; align-items: center;">
-                    <mat-form-field appearance="outline" style="flex: 1;">
-                      <mat-label>Image URL {{ $index + 1 }}</mat-label>
-                      <input matInput [formControlName]="$index" placeholder="https://example.com/image.jpg">
-                    </mat-form-field>
-                    <button mat-icon-button color="warn" type="button" (click)="removeImage($index)" matTooltip="Remove image">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                    @if (imageCtrl.value) {
-                      <img [src]="imageCtrl.value" [alt]="'Preview ' + ($index + 1)"
-                           style="width: 52px; height: 52px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.12);">
-                    }
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Description (Uzbek)</label>
+                <textarea formControlName="description_uz" rows="3" placeholder="Product description in Uzbek"
+                          class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pricing & Category -->
+          <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-700">
+              <h2 class="font-semibold text-white">Pricing & Category</h2>
+            </div>
+            <div class="p-5 space-y-4">
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Price (UZS) <span class="text-red-400">*</span></label>
+                  <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">UZS</span>
+                    <input type="number" formControlName="price" placeholder="1000000"
+                           class="w-full bg-gray-700 border text-white text-sm rounded-lg pl-12 pr-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                           [ngClass]="form.get('price')?.invalid && form.get('price')?.touched ? 'border-red-500' : 'border-gray-600'">
                   </div>
+                  @if (form.get('price')?.hasError('required') && form.get('price')?.touched) {
+                    <p class="text-xs text-red-400 mt-1">Price is required</p>
+                  }
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Old Price (UZS)</label>
+                  <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">UZS</span>
+                    <input type="number" formControlName="old_price" placeholder="Optional — leave empty if no discount"
+                           class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg pl-12 pr-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Category <span class="text-red-400">*</span></label>
+                <select formControlName="category"
+                        class="w-full bg-gray-700 border text-white text-sm rounded-lg px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                        [ngClass]="form.get('category')?.invalid && form.get('category')?.touched ? 'border-red-500' : 'border-gray-600'">
+                  <option value="">Select a category</option>
+                  @for (cat of categories; track cat) {
+                    <option [value]="cat">{{ cat }}</option>
+                  }
+                </select>
+                @if (form.get('category')?.hasError('required') && form.get('category')?.touched) {
+                  <p class="text-xs text-red-400 mt-1">Category is required</p>
                 }
               </div>
 
-              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                <input
-                  #fileInput
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  style="display: none"
-                  (change)="onFilesSelected($event)"
-                >
-                <button mat-raised-button color="primary" type="button" (click)="fileInput.click()" [disabled]="isUploading()">
-                  <mat-icon style="margin-right: 4px;">cloud_upload</mat-icon>
-                  Upload from PC
-                </button>
-                <button mat-stroked-button type="button" (click)="addImage()">
-                  <mat-icon style="margin-right: 4px;">add_link</mat-icon>
-                  Add URL
-                </button>
+              <div class="flex flex-wrap gap-5">
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input type="checkbox" formControlName="in_stock"
+                         class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2">
+                  <span class="text-sm text-gray-300">In Stock</span>
+                </label>
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input type="checkbox" formControlName="featured"
+                         class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2">
+                  <span class="text-sm text-gray-300">Featured</span>
+                </label>
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input type="checkbox" formControlName="is_new"
+                         class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2">
+                  <span class="text-sm text-gray-300">New</span>
+                </label>
               </div>
+            </div>
+          </div>
 
-              @if (isUploading()) {
-                <div style="margin-bottom: 16px;">
-                  <mat-progress-bar mode="determinate" [value]="uploadProgress()"></mat-progress-bar>
-                  <span style="font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 4px; display: block;">
-                    {{ uploadProgress() }}% uploading...
-                  </span>
+          <!-- Images -->
+          <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-700">
+              <h2 class="font-semibold text-white">Images</h2>
+              <p class="text-gray-500 text-xs mt-0.5">Upload images or paste URLs</p>
+            </div>
+            <div class="p-5 space-y-3">
+
+              <input #fileInput type="file" accept="image/*" multiple class="hidden" (change)="onFilesSelected($event)">
+
+              @if (imagesArray.controls.length > 0) {
+                <div class="flex flex-wrap gap-3">
+                  @for (imageCtrl of imagesArray.controls; track $index) {
+                    @if (imageCtrl.value) {
+                      <div class="relative group">
+                        <img [src]="imageCtrl.value" alt="preview"
+                             class="w-24 h-24 object-cover rounded-lg border border-gray-600">
+                        <button type="button" (click)="removeImage($index)"
+                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center shadow-lg transition-colors">
+                          <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                          </svg>
+                        </button>
+                      </div>
+                    }
+                  }
                 </div>
               }
-            </mat-card-content>
-          </mat-card>
 
-          <!-- Specifications Card -->
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>Specifications</mat-card-title>
-              <mat-card-subtitle>Add product technical details</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content style="margin-top: 16px;">
-              <div formArrayName="specs" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+              @if (isUploading()) {
+                <div class="space-y-1.5">
+                  <div class="w-full bg-gray-700 rounded-full h-1.5">
+                    <div class="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+                         [style.width]="uploadProgress() + '%'"></div>
+                  </div>
+                  <p class="text-xs text-gray-500">Uploading... {{ uploadProgress() }}%</p>
+                </div>
+              }
+
+              <div class="flex gap-2.5 pt-1">
+                <button type="button" (click)="fileInput.click()" [disabled]="isUploading()"
+                        class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  </svg>
+                  Upload from PC
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Specifications -->
+          <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-700">
+              <h2 class="font-semibold text-white">Specifications</h2>
+              <p class="text-gray-500 text-xs mt-0.5">Technical details shown on the product page</p>
+            </div>
+            <div class="p-5 space-y-3">
+              <div formArrayName="specs" class="space-y-2.5">
                 @for (specGroup of specsArray.controls; track $index) {
-                  <div [formGroupName]="$index" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: start;">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Property</mat-label>
-                      <input matInput formControlName="key" placeholder="e.g., Sensor">
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>Value</mat-label>
-                      <input matInput formControlName="value" placeholder="e.g., HERO 25K">
-                    </mat-form-field>
-                    <button mat-icon-button color="warn" type="button" (click)="removeSpec($index)" matTooltip="Remove specification">
-                      <mat-icon>delete</mat-icon>
+                  <div [formGroupName]="$index" class="flex gap-2.5 items-center">
+                    <input type="text" formControlName="key" placeholder="Property (e.g. Sensor)"
+                           class="flex-1 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                    <input type="text" formControlName="value" placeholder="Value (e.g. HERO 25K)"
+                           class="flex-1 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                    <button type="button" (click)="removeSpec($index)"
+                            class="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-gray-700 transition-colors flex-shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
                     </button>
                   </div>
                 }
               </div>
-              <button mat-stroked-button type="button" (click)="addSpec()">
-                <mat-icon style="margin-right: 4px;">add</mat-icon>
+              <button type="button" (click)="addSpec()"
+                      class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
                 Add Specification
               </button>
-            </mat-card-content>
-          </mat-card>
+            </div>
+          </div>
 
           <!-- Form Actions -->
-          <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px; background-color: rgba(255, 255, 255, 0.05); border-radius: 4px;">
-            <a mat-button routerLink="/admin/products">Cancel</a>
-            <button mat-raised-button color="primary" type="submit" [disabled]="isSaving() || form.invalid">
+          <div class="flex items-center justify-end gap-3 py-2">
+            <a routerLink="/admin/products"
+               class="px-5 py-2.5 text-sm font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors">
+              Cancel
+            </a>
+            <button type="submit" [disabled]="isSaving() || form.invalid"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors">
               @if (isSaving()) {
-                <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-                <span>Saving...</span>
+                <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Saving...
               } @else {
-                <ng-container>
-                  <mat-icon style="margin-right: 4px;">{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
-                  <span>{{ isEditMode() ? 'Save Changes' : 'Create Product' }}</span>
-                </ng-container>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        [attr.d]="isEditMode() ? 'M5 13l4 4L19 7' : 'M12 4v16m8-8H4'"/>
+                </svg>
+                {{ isEditMode() ? 'Save Changes' : 'Create Product' }}
               }
             </button>
           </div>
+
         </form>
       }
     </div>
@@ -310,7 +303,7 @@ export class ProductFormComponent implements OnInit {
 
   constructor() {
     this.form = this.fb.group({
-      slug: ['', Validators.required],
+      slug: [''],
       name_ru: ['', Validators.required],
       name_uz: [''],
       description_ru: [''],
@@ -361,16 +354,12 @@ export class ProductFormComponent implements OnInit {
           is_new: product.isNew
         });
 
-        // Load images
         if (product.images?.length) {
           product.images.forEach(url => this.addImage(url));
         }
 
-        // Load specs
         if (product.specs) {
-          Object.entries(product.specs).forEach(([key, value]) => {
-            this.addSpec(key, value);
-          });
+          Object.entries(product.specs).forEach(([key, value]) => this.addSpec(key, value));
         }
 
         this.isLoading.set(false);
@@ -381,6 +370,29 @@ export class ProductFormComponent implements OnInit {
         this.router.navigate(['/admin/products']);
       }
     });
+  }
+
+  private toSlug(value: string): string {
+    return value
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-');
+  }
+
+  sanitizeSlugField(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const pos = input.selectionStart ?? input.value.length;
+    const slug = this.toSlug(input.value);
+    this.form.get('slug')?.setValue(slug, { emitEvent: false });
+    input.value = slug;
+    input.setSelectionRange(pos, pos);
+  }
+
+  autoSlug(event: Event): void {
+    if (this.isEditMode()) return;
+    const name = (event.target as HTMLInputElement).value;
+    this.form.get('slug')?.setValue(this.toSlug(name), { emitEvent: false });
   }
 
   addImage(url: string = ''): void {
@@ -399,46 +411,33 @@ export class ProductFormComponent implements OnInit {
     let completedCount = 0;
     const totalFiles = fileArray.length;
 
-    const uploadPromises = fileArray.map(file => {
-      return this.uploadFile(file).then(url => {
+    const uploadPromises = fileArray.map(file =>
+      this.uploadFile(file).then(url => {
         completedCount++;
         this.uploadProgress.set(Math.round((completedCount / totalFiles) * 100));
         return url;
-      });
-    });
+      })
+    );
 
     Promise.all(uploadPromises)
       .then(urls => {
-        urls.forEach(url => {
-          if (url) this.addImage(url);
-        });
-        const successCount = urls.filter(u => u).length;
-        alert(`Successfully uploaded ${successCount} images`);
+        urls.forEach(url => { if (url) this.addImage(url); });
       })
-      .catch(error => {
-        alert('Failed to upload some images');
-      })
+      .catch(() => alert('Failed to upload some images'))
       .finally(() => {
         this.isUploading.set(false);
-        if (this.fileInput) {
-          this.fileInput.nativeElement.value = '';
-        }
+        if (this.fileInput) this.fileInput.nativeElement.value = '';
       });
   }
 
   private uploadFile(file: File): Promise<string | null> {
     const formData = new FormData();
     formData.append('image', file);
-
     return new Promise((resolve, reject) => {
       this.http.post<{ success: boolean; image: { url: string } }>('/api/admin/upload-image', formData)
         .subscribe({
-          next: (response) => {
-            resolve(response.image?.url || null);
-          },
-          error: (error) => {
-            reject(error);
-          }
+          next: (res) => resolve(res.image?.url || null),
+          error: (err) => reject(err)
         });
     });
   }
@@ -457,23 +456,24 @@ export class ProductFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
     this.isSaving.set(true);
-
     const formValue = this.form.value;
 
-    // Convert specs array to object
     const specs: Record<string, string> = {};
     formValue.specs.forEach((spec: { key: string; value: string }) => {
-      if (spec.key && spec.value) {
-        specs[spec.key] = spec.value;
-      }
+      if (spec.key && spec.value) specs[spec.key] = spec.value;
     });
 
+    const slug = this.isEditMode() && formValue.slug
+      ? formValue.slug
+      : this.toSlug(formValue.name_ru);
+
     const data: ProductFormData = {
-      slug: formValue.slug,
+      slug,
       name_ru: formValue.name_ru,
       name_uz: formValue.name_uz || formValue.name_ru,
       description_ru: formValue.description_ru,
@@ -496,7 +496,6 @@ export class ProductFormComponent implements OnInit {
     request.subscribe({
       next: () => {
         this.isSaving.set(false);
-        alert(this.isEditMode() ? 'Product updated successfully' : 'Product created successfully');
         this.router.navigate(['/admin/products']);
       },
       error: (error) => {

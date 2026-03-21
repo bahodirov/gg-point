@@ -1,10 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls:*)",
-      "Bash(npm install)",
-      "Bash(npm start)",
-      "Bash(find:*)"
+      "Bash(*)"
     ]
   }
 }
