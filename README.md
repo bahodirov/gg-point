@@ -1,5 +1,7 @@
 # GGPoint - Computer Accessories Store
 
+![Version](https://img.shields.io/badge/version-1.2.0-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+
 A modern, lightweight ecommerce catalog website built with Angular 20 featuring Server-Side Rendering (SSR), bilingual support (Russian/Uzbek), and a beautiful, mobile-responsive UI.
 
 ## 🚀 Features
