@@ -16,11 +16,12 @@ A modern, lightweight ecommerce catalog website built with Angular 20 featuring 
 - **SEO Optimized** - Schema.org markup, OG tags, sitemap, robots.txt
 
 ### Admin Panel Features
-- **Product Management** - Create, edit, delete products with rich editor
+- **Product Management** - Create, edit, delete products with image upload
 - **Image Upload & Optimization** - Automatic WebP conversion and thumbnail generation
-- **User Authentication** - Secure login with session management
-- **Dashboard** - Overview of products and statistics
-- **Responsive Admin UI** - Mobile-friendly admin interface
+- **User Authentication** - Secure login with persistent session (no logout on refresh)
+- **Dashboard** - Overview of products, categories, and statistics with progress bars
+- **Flowbite-style UI** - Clean dark admin panel built with Tailwind CSS (no Angular Material)
+- **Smart Slug Generation** - Product URL slug auto-generated from name, hidden from user
 
 ### Security Features
 - **Rate Limiting** - Prevents brute force attacks (10 attempts/15min for auth)
@@ -32,14 +33,13 @@ A modern, lightweight ecommerce catalog website built with Angular 20 featuring 
 - **Security Headers** - Helmet.js for Content Security Policy, HSTS, etc.
 - **Audit Logging** - Track all admin actions and security events
 
-### Database Options
-- **PostgreSQL** - Production-ready with connection pooling, transactions, and migrations
-- **JSON Files** - Simple fallback for development (automatic)
+### Database
+- **PostgreSQL** - Production-ready with connection pooling, transactions, and auto schema migration
 
 ## 📋 Tech Stack
 
 - **Framework**: Angular 20 with SSR (Angular Universal)
-- **UI Library**: Angular Material + Tailwind CSS
+- **UI Library**: Tailwind CSS (admin panel), Angular Material (storefront)
 - **Language**: TypeScript
 - **Internationalization**: @ngx-translate/core
 - **Markdown**: ngx-markdown
@@ -178,10 +178,6 @@ The application supports two storage options:
    ```
    
    For detailed migration instructions, see [Database Migration Guide](./docs/deployment/DATABASE_MIGRATION.md)
-
-#### Using JSON Files (Development)
-
-No configuration required. The application will automatically use JSON file storage if PostgreSQL is not configured. Data is stored in the `data/` directory.
 
 ### Deploy to Production
 
@@ -458,5 +454,5 @@ For support, email info@gg-point.uz or join our Telegram channel.
 
 ---
 
-**Last Updated:** December 13, 2025  
-**Version:** 1.0.0
+**Last Updated:** March 22, 2026
+**Version:** 1.2.0

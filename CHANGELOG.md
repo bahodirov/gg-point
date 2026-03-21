@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.2.0] - 2026-03-22
+
+### ✨ Admin Panel — Full Redesign (Flowbite style)
+
+#### UI
+- Replaced Angular Material with pure Tailwind CSS throughout the entire admin panel
+- New fixed sidebar with logo, nav icons, user info and logout at the bottom
+- Flowbite-style dark theme: `gray-900` sidebar, `gray-800` cards, `gray-950` background
+- Responsive mobile sidebar with overlay
+
+#### Dashboard
+- Stat cards with colored icons (blue, yellow, red, purple)
+- Category breakdown with progress bars
+- Quick action buttons
+
+#### Product List
+- Native HTML table replacing `mat-table`
+- Client-side search, sort (by name/category/price), and pagination — no Angular Material dependencies
+- Category filter dropdown
+- Inline delete confirmation modal (replaces `MatDialog`)
+- Status badges: In Stock / Out of Stock / Featured / New
+
+#### Product Form
+- Slug field removed from UI — auto-generated from product name on submit
+- Image upload only (URL input removed), uploaded images shown as thumbnail grid with remove button
+- Native HTML inputs, selects, and checkboxes styled with Tailwind
+
+#### Auth Guard Fix
+- Refresh no longer redirects to login — guard now waits for session check to complete using `toObservable`
+
+---
+
 ## [1.1.0] - 2025-12-14
 
 ### ✨ Added - Complete i18n Implementation

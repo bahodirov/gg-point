@@ -62,3 +62,10 @@ Thumbs.db
 # Log files
 /logs
 *.log
+
+# Claude Code internal files
+.claude/
+
+# Build artifacts & temporary files
+build_output.txt
+*.tmp
