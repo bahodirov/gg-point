@@ -157,8 +157,7 @@ const PAGE_SIZE = 12;
               </span>
               <div class="flex items-center gap-3">
                 <!-- Sort -->
-                <mat-form-field appearance="outline" class="w-52">
-                  <mat-label>{{ 'catalog.sortBy' | translate }}</mat-label>
+                <mat-form-field appearance="outline" class="sort-field" subscriptSizing="dynamic">
                   <mat-select [(value)]="sortBy" (selectionChange)="applySort()">
                     <mat-option value="default">{{ 'catalog.sortOptions.default' | translate }}</mat-option>
                     <mat-option value="priceLow">{{ 'catalog.sortOptions.priceLow' | translate }}</mat-option>
@@ -172,10 +171,10 @@ const PAGE_SIZE = 12;
 
                 <!-- View toggle -->
                 <div class="flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
-                  <button class="view-toggle-btn" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'" [matTooltip]="'catalog.gridView' | translate">
+                  <button class="view-toggle-btn" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">
                     <mat-icon>grid_view</mat-icon>
                   </button>
-                  <button class="view-toggle-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'" [matTooltip]="'catalog.listView' | translate">
+                  <button class="view-toggle-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">
                     <mat-icon>view_list</mat-icon>
                   </button>
                 </div>
@@ -317,6 +316,11 @@ const PAGE_SIZE = 12;
     }
     .sort-bar span { font-size: 13px; color: #7c8db5; }
     .sort-bar strong { color: #e2e8f0; }
+
+    .sort-field {
+      min-width: 190px;
+      margin: 0 !important;
+    }
 
     /* View toggle */
     .view-toggle-btn {

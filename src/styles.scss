@@ -169,6 +169,53 @@ html.dark-theme {
   }
 }
 
+// ── Global overlay (cdk-overlay is outside html.dark scope) ─────────────────
+.cdk-overlay-container,
+.cdk-overlay-pane {
+  background: transparent !important;
+}
+
+.mat-mdc-select-panel,
+.mat-select-panel {
+  background-color: #0d1426 !important;
+  border: 1px solid rgba(59,130,246,0.25) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7) !important;
+}
+
+.mat-mdc-option,
+.mat-option {
+  color: #e2e8f0 !important;
+  background-color: transparent !important;
+}
+.mat-mdc-option:hover,
+.mat-mdc-option.mat-mdc-option-active,
+.mat-option:hover {
+  background-color: rgba(59,130,246,0.12) !important;
+}
+.mat-mdc-option.mdc-list-item--selected,
+.mat-option.mat-selected {
+  background-color: rgba(59,130,246,0.18) !important;
+  color: #60a5fa !important;
+}
+
+.mat-mdc-menu-panel,
+.mat-menu-panel {
+  background-color: #0d1426 !important;
+  border: 1px solid rgba(59,130,246,0.2) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+}
+.mat-mdc-menu-item,
+.mat-menu-item { color: #e2e8f0 !important; background: transparent !important; }
+.mat-mdc-menu-item:hover,
+.mat-menu-item:hover { background-color: rgba(59,130,246,0.08) !important; }
+
+// ── Form field border-radius (global) ────────────────────────────────────────
+.mdc-notched-outline__leading  { border-radius: 10px 0 0 10px !important; min-width: 10px !important; }
+.mdc-notched-outline__trailing { border-radius: 0 10px 10px 0 !important; }
+.mat-mdc-text-field-wrapper    { border-radius: 10px !important; }
+
 // ── Tailwind ──────────────────────────────────────────────────────────────
 @tailwind base;
 @tailwind components;
@@ -496,6 +543,29 @@ app-catalog-list .filter-panel {
   padding: 20px;
   position: sticky;
   top: 80px;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+}
+app-catalog-list .filter-panel mat-form-field {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+app-catalog-list .filter-panel .flex.gap-2 {
+  display: flex !important;
+  gap: 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+app-catalog-list .filter-panel .flex.gap-2 mat-form-field {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  max-width: calc(50% - 4px) !important;
+}
+app-catalog-list .filter-panel button {
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 app-catalog-list .filter-title {
   font-size: 1rem; font-weight: 700; color: #e2e8f0; margin-bottom: 16px;
@@ -554,6 +624,36 @@ app-catalog-list .page-btn {
 app-catalog-list .page-btn:hover { border-color: rgba(59,130,246,0.4); color: #60a5fa; }
 app-catalog-list .page-btn.active { background: #2563eb; border-color: #2563eb; color: white; }
 app-catalog-list .page-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+// ── Catalog list view ─────────────────────────────────────────────────────────
+app-catalog-list .list-view { display: flex; flex-direction: column; gap: 12px; }
+app-catalog-list .list-card {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: #111c35; border: 1px solid rgba(59,130,246,0.15);
+  border-radius: 14px; padding: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+app-catalog-list .list-card:hover { border-color: rgba(59,130,246,0.35); box-shadow: 0 4px 20px rgba(59,130,246,0.12); }
+app-catalog-list .list-img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; flex-shrink: 0; background: #0d1426; }
+app-catalog-list .list-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+app-catalog-list .list-name {
+  font-size: 15px; font-weight: 700; color: #e2e8f0;
+  text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+app-catalog-list .list-name:hover { color: #60a5fa; }
+app-catalog-list .list-desc { font-size: 12px; color: #7c8db5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+app-catalog-list .list-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; flex-wrap: wrap; gap: 8px; padding-top: 6px; }
+app-catalog-list .list-price-old { font-size: 12px; color: #64748b; text-decoration: line-through; margin-right: 6px; }
+app-catalog-list .list-price { font-size: 16px; font-weight: 800; background: linear-gradient(90deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+app-catalog-list .list-view-btn {
+  display: inline-flex; align-items: center;
+  padding: 6px 16px;
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 8px; color: #93c5fd; text-decoration: none;
+  font-size: 12px; font-weight: 600; transition: all 0.2s;
+}
+app-catalog-list .list-view-btn:hover { background: rgba(59,130,246,0.22); color: #bfdbfe; }
 
 // ── Product card ─────────────────────────────────────────────────────────────
 app-product-card .g-card {
