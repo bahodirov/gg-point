@@ -53,7 +53,7 @@ const PAGE_SIZE = 12;
           <div class="filter-tags">
             @for (tag of activeFilterTags(); track tag.key) {
               <span class="filter-tag">
-                {{ tag.label }}
+                {{ tag.label | translate }}
                 <button (click)="removeFilterTag(tag.key)" class="filter-tag-remove">×</button>
               </span>
             }
@@ -425,6 +425,7 @@ export class CatalogListComponent implements OnInit {
   maxPriceInput: number | null = null;
   inStockOnly = false;
   discountOnly = false;
+  newOnly = false;
   sortBy = 'default';
   currentPage = 1;
 
@@ -456,10 +457,10 @@ export class CatalogListComponent implements OnInit {
     if (this.selectedCategory) tags.push({ key: 'category', label: this.selectedCategory });
     if (this.selectedBrand) tags.push({ key: 'brand', label: this.selectedBrand });
     if (this.searchQuery) tags.push({ key: 'search', label: `"${this.searchQuery}"` });
-    if (this.inStockOnly) tags.push({ key: 'inStock', label: 'В наличии' });
-    if (this.discountOnly) tags.push({ key: 'discount', label: 'Со скидкой' });
-    if (this.minPriceInput) tags.push({ key: 'minPrice', label: `от ${this.minPriceInput.toLocaleString()} UZS` });
-    if (this.maxPriceInput) tags.push({ key: 'maxPrice', label: `до ${this.maxPriceInput.toLocaleString()} UZS` });
+    if (this.inStockOnly) tags.push({ key: 'inStock', label: 'catalog.inStock' });
+    if (this.discountOnly) tags.push({ key: 'discount', label: 'catalog.discountOnly' });
+    if (this.minPriceInput) tags.push({ key: 'minPrice', label: `≥ ${this.minPriceInput.toLocaleString()} UZS` });
+    if (this.maxPriceInput) tags.push({ key: 'maxPrice', label: `≤ ${this.maxPriceInput.toLocaleString()} UZS` });
     return tags;
   });
 
@@ -467,10 +468,11 @@ export class CatalogListComponent implements OnInit {
     this.loadData();
     this.updateSEO();
     this.route.queryParams.subscribe(params => {
-      if (params['category']) {
-        this.selectedCategory = params['category'];
-        this.applyFilters();
-      }
+      if (params['category']) this.selectedCategory = params['category'];
+      if (params['discount']) this.discountOnly = true;
+      if (params['new']) this.newOnly = true;
+      if (params['brand']) this.selectedBrand = params['brand'];
+      this.applyFilters();
     });
   }
 
@@ -518,6 +520,10 @@ export class CatalogListComponent implements OnInit {
       filtered = filtered.filter(p => p.originalPrice && p.originalPrice > p.price);
     }
 
+    if (this.newOnly) {
+      filtered = filtered.filter(p => p.isNew);
+    }
+
     this.filteredProducts.set(filtered);
     this.currentPage = 1;
     this.applySort();
@@ -557,6 +563,7 @@ export class CatalogListComponent implements OnInit {
     this.maxPriceInput = null;
     this.inStockOnly = false;
     this.discountOnly = false;
+    this.newOnly = false;
     this.sortBy = 'default';
     this.applyFilters();
   }
