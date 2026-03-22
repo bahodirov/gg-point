@@ -2,11 +2,14 @@
   "header": {
     "home": "Bosh sahifa",
     "catalog": "Katalog",
+    "keycaps": "Keycaps",
+    "mousepads": "Sichqon gilami",
     "blog": "Blog",
     "about": "Biz haqimizda",
     "contact": "Aloqa",
     "faq": "Savol-javob",
-    "language": "Til"
+    "language": "Til",
+    "favorites": "Sevimlilar"
   },
   "footer": {
     "about": "Kompaniya haqida",
@@ -20,28 +23,57 @@
     "hero": {
       "title": "Zamonaviy kompyuter aksessuarlari",
       "subtitle": "O'zingiz uchun eng yaxshi jihozlarni toping",
-      "cta": "Katalogni ko'rish"
+      "cta": "Katalogni ko'rish",
+      "sales": "Aksiyalar"
     },
     "featured": "Mashhur mahsulotlar",
+    "featuredDesc": "Xaridorlar tomonidan tanlangan eng yaxshi mahsulotlar",
+    "sales": "Aksiyalar va chegirmalar",
+    "newArrivals": "Yangiliklar",
     "categories": "Kategoriyalar",
+    "brands": "Mashhur brendlar",
     "latestBlog": "So'nggi maqolalar",
-    "viewAll": "Barchasini ko'rish"
+    "viewAll": "Barchasini ko'rish",
+    "benefits": {
+      "quality": "Original mahsulotlar",
+      "qualityDesc": "Faqat sertifikatlangan tovarlar",
+      "delivery": "Tez yetkazib berish",
+      "deliveryDesc": "Butun O'zbekiston bo'ylab",
+      "support": "24/7 qo'llab-quvvatlash",
+      "supportDesc": "Telegram va telefon"
+    }
   },
   "catalog": {
     "title": "Katalog",
     "filters": "Filtrlar",
     "category": "Kategoriya",
     "allCategories": "Barcha kategoriyalar",
+    "brand": "Brend",
+    "allBrands": "Barcha brendlar",
     "priceRange": "Narx oralig'i",
+    "applyPrice": "Qo'llash",
     "inStock": "Mavjud",
+    "discountOnly": "Faqat chegirmali",
     "sortBy": "Tartiblash",
     "sortOptions": {
       "default": "Standart",
       "priceLow": "Narx: o'sish bo'yicha",
       "priceHigh": "Narx: kamayish bo'yicha",
-      "newest": "Yangilar"
+      "nameAZ": "Nom: A-Z",
+      "nameZA": "Nom: Z-A",
+      "newest": "Yangilar",
+      "popular": "Mashhurlar"
     },
-    "noProducts": "Mahsulotlar topilmadi"
+    "noProducts": "Mahsulotlar topilmadi",
+    "found": "Topildi",
+    "products": "ta mahsulot",
+    "resetFilters": "Filtrlarni tozalash",
+    "resetAll": "Hammasini tozalash",
+    "search": "Qidirish",
+    "searchPlaceholder": "Nomi, brendi...",
+    "recentlyViewed": "So'nggi ko'rilganlar",
+    "gridView": "Katak",
+    "listView": "Ro'yxat"
   },
   "product": {
     "price": "Narx",
@@ -49,9 +81,39 @@
     "outOfStock": "Mavjud emas",
     "orderViaTelegram": "Telegram orqali buyurtma",
     "specifications": "Xususiyatlari",
+    "noSpecs": "Xususiyatlar ko'rsatilmagan",
     "description": "Tavsif",
+    "features": "Imkoniyatlari",
     "relatedProducts": "O'xshash mahsulotlar",
-    "features": "Xususiyatlari"
+    "showMore": "To'liq ko'rsatish",
+    "showLess": "Yig'ish",
+    "addToFavorites": "Sevimlilarga",
+    "removeFromFavorites": "Sevimlilardan o'chirish",
+    "notifyWhenAvailable": "Mavjud bo'lganda xabar bering",
+    "notFound": "Mahsulot topilmadi",
+    "backToCatalog": "Katalogga qaytish",
+    "videoReview": "Video sharh",
+    "badges": {
+      "new": "Yangi",
+      "sale": "Chegirma"
+    },
+    "delivery": {
+      "title": "Yetkazib berish va kafolat",
+      "tashkent": "Toshkent bo'ylab yetkazib berish",
+      "tashkentDesc": "1-2 ish kuni, 300 000 UZS dan bepul",
+      "regions": "Viloyatlarga yetkazib berish",
+      "regionsDesc": "3-7 ish kuni pochta orqali",
+      "warranty": "Rasmiy kafolat",
+      "warrantyDesc": "Original mahsulot bilan kafolat"
+    }
+  },
+  "cart": {
+    "title": "Savat",
+    "addToCart": "Savatga",
+    "inCart": "Savatda",
+    "empty": "Savat bo'sh",
+    "total": "Jami",
+    "order": "Buyurtma berish"
   },
   "blog": {
     "title": "Blog",
@@ -69,18 +131,9 @@
     "missionText": "O'zbekistonda mijozlarimizga sifatli kompyuter aksessuarlari va a'lo darajadagi xizmat ko'rsatish.",
     "whyChooseUs": "Nima uchun biz?",
     "values": {
-      "quality": {
-        "title": "Sifat",
-        "text": "Faqat ishonchli ishlab chiqaruvchilardan asl mahsulotlar"
-      },
-      "service": {
-        "title": "Xizmat",
-        "text": "Tez yetkazib berish va professional maslahat"
-      },
-      "prices": {
-        "title": "Narxlar",
-        "text": "Raqobatbardosh narxlar va muntazam aksiyalar"
-      }
+      "quality": { "title": "Sifat", "text": "Faqat ishonchli ishlab chiqaruvchilardan asl mahsulotlar" },
+      "service": { "title": "Xizmat", "text": "Tez yetkazib berish va professional maslahat" },
+      "prices": { "title": "Narxlar", "text": "Raqobatbardosh narxlar va muntazam aksiyalar" }
     }
   },
   "contact": {
@@ -99,11 +152,16 @@
   "faq": {
     "title": "Ko'p so'raladigan savollar"
   },
+  "soon": {
+    "button": "Tez kunda / Aksiyalar",
+    "title": "Aksiyalar va yangiliklar",
+    "noProducts": "Tez orada yangiliklar bo'ladi!"
+  },
   "common": {
     "loading": "Yuklanmoqda...",
     "error": "Xatolik yuz berdi",
     "close": "Yopish",
-    "viewMore": "Ko'proq ko'rsatish",
+    "viewMore": "Batafsil",
     "backToTop": "Yuqoriga",
     "currency": "so'm"
   }

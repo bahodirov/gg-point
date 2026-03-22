@@ -5,212 +5,390 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatBadgeModule } from '@angular/material/badge';
 import { TranslateModule } from '@ngx-translate/core';
 import { ThemeService } from '../../../core/services/theme.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { CartService } from '../../services/cart.service';
+import { FavoritesService } from '../../services/favorites.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatSidenavModule,
-    TranslateModule
+    CommonModule, RouterModule,
+    MatToolbarModule, MatButtonModule, MatIconModule,
+    MatMenuModule, MatBadgeModule, TranslateModule
   ],
   template: `
-    <mat-toolbar class="header sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-md">
-      <div class="container mx-auto px-4 flex items-center justify-between">
+    <header class="site-header">
+      <div class="header-inner">
         <!-- Logo -->
-        <a routerLink="/" class="flex items-center space-x-2 no-underline">
-          <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">GG</span>
-          <span class="text-2xl font-bold text-gray-800 dark:text-white">Point</span>
+        <a routerLink="/" class="logo-link">
+          <span class="logo-gg">GG</span><span class="logo-point">Point</span>
         </a>
 
-        <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center space-x-6">
-          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" 
-             class="nav-link">
+        <!-- Desktop Nav -->
+        <nav class="desktop-nav">
+          <a routerLink="/" routerLinkActive="nav-active" [routerLinkActiveOptions]="{exact:true}" class="nav-item">
             {{ 'header.home' | translate }}
           </a>
-          <a routerLink="/catalog" routerLinkActive="active" class="nav-link">
+          <a routerLink="/catalog" routerLinkActive="nav-active" class="nav-item">
             {{ 'header.catalog' | translate }}
           </a>
-          <a routerLink="/blog" routerLinkActive="active" class="nav-link">
+          <a routerLink="/catalog" [queryParams]="{category:'keycaps'}" class="nav-item nav-special">
+            <mat-icon style="font-size:15px;width:15px;height:15px;vertical-align:middle;margin-right:3px;">keyboard</mat-icon>
+            {{ 'header.keycaps' | translate }}
+          </a>
+          <a routerLink="/catalog" [queryParams]="{category:'mousepads'}" class="nav-item nav-special">
+            <mat-icon style="font-size:15px;width:15px;height:15px;vertical-align:middle;margin-right:3px;">mouse</mat-icon>
+            {{ 'header.mousepads' | translate }}
+          </a>
+          <a routerLink="/blog" routerLinkActive="nav-active" class="nav-item">
             {{ 'header.blog' | translate }}
           </a>
-          <a routerLink="/about" routerLinkActive="active" class="nav-link">
+          <a routerLink="/about" routerLinkActive="nav-active" class="nav-item">
             {{ 'header.about' | translate }}
           </a>
-          <a routerLink="/contact" routerLinkActive="active" class="nav-link">
+          <a routerLink="/contact" routerLinkActive="nav-active" class="nav-item">
             {{ 'header.contact' | translate }}
-          </a>
-          <a routerLink="/faq" routerLinkActive="active" class="nav-link">
-            {{ 'header.faq' | translate }}
           </a>
         </nav>
 
         <!-- Actions -->
-        <div class="flex items-center space-x-2 header-actions">
-          <!-- Language Switcher -->
-          <button mat-icon-button [matMenuTriggerFor]="languageMenu" 
-                  class="text-gray-700 dark:text-gray-300 language-toggle-btn"
-                  [attr.aria-label]="'header.language' | translate">
+        <div class="header-actions">
+          <!-- Language -->
+          <button class="icon-btn" [matMenuTriggerFor]="langMenu" [attr.aria-label]="'header.language'|translate">
             <mat-icon>language</mat-icon>
           </button>
-          <mat-menu #languageMenu="matMenu">
-            <button mat-menu-item 
-                    (click)="languageService.setLanguage('ru')"
-                    [class.active-language]="languageService.currentLanguage() === 'ru'">
-              <mat-icon>{{ languageService.currentLanguage() === 'ru' ? 'check' : '' }}</mat-icon>
-              <span>Русский</span>
+          <mat-menu #langMenu="matMenu">
+            <button mat-menu-item (click)="languageService.setLanguage('ru')"
+                    [class.lang-active]="languageService.currentLanguage()==='ru'">
+              <mat-icon>{{ languageService.currentLanguage()==='ru' ? 'check' : '' }}</mat-icon>
+              Русский
             </button>
-            <button mat-menu-item 
-                    (click)="languageService.setLanguage('uz')"
-                    [class.active-language]="languageService.currentLanguage() === 'uz'">
-              <mat-icon>{{ languageService.currentLanguage() === 'uz' ? 'check' : '' }}</mat-icon>
-              <span>O'zbek</span>
+            <button mat-menu-item (click)="languageService.setLanguage('uz')"
+                    [class.lang-active]="languageService.currentLanguage()==='uz'">
+              <mat-icon>{{ languageService.currentLanguage()==='uz' ? 'check' : '' }}</mat-icon>
+              O'zbek
             </button>
           </mat-menu>
 
-          <!-- Theme Toggle -->
-          <button mat-icon-button (click)="themeService.toggleTheme()" 
-                  class="text-gray-700 dark:text-gray-300 theme-toggle-btn"
-                  aria-label="Toggle theme">
-            <mat-icon>{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+          <!-- Theme toggle -->
+          <button class="icon-btn" (click)="themeService.toggleTheme()" aria-label="Toggle theme">
+            <mat-icon>{{ themeService.theme()==='light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
           </button>
 
-          <!-- Mobile Menu Toggle -->
-          <button mat-icon-button (click)="mobileMenuOpen.set(!mobileMenuOpen())" 
-                  class="md:hidden text-gray-700 dark:text-gray-300 menu-toggle-btn"
-                  aria-label="Toggle menu">
-            <mat-icon>{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+          <!-- Favorites -->
+          <button class="icon-btn fav-btn-desktop" routerLink="/favorites" [attr.aria-label]="'header.favorites'|translate">
+            <mat-icon [matBadge]="favCount() > 0 ? favCount() : null" matBadgeColor="warn" matBadgeSize="small">
+              favorite_border
+            </mat-icon>
+          </button>
+
+          <!-- Cart -->
+          <button class="cart-btn" [matMenuTriggerFor]="cartMenu" [attr.aria-label]="'cart.title'|translate">
+            <mat-icon [matBadge]="cartCount() > 0 ? cartCount() : null" matBadgeColor="primary" matBadgeSize="small">
+              shopping_cart
+            </mat-icon>
+          </button>
+          <mat-menu #cartMenu="matMenu" class="cart-dropdown">
+            @if (cartItems().length === 0) {
+              <div class="cart-empty">
+                <mat-icon>shopping_cart</mat-icon>
+                <p>{{ 'cart.empty' | translate }}</p>
+              </div>
+            } @else {
+              <div class="cart-list">
+                @for (item of cartItems(); track item.productId) {
+                  <div class="cart-item">
+                    <img [src]="item.thumbnail" [alt]="item.name" class="cart-thumb">
+                    <div class="cart-item-info">
+                      <p class="cart-item-name">{{ item.name }}</p>
+                      <p class="cart-item-price">{{ item.quantity }} × {{ item.price | number:'1.0-0' }} UZS</p>
+                    </div>
+                    <button class="cart-remove" (click)="removeFromCart(item.productId, $event)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+                <div class="cart-footer">
+                  <span class="cart-total">{{ 'cart.total' | translate }}: {{ cartTotal() | number:'1.0-0' }} UZS</span>
+                  <a [href]="getCartTelegramLink()" target="_blank" rel="noopener noreferrer" class="cart-order-btn">
+                    {{ 'cart.order' | translate }}
+                  </a>
+                </div>
+              </div>
+            }
+          </mat-menu>
+
+          <!-- Mobile Menu -->
+          <button class="icon-btn mobile-menu-btn" (click)="mobileOpen.set(!mobileOpen())" aria-label="Menu">
+            <mat-icon>{{ mobileOpen() ? 'close' : 'menu' }}</mat-icon>
           </button>
         </div>
       </div>
 
-      <!-- Mobile Navigation -->
-      @if (mobileMenuOpen()) {
-        <div class="md:hidden absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 shadow-lg z-40">
-          <nav class="flex flex-col p-4 space-y-2">
-            <a routerLink="/" (click)="mobileMenuOpen.set(false)" 
-               class="mobile-nav-link">
-              {{ 'header.home' | translate }}
-            </a>
-            <a routerLink="/catalog" (click)="mobileMenuOpen.set(false)" 
-               class="mobile-nav-link">
-              {{ 'header.catalog' | translate }}
-            </a>
-            <a routerLink="/blog" (click)="mobileMenuOpen.set(false)" 
-               class="mobile-nav-link">
-              {{ 'header.blog' | translate }}
-            </a>
-            <a routerLink="/about" (click)="mobileMenuOpen.set(false)" 
-               class="mobile-nav-link">
-              {{ 'header.about' | translate }}
-            </a>
-            <a routerLink="/contact" (click)="mobileMenuOpen.set(false)" 
-               class="mobile-nav-link">
-              {{ 'header.contact' | translate }}
-            </a>
-            <a routerLink="/faq" (click)="mobileMenuOpen.set(false)" 
-               class="mobile-nav-link">
-              {{ 'header.faq' | translate }}
-            </a>
-          </nav>
-        </div>
+      <!-- Mobile nav -->
+      @if (mobileOpen()) {
+        <nav class="mobile-nav">
+          <a routerLink="/"               (click)="mobileOpen.set(false)" class="mobile-item">{{ 'header.home'|translate }}</a>
+          <a routerLink="/catalog"         (click)="mobileOpen.set(false)" class="mobile-item">{{ 'header.catalog'|translate }}</a>
+          <a routerLink="/catalog" [queryParams]="{category:'keycaps'}"   (click)="mobileOpen.set(false)" class="mobile-item">{{ 'header.keycaps'|translate }}</a>
+          <a routerLink="/catalog" [queryParams]="{category:'mousepads'}" (click)="mobileOpen.set(false)" class="mobile-item">{{ 'header.mousepads'|translate }}</a>
+          <a routerLink="/blog"            (click)="mobileOpen.set(false)" class="mobile-item">{{ 'header.blog'|translate }}</a>
+          <a routerLink="/about"           (click)="mobileOpen.set(false)" class="mobile-item">{{ 'header.about'|translate }}</a>
+          <a routerLink="/contact"         (click)="mobileOpen.set(false)" class="mobile-item">{{ 'header.contact'|translate }}</a>
+          <a routerLink="/faq"             (click)="mobileOpen.set(false)" class="mobile-item">{{ 'header.faq'|translate }}</a>
+        </nav>
       }
-    </mat-toolbar>
+    </header>
   `,
   styles: [`
-    .header {
-      min-height: 64px;
+    /* ── Header shell ──────────────────────────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8,12,24,0.96);
+      border-bottom: 1px solid rgba(59,130,246,0.15);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
-    .nav-link {
+    .header-inner {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: 16px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ── Logo ──────────────────────────────────────────────────────── */
+    .logo-link {
+      display: flex;
+      align-items: center;
       text-decoration: none;
-      color: inherit;
+      flex-shrink: 0;
+      gap: 2px;
+    }
+    .logo-gg {
+      font-size: 1.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+    .logo-point {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #e2e8f0;
+      letter-spacing: -1px;
+    }
+
+    /* ── Desktop nav ───────────────────────────────────────────────── */
+    .desktop-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .fav-btn-desktop { display: flex; }
+    .mobile-menu-btn { display: none; }
+
+    @media (max-width: 767px) {
+      .desktop-nav { display: none; }
+      .fav-btn-desktop { display: none; }
+      .mobile-menu-btn { display: flex; }
+    }
+    .nav-item {
+      text-decoration: none;
+      color: #94a3b8;
+      font-size: 0.875rem;
       font-weight: 500;
-      padding: 0.5rem 0;
+      padding: 6px 10px;
+      border-radius: 6px;
       border-bottom: 2px solid transparent;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-item:hover {
+      color: #e2e8f0;
+      background: rgba(59,130,246,0.08);
+    }
+    .nav-active {
+      color: #60a5fa !important;
+      border-bottom-color: #3b82f6 !important;
+    }
+    .nav-special {
+      color: #a78bfa;
+    }
+    .nav-special:hover {
+      color: #c4b5fd;
+      background: rgba(139,92,246,0.1);
     }
 
-    .nav-link:hover {
-      color: #0ea5e9;
-      border-bottom-color: #0ea5e9;
-    }
-
-    .nav-link.active {
-      color: #0ea5e9;
-      border-bottom-color: #0ea5e9;
-    }
-
-    .mobile-nav-link {
-      text-decoration: none;
-      color: inherit;
-      padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
-      transition: all 0.2s ease;
-      display: block;
-    }
-
-    .mobile-nav-link:hover {
-      background-color: rgba(14, 165, 233, 0.1);
-      color: #0ea5e9;
-    }
-
-    :host ::ng-deep .mat-toolbar {
-      padding: 0 !important;
-    }
-
+    /* ── Actions ───────────────────────────────────────────────────── */
     .header-actions {
-      min-width: fit-content;
-    }
-
-    :host ::ng-deep .theme-toggle-btn,
-    :host ::ng-deep .menu-toggle-btn {
-      width: 48px !important;
-      height: 48px !important;
+      display: flex;
+      align-items: center;
+      gap: 4px;
       flex-shrink: 0;
     }
-
-    :host ::ng-deep .theme-toggle-btn .mat-icon,
-    :host ::ng-deep .menu-toggle-btn .mat-icon,
-    :host ::ng-deep .language-toggle-btn .mat-icon {
-      font-size: 24px !important;
-      width: 24px !important;
-      height: 24px !important;
-      line-height: 24px !important;
+    .icon-btn {
+      background: none;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .icon-btn:hover {
+      background: rgba(59,130,246,0.1);
+      color: #60a5fa;
+    }
+    .cart-btn {
+      background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(124,58,237,0.3));
+      border: 1px solid rgba(59,130,246,0.3);
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #60a5fa;
+      transition: all 0.2s;
+    }
+    .cart-btn:hover {
+      background: linear-gradient(135deg, rgba(37,99,235,0.5), rgba(124,58,237,0.5));
+      box-shadow: 0 0 12px rgba(59,130,246,0.3);
     }
 
-    :host ::ng-deep .language-toggle-btn {
-      width: 48px !important;
-      height: 48px !important;
-      flex-shrink: 0;
+    /* ── Cart dropdown ─────────────────────────────────────────────── */
+    .cart-empty {
+      padding: 24px;
+      text-align: center;
+      min-width: 240px;
+      color: #7c8db5;
+    }
+    .cart-empty mat-icon {
+      font-size: 40px; width: 40px; height: 40px;
+      display: block; margin: 0 auto 8px;
+    }
+    .cart-list { min-width: 320px; max-width: 360px; }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .cart-thumb {
+      width: 48px; height: 48px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid rgba(59,130,246,0.2);
+    }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name {
+      font-size: 13px;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cart-item-price { font-size: 12px; color: #7c8db5; margin-top: 2px; }
+    .cart-remove {
+      background: none; border: none; cursor: pointer;
+      color: #7c8db5; padding: 4px;
+      border-radius: 4px; transition: color 0.2s;
+    }
+    .cart-remove:hover { color: #ef4444; }
+    .cart-remove mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    .cart-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      gap: 12px;
+    }
+    .cart-total { font-size: 13px; font-weight: 700; color: #e2e8f0; }
+    .cart-order-btn {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .cart-order-btn:hover { opacity: 0.9; }
+
+    /* ── Mobile nav ────────────────────────────────────────────────── */
+    .mobile-nav {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 16px 16px;
+      border-top: 1px solid rgba(59,130,246,0.1);
+      background: rgba(8,12,24,0.98);
+    }
+    .mobile-item {
+      text-decoration: none;
+      color: #94a3b8;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .mobile-item:hover {
+      background: rgba(59,130,246,0.1);
+      color: #60a5fa;
     }
 
-    .active-language {
-      background-color: rgba(14, 165, 233, 0.1);
-      color: #0ea5e9;
-    }
+    .lang-active { color: #3b82f6 !important; }
 
-    :host ::ng-deep .mat-mdc-menu-content {
-      padding: 0.5rem 0;
-    }
-
-    :host ::ng-deep .mat-mdc-menu-item {
-      min-height: 48px;
-    }
+    :host ::ng-deep .mat-badge-content { font-size: 10px !important; }
   `]
 })
 export class HeaderComponent {
-  themeService = inject(ThemeService);
+  themeService    = inject(ThemeService);
   languageService = inject(LanguageService);
-  mobileMenuOpen = signal(false);
+  private cartService      = inject(CartService);
+  private favoritesService = inject(FavoritesService);
+
+  mobileOpen = signal(false);
+
+  cartItems  = this.cartService.items;
+  cartCount  = this.cartService.totalCount;
+  cartTotal  = this.cartService.totalPrice;
+  favCount   = this.favoritesService.count;
+
+  removeFromCart(productId: string, event: Event): void {
+    event.stopPropagation();
+    this.cartService.removeFromCart(productId);
+  }
+
+  getCartTelegramLink(): string {
+    const items = this.cartService.items();
+    if (!items.length) return '#';
+    const lines = items.map(i => `• ${i.name} × ${i.quantity} = ${(i.price*i.quantity).toLocaleString()} UZS`).join('\n');
+    const total = this.cartService.totalPrice();
+    const text  = `Здравствуйте! Хочу заказать:\n${lines}\n\nИтого: ${total.toLocaleString()} UZS`;
+    return `https://t.me/ggpoint_bot?text=${encodeURIComponent(text)}`;
+  }
 }

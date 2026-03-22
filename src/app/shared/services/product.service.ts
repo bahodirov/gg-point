@@ -42,12 +42,16 @@ export class ProductService {
       })
     );
 
+    const brand = safeSpecs['brand'] ? String(safeSpecs['brand']) :
+                  safeSpecs['Brand'] ? String(safeSpecs['Brand']) : undefined;
+
     return {
       id: p.id,
       slug: p.slug,
       name: p.name.ru,
       nameUz: p.name.uz,
       category: p.category,
+      brand,
       price: p.price,
       originalPrice: p.oldPrice,
       currency: 'UZS',
@@ -141,6 +145,22 @@ export class ProductService {
     }
 
     return filtered;
+  }
+
+  getBrands(): string[] {
+    const brands = new Set<string>();
+    this.productsSignal().forEach(p => { if (p.brand) brands.add(p.brand); });
+    return Array.from(brands).sort();
+  }
+
+  getDiscountedProducts(limit?: number): Product[] {
+    const result = this.productsSignal().filter(p => p.originalPrice && p.originalPrice > p.price);
+    return limit ? result.slice(0, limit) : result;
+  }
+
+  getNewProducts(limit?: number): Product[] {
+    const result = this.productsSignal().filter(p => p.isNew);
+    return limit ? result.slice(0, limit) : result;
   }
 
   getRelatedProducts(productId: string, limit: number = 4): Product[] {

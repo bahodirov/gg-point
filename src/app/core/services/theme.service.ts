@@ -32,7 +32,7 @@ export class ThemeService {
         return 'dark';
       }
     }
-    return 'light';
+    return 'dark';
   }
 
   private applyTheme(theme: Theme): void {
