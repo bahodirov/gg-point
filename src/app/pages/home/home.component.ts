@@ -4,14 +4,11 @@ import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { BlogCardComponent } from '../../shared/components/blog-card/blog-card.component';
 import { TelegramButtonComponent } from '../../shared/components/telegram-button/telegram-button.component';
 import { SoonModalComponent } from '../../shared/components/soon-modal/soon-modal.component';
 import { ProductService } from '../../shared/services/product.service';
-import { BlogService } from '../../shared/services/blog.service';
 import { SeoService } from '../../shared/services/seo.service';
-import { Product, ProductCategory } from '../../shared/models/product.model';
-import { BlogPost } from '../../shared/models/blog.model';
+import { Product } from '../../shared/models/product.model';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +16,7 @@ import { BlogPost } from '../../shared/models/blog.model';
   imports: [
     CommonModule, RouterModule,
     MatButtonModule, MatIconModule, TranslateModule,
-    BlogCardComponent, TelegramButtonComponent, SoonModalComponent
+    TelegramButtonComponent, SoonModalComponent
   ],
   template: `
     <!-- ── HERO ────────────────────────────────────────────────────── -->
@@ -122,26 +119,6 @@ import { BlogPost } from '../../shared/models/blog.model';
       </div>
     </section>
 
-    <!-- ── CATEGORIES ───────────────────────────────────────────────── -->
-    <section class="page-section gaming-section-alt">
-      <div class="container mx-auto px-4">
-        <h2 class="section-title text-center mb-8">{{ 'home.categories' | translate }}</h2>
-        <div class="categories-grid">
-          @for (cat of categories; track cat.id) {
-            <a [routerLink]="['/catalog']" [queryParams]="{category:cat.slug}" class="category-card">
-              <div class="cat-icon">
-                <mat-icon>{{ getCategoryIcon(cat.name) }}</mat-icon>
-              </div>
-              <p class="cat-name">{{ cat.name }}</p>
-              @if (cat.productCount) {
-                <p class="cat-count">{{ cat.productCount }} {{ 'catalog.products' | translate }}</p>
-              }
-            </a>
-          }
-        </div>
-      </div>
-    </section>
-
     <!-- ── BRANDS ────────────────────────────────────────────────────── -->
     @if (brands.length > 0) {
       <section class="page-section gaming-section">
@@ -157,26 +134,6 @@ import { BlogPost } from '../../shared/models/blog.model';
         </div>
       </section>
     }
-
-    <!-- ── BLOG ──────────────────────────────────────────────────────── -->
-    <section class="page-section gaming-section-alt">
-      <div class="container mx-auto px-4">
-        <div class="section-header">
-          <div class="section-title-group">
-            <div class="section-icon-purple"><mat-icon>article</mat-icon></div>
-            <h2 class="section-title">{{ 'home.latestBlog' | translate }}</h2>
-          </div>
-          <a routerLink="/blog" class="section-link">
-            {{ 'home.viewAll' | translate }} <mat-icon>arrow_forward</mat-icon>
-          </a>
-        </div>
-        <div class="products-grid-3">
-          @for (post of recentPosts; track post.id) {
-            <app-blog-card [post]="post"></app-blog-card>
-          }
-        </div>
-      </div>
-    </section>
 
     <app-telegram-button [floating]="true"></app-telegram-button>
   `,
@@ -545,14 +502,11 @@ import { BlogPost } from '../../shared/models/blog.model';
 })
 export class HomeComponent implements OnInit {
   private productService = inject(ProductService);
-  private blogService    = inject(BlogService);
   private seoService     = inject(SeoService);
 
   featuredProducts: Product[]  = [];
   discountedProducts: Product[] = [];
   newProducts: Product[]       = [];
-  categories: ProductCategory[] = [];
-  recentPosts: BlogPost[]       = [];
   brands: string[]              = [];
 
   benefits = [
@@ -565,8 +519,6 @@ export class HomeComponent implements OnInit {
     this.featuredProducts  = this.productService.getFeaturedProducts(6);
     this.discountedProducts = this.productService.getDiscountedProducts(4);
     this.newProducts       = this.productService.getNewProducts(4);
-    this.categories        = this.productService.categories();
-    this.recentPosts       = this.blogService.getRecentPosts(3);
     this.brands            = this.productService.getBrands().slice(0, 12);
     this.updateSEO();
   }
@@ -583,14 +535,5 @@ export class HomeComponent implements OnInit {
     this.seoService.addStructuredData(this.seoService.generateOrganizationSchema(), 'organization-schema');
     this.seoService.addStructuredData(this.seoService.generateWebSiteSchema(), 'website-schema');
     this.seoService.addStructuredData(this.seoService.generateLocalBusinessSchema(), 'localbusiness-schema');
-  }
-
-  getCategoryIcon(name: string): string {
-    const map: Record<string, string> = {
-      mice: 'mouse', keyboards: 'keyboard', headsets: 'headset',
-      monitors: 'monitor', mousepads: 'mouse', keycaps: 'keyboard',
-      webcams: 'videocam', cables: 'cable', other: 'devices'
-    };
-    return map[name.toLowerCase()] || 'category';
   }
 }

@@ -53,27 +53,18 @@ html.dark-theme {
     }
     .mat-mdc-input-element { background-color: transparent !important; }
 
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      border-color: rgba(59,130,246,0.3) !important;
-      border-width: 1.5px !important;
+    .mdc-notched-outline { display: none !important; }
+    .mat-mdc-text-field-wrapper {
+      border: 1.5px solid rgba(59,130,246,0.3) !important;
+      border-radius: 10px !important;
     }
-    &.mat-focused {
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: #3b82f6 !important;
-        border-width: 2px !important;
-        box-shadow: 0 0 8px rgba(59,130,246,0.3);
-      }
+    &.mat-focused .mat-mdc-text-field-wrapper {
+      border-color: #3b82f6 !important;
+      border-width: 2px !important;
+      box-shadow: 0 0 8px rgba(59,130,246,0.2) !important;
     }
-    &:hover:not(.mat-focused) {
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: rgba(59,130,246,0.5) !important;
-      }
+    &:hover:not(.mat-focused) .mat-mdc-text-field-wrapper {
+      border-color: rgba(59,130,246,0.5) !important;
     }
 
     input.mat-mdc-input-element,
@@ -170,17 +161,68 @@ html.dark-theme {
 }
 
 // ── Global overlay (cdk-overlay is outside html.dark scope) ─────────────────
-.cdk-overlay-container,
-.cdk-overlay-pane {
+
+// Popover API (Chrome 114+) — browser default oq background override
+[popover] {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  color-scheme: dark;
+}
+[popover]::backdrop {
   background: transparent !important;
 }
 
+.cdk-overlay-container,
+.cdk-overlay-backdrop,
+.cdk-overlay-pane,
+.cdk-overlay-popover,
+.cdk-overlay-connected-position-bounding-box {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Bounding box transparent qismida click CDK backdrop ga o'tsin */
+.cdk-overlay-connected-position-bounding-box {
+  pointer-events: none !important;
+}
+.cdk-overlay-pane {
+  pointer-events: auto !important;
+}
+
+.mat-mdc-select-panel-wrap,
+.mat-select-panel-wrap,
+.mat-mdc-select-panel-wrap > *,
+.cdk-overlay-pane > div {
+  background: transparent !important;
+}
+
+.cdk-overlay-container .mat-mdc-select-panel,
+.cdk-overlay-container .mat-mdc-menu-panel {
+  background-color: #162040 !important;
+}
+
 .mat-mdc-select-panel,
-.mat-select-panel {
-  background-color: #0d1426 !important;
-  border: 1px solid rgba(59,130,246,0.25) !important;
+.mat-select-panel,
+.mat-mdc-select-panel-above,
+div.mat-mdc-select-panel {
+  background: #162040 !important;
+  background-color: #162040 !important;
+  border: 1px solid rgba(59,130,246,0.3) !important;
   border-radius: 10px !important;
   box-shadow: 0 8px 32px rgba(0,0,0,0.7) !important;
+  min-width: 220px !important;
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel,
+.cdk-overlay-container .mat-mdc-select-panel {
+  background: #0d1426 !important;
+}
+
+.mat-mdc-option .mdc-list-item__primary-text {
+  white-space: nowrap !important;
 }
 
 .mat-mdc-option,
@@ -211,10 +253,38 @@ html.dark-theme {
 .mat-mdc-menu-item:hover,
 .mat-menu-item:hover { background-color: rgba(59,130,246,0.08) !important; }
 
+// ── Catalog price inputs ──────────────────────────────────────────────────────
+app-catalog-list .search-wrap {
+  position: relative;
+}
+app-catalog-list .search-wrap .price-input {
+  width: 100% !important; padding-right: 36px !important;
+}
+app-catalog-list .search-wrap .search-icon {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  color: #4b5880; font-size: 18px; width: 18px; height: 18px;
+  pointer-events: none;
+}
+
+app-catalog-list .price-range-row {
+  display: flex !important; align-items: center; gap: 8px;
+}
+app-catalog-list .price-input {
+  flex: 1; min-width: 0;
+  background: #111c35 !important; color: #e2e8f0 !important;
+  border: 1px solid rgba(59,130,246,0.25) !important;
+  border-radius: 10px !important; padding: 9px 10px !important;
+  font-size: 14px; outline: none;
+  -moz-appearance: textfield;
+  box-sizing: border-box;
+}
+app-catalog-list .price-input:focus { border-color: #3b82f6 !important; }
+app-catalog-list .price-input::placeholder { color: #4b5880 !important; }
+app-catalog-list .price-sep { color: #4b5880; flex-shrink: 0; }
+
 // ── Form field border-radius (global) ────────────────────────────────────────
-.mdc-notched-outline__leading  { border-radius: 10px 0 0 10px !important; min-width: 10px !important; }
-.mdc-notched-outline__trailing { border-radius: 0 10px 10px 0 !important; }
-.mat-mdc-text-field-wrapper    { border-radius: 10px !important; }
+.mdc-notched-outline { display: none !important; }
+.mat-mdc-text-field-wrapper { border-radius: 10px !important; }
 
 // ── Tailwind ──────────────────────────────────────────────────────────────
 @tailwind base;
@@ -529,6 +599,7 @@ app-catalog-list .grid > aside {
 app-catalog-list .grid > main {
   grid-column: 2 !important;
   grid-row: 1 !important;
+  background: #080c18 !important;
 }
 @media (max-width: 1023px) {
   app-catalog-list .grid { grid-template-columns: 1fr !important; }
@@ -570,6 +641,34 @@ app-catalog-list .filter-panel button {
 app-catalog-list .filter-title {
   font-size: 1rem; font-weight: 700; color: #e2e8f0; margin-bottom: 16px;
 }
+
+// Sort field — dark card style
+app-catalog-list .sort-field .mat-mdc-text-field-wrapper,
+app-catalog-list .sort-field .mdc-text-field,
+app-catalog-list .sort-field .mdc-text-field--outlined,
+app-catalog-list .sort-field .mat-mdc-form-field-flex,
+app-catalog-list .sort-field .mat-mdc-form-field-infix {
+  background: #111c35 !important;
+  border-radius: 10px !important;
+}
+app-catalog-list .sort-field {
+  background: transparent !important;
+}
+/* mdc-notched-outline (3 qatlam) ni to'liq yashirish */
+app-catalog-list .sort-field .mdc-notched-outline {
+  display: none !important;
+}
+/* O'rniga oddiy border */
+app-catalog-list .sort-field .mat-mdc-text-field-wrapper {
+  border: 1px solid rgba(59,130,246,0.3) !important;
+  border-radius: 10px !important;
+}
+app-catalog-list .sort-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: rgba(59,130,246,0.6) !important;
+}
+app-catalog-list .sort-field .mat-mdc-select-value-text,
+app-catalog-list .sort-field .mat-mdc-select-value { color: #e2e8f0 !important; }
+app-catalog-list .sort-field .mat-mdc-select-arrow { color: #7c8db5 !important; }
 
 app-catalog-list .sort-bar {
   display: flex !important;

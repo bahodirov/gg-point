@@ -70,12 +70,9 @@ const PAGE_SIZE = 12;
               <h2 class="filter-title">{{ 'catalog.filters' | translate }}</h2>
 
               <!-- Search -->
-              <div class="mb-5">
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>{{ 'catalog.search' | translate }}</mat-label>
-                  <input matInput [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" [placeholder]="'catalog.searchPlaceholder' | translate">
-                  <mat-icon matSuffix>search</mat-icon>
-                </mat-form-field>
+              <div class="mb-5 search-wrap">
+                <input class="price-input" type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" [placeholder]="'catalog.searchPlaceholder' | translate">
+                <mat-icon class="search-icon">search</mat-icon>
               </div>
 
               <!-- Category Filter -->
@@ -115,15 +112,10 @@ const PAGE_SIZE = 12;
                 <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                   {{ 'catalog.priceRange' | translate }}
                 </label>
-                <div class="flex gap-2">
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>Min</mat-label>
-                    <input matInput type="number" [(ngModel)]="minPriceInput" (blur)="applyFilters()">
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="flex-1">
-                    <mat-label>Max</mat-label>
-                    <input matInput type="number" [(ngModel)]="maxPriceInput" (blur)="applyFilters()">
-                  </mat-form-field>
+                <div class="price-range-row">
+                  <input class="price-input" type="number" [(ngModel)]="minPriceInput" (blur)="applyFilters()" placeholder="Min">
+                  <span class="price-sep">—</span>
+                  <input class="price-input" type="number" [(ngModel)]="maxPriceInput" (blur)="applyFilters()" placeholder="Max">
                 </div>
                 <button mat-stroked-button class="w-full text-sm" (click)="applyFilters()">
                   {{ 'catalog.applyPrice' | translate }}
@@ -321,6 +313,23 @@ const PAGE_SIZE = 12;
       min-width: 190px;
       margin: 0 !important;
     }
+
+    .price-range-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .price-input {
+      flex: 1; min-width: 0;
+      background: #111c35; color: #e2e8f0;
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 10px; padding: 9px 10px;
+      font-size: 14px; outline: none;
+      -moz-appearance: textfield;
+    }
+    .price-input::-webkit-outer-spin-button,
+    .price-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .price-input:focus { border-color: #3b82f6; }
+    .price-input::placeholder { color: #4b5880; }
+    .price-sep { color: #4b5880; flex-shrink: 0; }
 
     /* View toggle */
     .view-toggle-btn {
