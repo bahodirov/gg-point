@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, computed, HostListener, ViewChildren, QueryList } from '@angular/core';
+import { MatSelect } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -407,6 +408,16 @@ const PAGE_SIZE = 12;
   `]
 })
 export class CatalogListComponent implements OnInit {
+  @ViewChildren(MatSelect) matSelects!: QueryList<MatSelect>;
+
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('mat-form-field') && !target.closest('.cdk-overlay-pane')) {
+      this.matSelects?.forEach(s => s.panelOpen && s.close());
+    }
+  }
+
   private productService = inject(ProductService);
   private recentlyViewedService = inject(RecentlyViewedService);
   private seoService = inject(SeoService);

@@ -184,7 +184,11 @@ html.dark-theme {
   border: none !important;
 }
 
-/* Bounding box transparent qismida click CDK backdrop ga o'tsin */
+.cdk-overlay-backdrop,
+.cdk-overlay-transparent-backdrop {
+  pointer-events: auto !important;
+  visibility: visible !important;
+}
 .cdk-overlay-connected-position-bounding-box {
   pointer-events: none !important;
 }

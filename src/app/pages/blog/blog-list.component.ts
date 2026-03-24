@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, HostListener, ViewChildren, QueryList } from '@angular/core';
+import { MatSelect } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -108,6 +109,16 @@ import { BlogPost, BlogCategory } from '../../shared/models/blog.model';
   `]
 })
 export class BlogListComponent implements OnInit {
+  @ViewChildren(MatSelect) matSelects!: QueryList<MatSelect>;
+
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('mat-form-field') && !target.closest('.cdk-overlay-pane')) {
+      this.matSelects?.forEach(s => s.panelOpen && s.close());
+    }
+  }
+
   private blogService = inject(BlogService);
   private seoService = inject(SeoService);
 
