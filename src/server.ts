@@ -115,6 +115,12 @@ app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 /**
+ * Serve uploaded files from /public/uploads
+ */
+const uploadsFolder = join(import.meta.dirname, '../../public/uploads');
+app.use('/uploads', express.static(uploadsFolder, { maxAge: '7d' }));
+
+/**
  * Serve static files from /browser
  */
 app.use(
