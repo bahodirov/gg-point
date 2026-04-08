@@ -30,6 +30,7 @@ interface SchemaProduct {
   description: string;
   brand?: string;
   price: number;
+  currency?: string;
   inStock: boolean;
   rating?: number;
   reviewCount?: number;
@@ -205,7 +206,7 @@ export class SeoService {
       offers: {
         '@type': 'Offer',
         url: `${environment.domain}/catalog/${product.id}`,
-        priceCurrency: 'UZS',
+        priceCurrency: product.currency || 'UZS',
         price: product.price.toString(),
         priceValidUntil: '2026-12-31',
         itemCondition: 'https://schema.org/NewCondition',
@@ -277,7 +278,7 @@ export class SeoService {
         }
       ],
       paymentAccepted: 'Cash, Credit Card, Online Payment',
-      currenciesAccepted: 'UZS',
+      currenciesAccepted: 'UZS, USD',
       areaServed: {
         '@type': 'City',
         name: 'Tashkent'

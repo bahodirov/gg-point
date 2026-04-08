@@ -5,13 +5,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { Product } from '../../models/product.model';
+import { CurrencySymbolPipe } from '../../pipes/currency-symbol.pipe';
 import { CartService } from '../../services/cart.service';
 import { FavoritesService } from '../../services/favorites.service';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatTooltipModule, TranslateModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatTooltipModule, TranslateModule, CurrencySymbolPipe],
   template: `
     <div class="g-card">
       <!-- Badges -->
@@ -60,9 +61,9 @@ import { FavoritesService } from '../../services/favorites.service';
         <div class="card-price-row">
           <div>
             @if (hasDiscount()) {
-              <span class="price-old">{{ product.originalPrice | number:'1.0-0' }} UZS</span>
+              <span class="price-old">{{ product.currency === 'USD' ? (product.originalPrice | number:'1.0-2') : (product.originalPrice | number:'1.0-0') }} {{ product.currency | currencySymbol }}</span>
             }
-            <span class="price-main">{{ product.price | number:'1.0-0' }} UZS</span>
+            <span class="price-main">{{ product.currency === 'USD' ? (product.price | number:'1.0-2') : (product.price | number:'1.0-0') }} {{ product.currency | currencySymbol }}</span>
           </div>
         </div>
 
@@ -306,7 +307,7 @@ export class ProductCardComponent implements OnInit {
   addToCart(event: Event): void {
     event.stopPropagation();
     event.preventDefault();
-    this.cartService.addToCart({ id: this.product.id, name: this.product.name, price: this.product.price, thumbnail: this.product.thumbnail });
+    this.cartService.addToCart({ id: this.product.id, name: this.product.name, price: this.product.price, currency: this.product.currency, thumbnail: this.product.thumbnail });
     this.inCart.set(true);
   }
 

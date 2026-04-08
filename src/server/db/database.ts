@@ -30,6 +30,7 @@ export interface ProductData {
   featured: number; // 0 or 1 for compatibility
   is_new: number; // 0 or 1 for compatibility
   related_products: string | null; // JSON string for compatibility
+  currency: string;
   created_at: string;
   updated_at: string;
 }
@@ -203,7 +204,7 @@ const pgDb = {
     all: async (): Promise<ProductData[]> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
-        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products ORDER BY created_at DESC'
+        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, currency, created_at, updated_at FROM products ORDER BY created_at DESC'
       );
       return result.rows.map(row => ({
         ...row,
@@ -215,7 +216,7 @@ const pgDb = {
     findById: async (id: string): Promise<ProductData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
-        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products WHERE id = $1',
+        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, currency, created_at, updated_at FROM products WHERE id = $1',
         [id]
       );
       if (result.rows.length === 0) return null;
@@ -230,7 +231,7 @@ const pgDb = {
     findBySlug: async (slug: string): Promise<ProductData | null> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
-        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products WHERE slug = $1',
+        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, currency, created_at, updated_at FROM products WHERE slug = $1',
         [slug]
       );
       if (result.rows.length === 0) return null;
@@ -287,7 +288,7 @@ const pgDb = {
         SELECT id, slug, name_ru, name_uz, description_ru, description_uz,
                price, old_price, category, images::text, specs::text,
                in_stock, featured, is_new, related_products::text,
-               created_at, updated_at
+               currency, created_at, updated_at
         FROM products
         ${whereClause}
         ORDER BY created_at DESC
@@ -306,7 +307,7 @@ const pgDb = {
     filterByCategory: async (category: string): Promise<ProductData[]> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       const result = await pool.query(
-        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, created_at, updated_at FROM products WHERE LOWER(category) = LOWER($1) ORDER BY created_at DESC',
+        'SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images::text, specs::text, in_stock, featured, is_new, related_products::text, currency, created_at, updated_at FROM products WHERE LOWER(category) = LOWER($1) ORDER BY created_at DESC',
         [category]
       );
       return result.rows.map(row => ({
@@ -325,7 +326,7 @@ const pgDb = {
       const result = await pool.query(
         `SELECT id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category,
                 images::text, specs::text, in_stock, featured, is_new, related_products::text,
-                created_at, updated_at
+                currency, created_at, updated_at
          FROM products
          WHERE to_tsvector('simple',
            COALESCE(name_ru, '') || ' ' ||
@@ -346,8 +347,8 @@ const pgDb = {
     insert: async (product: ProductData): Promise<void> => {
       if (!pool) throw new Error('PostgreSQL not initialized');
       await pool.query(
-        `INSERT INTO products (id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images, specs, in_stock, featured, is_new, related_products, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12, $13, $14, $15::jsonb, $16, $17)`,
+        `INSERT INTO products (id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images, specs, in_stock, featured, is_new, related_products, currency, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12, $13, $14, $15::jsonb, $16, $17, $18)`,
         [
           product.id,
           product.slug,
@@ -364,6 +365,7 @@ const pgDb = {
           intToBool(product.featured),
           intToBool(product.is_new),
           product.related_products,
+          product.currency || 'UZS',
           product.created_at,
           product.updated_at,
         ]
@@ -376,8 +378,8 @@ const pgDb = {
         await client.query('BEGIN');
         for (const product of products) {
           await client.query(
-            `INSERT INTO products (id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images, specs, in_stock, featured, is_new, related_products, created_at, updated_at)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12, $13, $14, $15::jsonb, $16, $17)`,
+            `INSERT INTO products (id, slug, name_ru, name_uz, description_ru, description_uz, price, old_price, category, images, specs, in_stock, featured, is_new, related_products, currency, created_at, updated_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12, $13, $14, $15::jsonb, $16, $17, $18)`,
             [
               product.id,
               product.slug,
@@ -394,6 +396,7 @@ const pgDb = {
               intToBool(product.featured),
               intToBool(product.is_new),
               product.related_products,
+              product.currency || 'UZS',
               product.created_at,
               product.updated_at,
             ]

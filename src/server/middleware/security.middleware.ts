@@ -10,7 +10,7 @@ const ONE_MINUTE_IN_SECONDS = 60;
 
 // Config for CORS and other settings
 const config = {
-  corsOrigins: process.env['CORS_ORIGINS']?.split(',').map(o => o.trim()) || ['http://localhost:4200', 'http://localhost:4000'],
+  corsOrigins: process.env['CORS_ORIGINS']?.split(',').map(o => o.trim()) || ['http://localhost:4200', 'http://localhost:4000', 'https://ggpoint.uz', 'https://www.ggpoint.uz', 'https://admin.ggpoint.uz'],
 };
 
 /**

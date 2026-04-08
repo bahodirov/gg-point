@@ -54,7 +54,7 @@ export class ProductService {
       brand,
       price: p.price,
       originalPrice: p.oldPrice,
-      currency: 'UZS',
+      currency: (p.currency as 'UZS' | 'USD') || 'UZS',
       description: p.description.ru,
       descriptionUz: p.description.uz,
       specifications,

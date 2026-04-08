@@ -61,6 +61,30 @@ app.use(cookieParser());
 // Initialize security middleware immediately on startup
 await initializeSecurity();
 
+// Subdomain routing middleware — only active in production
+// In development, /admin is accessible directly without subdomain restriction
+const adminHost = process.env['ADMIN_SUBDOMAIN'] || 'admin.ggpoint.uz';
+const isProduction = process.env['NODE_ENV'] === 'production';
+
+if (isProduction) {
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const isAdminSubdomain = req.hostname === adminHost;
+    res.locals['isAdminSubdomain'] = isAdminSubdomain;
+
+    if (!isAdminSubdomain && (req.path.startsWith('/admin') || req.path === '/login')) {
+      return res.redirect(302, '/');
+    }
+
+    if (isAdminSubdomain && req.method === 'GET' && !req.path.includes('.')
+        && !req.path.startsWith('/admin') && req.path !== '/login'
+        && !req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+      return res.redirect(302, '/admin');
+    }
+
+    next();
+  });
+}
+
 // Track if API is initialized
 let apiInitializationPromise: Promise<express.Router> | null = null;
 

@@ -18,6 +18,7 @@ interface Product {
   featured: boolean;
   isNew: boolean;
   relatedProducts: string[];
+  currency?: string;
 }
 
 interface ProductFormData {
@@ -35,6 +36,7 @@ interface ProductFormData {
   featured: boolean;
   is_new: boolean;
   related_products: string[];
+  currency: string;
 }
 
 const CATEGORIES = ['mice', 'keyboards', 'headsets', 'monitors', 'mousepads', 'webcams', 'cables', 'other'];
@@ -114,11 +116,20 @@ const CATEGORIES = ['mice', 'keyboards', 'headsets', 'monitors', 'mousepads', 'w
             </div>
             <div class="p-5 space-y-4">
 
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Currency <span class="text-red-400">*</span></label>
+                <select formControlName="currency"
+                        class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
+                  <option value="UZS">UZS — Uzbek Som</option>
+                  <option value="USD">USD — US Dollar</option>
+                </select>
+              </div>
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Price (UZS) <span class="text-red-400">*</span></label>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Price ({{ form.get('currency')?.value }}) <span class="text-red-400">*</span></label>
                   <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">UZS</span>
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">{{ form.get('currency')?.value }}</span>
                     <input type="number" formControlName="price" placeholder="1000000"
                            class="w-full bg-gray-700 border text-white text-sm rounded-lg pl-12 pr-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                            [ngClass]="form.get('price')?.invalid && form.get('price')?.touched ? 'border-red-500' : 'border-gray-600'">
@@ -128,9 +139,9 @@ const CATEGORIES = ['mice', 'keyboards', 'headsets', 'monitors', 'mousepads', 'w
                   }
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Old Price (UZS)</label>
+                  <label class="block text-sm font-medium text-gray-300 mb-1.5">Old Price ({{ form.get('currency')?.value }})</label>
                   <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">UZS</span>
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">{{ form.get('currency')?.value }}</span>
                     <input type="number" formControlName="old_price" placeholder="Optional — leave empty if no discount"
                            class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg pl-12 pr-3.5 py-2.5 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">
                   </div>
@@ -310,6 +321,7 @@ export class ProductFormComponent implements OnInit {
       description_uz: [''],
       price: [null, [Validators.required, Validators.min(0)]],
       old_price: [null],
+      currency: ['UZS', Validators.required],
       category: ['', Validators.required],
       in_stock: [true],
       featured: [false],
@@ -348,6 +360,7 @@ export class ProductFormComponent implements OnInit {
           description_uz: product.description.uz,
           price: product.price,
           old_price: product.oldPrice || null,
+          currency: product.currency || 'UZS',
           category: product.category,
           in_stock: product.inStock,
           featured: product.featured,
@@ -486,7 +499,8 @@ export class ProductFormComponent implements OnInit {
       in_stock: formValue.in_stock,
       featured: formValue.featured,
       is_new: formValue.is_new,
-      related_products: []
+      related_products: [],
+      currency: formValue.currency || 'UZS'
     };
 
     const request = this.isEditMode()

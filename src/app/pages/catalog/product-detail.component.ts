@@ -15,6 +15,7 @@ import { CartService } from '../../shared/services/cart.service';
 import { RecentlyViewedService } from '../../shared/services/recently-viewed.service';
 import { SeoService } from '../../shared/services/seo.service';
 import { Product } from '../../shared/models/product.model';
+import { CurrencySymbolPipe } from '../../shared/pipes/currency-symbol.pipe';
 
 @Component({
   selector: 'app-product-detail',
@@ -29,7 +30,8 @@ import { Product } from '../../shared/models/product.model';
     MatTableModule,
     TranslateModule,
     ProductCardComponent,
-    TelegramButtonComponent
+    TelegramButtonComponent,
+    CurrencySymbolPipe
   ],
   template: `
     @if (product()) {
@@ -114,14 +116,14 @@ import { Product } from '../../shared/models/product.model';
                 @if (hasDiscount()) {
                   <div class="flex items-center gap-3 mb-1">
                     <span class="text-xl text-gray-400 dark:text-gray-500 line-through">
-                      {{ product()!.originalPrice | number:'1.0-0' }} UZS
+                      {{ product()!.currency === 'USD' ? (product()!.originalPrice | number:'1.0-2') : (product()!.originalPrice | number:'1.0-0') }} {{ product()!.currency | currencySymbol }}
                     </span>
                     <span class="bg-red-500 text-white px-2 py-0.5 rounded-full text-sm font-bold">
                       -{{ getDiscountPercent() }}%
                     </span>
                   </div>
                 }
-                <div class="product-price-main">{{ product()!.price | number:'1.0-0' }} UZS</div>
+                <div class="product-price-main">{{ product()!.currency === 'USD' ? (product()!.price | number:'1.0-2') : (product()!.price | number:'1.0-0') }} {{ product()!.currency | currencySymbol }}</div>
               </div>
 
               <!-- Description (expandable) -->
@@ -500,7 +502,7 @@ export class ProductDetailComponent implements OnInit {
   addToCart(): void {
     const p = this.product();
     if (!p) return;
-    this.cartService.addToCart({ id: p.id, name: p.name, price: p.price, thumbnail: p.thumbnail });
+    this.cartService.addToCart({ id: p.id, name: p.name, price: p.price, currency: p.currency, thumbnail: p.thumbnail });
     this.inCart.set(true);
   }
 
@@ -514,7 +516,8 @@ export class ProductDetailComponent implements OnInit {
   getTelegramOrderLink(): string {
     const p = this.product();
     if (!p) return '#';
-    const text = `Здравствуйте! Хочу заказать: ${p.name} (ID: ${p.id}). Цена: ${p.price.toLocaleString()} UZS`;
+    const priceStr = p.currency === 'USD' ? `${p.price.toFixed(2)} $` : `${p.price.toLocaleString()} UZS`;
+    const text = `Здравствуйте! Хочу заказать: ${p.name} (ID: ${p.id}). Цена: ${priceStr}`;
     return `https://t.me/ggpoint_bot?text=${encodeURIComponent(text)}`;
   }
 
@@ -570,8 +573,8 @@ export class ProductDetailComponent implements OnInit {
     const currentUrl = `https://gg-point.uz/product/${product.id}`;
     const discountText = product.originalPrice ? ` SALE ${this.getDiscountPercent()}% OFF!` : '';
     this.seoService.updateMetaTags({
-      title: `${product.name} — ${product.price.toLocaleString()} UZS${discountText} | GGPoint`,
-      description: `${product.name} — ${product.description.slice(0, 150)}. Цена: ${product.price.toLocaleString()} UZS. Доставка по Ташкенту. Заказ через Telegram.`,
+      title: `${product.name} — ${product.price.toLocaleString()} ${product.currency}${discountText} | GGPoint`,
+      description: `${product.name} — ${product.description.slice(0, 150)}. Цена: ${product.price.toLocaleString()} ${product.currency}. Доставка по Ташкенту. Заказ через Telegram.`,
       keywords: `${product.name}, ${product.category}, купить, Ташкент, Узбекистан`,
       image: product.thumbnail,
       type: 'product',

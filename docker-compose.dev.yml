@@ -1,0 +1,16 @@
+services:
+  ggpoint:
+    build: .
+    container_name: ggpoint-app-dev
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env.development
+    volumes:
+      - uploads_data:/app/public/uploads
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+volumes:
+  uploads_data:

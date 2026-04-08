@@ -11,6 +11,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { CartService } from '../../services/cart.service';
 import { FavoritesService } from '../../services/favorites.service';
+import { CurrencySymbolPipe } from '../../pipes/currency-symbol.pipe';
 
 @Component({
   selector: 'app-header',
@@ -18,7 +19,8 @@ import { FavoritesService } from '../../services/favorites.service';
   imports: [
     CommonModule, RouterModule,
     MatToolbarModule, MatButtonModule, MatIconModule,
-    MatMenuModule, MatBadgeModule, TranslateModule
+    MatMenuModule, MatBadgeModule, TranslateModule,
+    CurrencySymbolPipe
   ],
   template: `
     <header class="site-header">
@@ -64,13 +66,15 @@ import { FavoritesService } from '../../services/favorites.service';
           <mat-menu #langMenu="matMenu">
             <button mat-menu-item (click)="languageService.setLanguage('ru')"
                     [class.lang-active]="languageService.currentLanguage()==='ru'">
-              <mat-icon>{{ languageService.currentLanguage()==='ru' ? 'check' : '' }}</mat-icon>
+              <span class="lang-flag">🇷🇺</span>
               Русский
+              @if (languageService.currentLanguage()==='ru') { <mat-icon class="lang-check">check</mat-icon> }
             </button>
             <button mat-menu-item (click)="languageService.setLanguage('uz')"
                     [class.lang-active]="languageService.currentLanguage()==='uz'">
-              <mat-icon>{{ languageService.currentLanguage()==='uz' ? 'check' : '' }}</mat-icon>
+              <span class="lang-flag">🇺🇿</span>
               O'zbek
+              @if (languageService.currentLanguage()==='uz') { <mat-icon class="lang-check">check</mat-icon> }
             </button>
           </mat-menu>
 
@@ -105,7 +109,7 @@ import { FavoritesService } from '../../services/favorites.service';
                     <img [src]="item.thumbnail" [alt]="item.name" class="cart-thumb">
                     <div class="cart-item-info">
                       <p class="cart-item-name">{{ item.name }}</p>
-                      <p class="cart-item-price">{{ item.quantity }} × {{ item.price | number:'1.0-0' }} UZS</p>
+                      <p class="cart-item-price">{{ item.quantity }} × {{ item.currency === 'USD' ? (item.price | number:'1.0-2') : (item.price | number:'1.0-0') }} {{ item.currency | currencySymbol }}</p>
                     </div>
                     <button class="cart-remove" (click)="removeFromCart(item.productId, $event)">
                       <mat-icon>close</mat-icon>
@@ -113,7 +117,12 @@ import { FavoritesService } from '../../services/favorites.service';
                   </div>
                 }
                 <div class="cart-footer">
-                  <span class="cart-total">{{ 'cart.total' | translate }}: {{ cartTotal() | number:'1.0-0' }} UZS</span>
+                  @if (cartTotalUZS() > 0) {
+                    <span class="cart-total">{{ 'cart.total' | translate }}: {{ cartTotalUZS() | number:'1.0-0' }} {{ 'UZS' | currencySymbol }}</span>
+                  }
+                  @if (cartTotalUSD() > 0) {
+                    <span class="cart-total">{{ 'cart.total' | translate }}: {{ cartTotalUSD() | number:'1.0-2' }} {{ 'USD' | currencySymbol }}</span>
+                  }
                   <a [href]="getCartTelegramLink()" target="_blank" rel="noopener noreferrer" class="cart-order-btn">
                     {{ 'cart.order' | translate }}
                   </a>
@@ -361,6 +370,8 @@ import { FavoritesService } from '../../services/favorites.service';
     }
 
     .lang-active { color: #3b82f6 !important; }
+    .lang-flag { font-size: 18px; margin-right: 8px; line-height: 1; }
+    .lang-check { font-size: 16px; width: 16px; height: 16px; margin-left: auto; color: #3b82f6; }
 
     :host ::ng-deep .mat-badge-content { font-size: 10px !important; }
   `]
@@ -373,9 +384,10 @@ export class HeaderComponent {
 
   mobileOpen = signal(false);
 
-  cartItems  = this.cartService.items;
-  cartCount  = this.cartService.totalCount;
-  cartTotal  = this.cartService.totalPrice;
+  cartItems     = this.cartService.items;
+  cartCount     = this.cartService.totalCount;
+  cartTotalUZS  = this.cartService.totalPriceUZS;
+  cartTotalUSD  = this.cartService.totalPriceUSD;
   favCount   = this.favoritesService.count;
 
   removeFromCart(productId: string, event: Event): void {
@@ -386,9 +398,16 @@ export class HeaderComponent {
   getCartTelegramLink(): string {
     const items = this.cartService.items();
     if (!items.length) return '#';
-    const lines = items.map(i => `• ${i.name} × ${i.quantity} = ${(i.price*i.quantity).toLocaleString()} UZS`).join('\n');
-    const total = this.cartService.totalPrice();
-    const text  = `Здравствуйте! Хочу заказать:\n${lines}\n\nИтого: ${total.toLocaleString()} UZS`;
+    const fmtPrice = (price: number, currency: string) =>
+      currency === 'USD' ? `${price.toFixed(2)} $` : `${price.toLocaleString()} UZS`;
+    const lines = items.map(i => `• ${i.name} × ${i.quantity} = ${fmtPrice(i.price * i.quantity, i.currency)}`).join('\n');
+    const totalUZS = this.cartService.totalPriceUZS();
+    const totalUSD = this.cartService.totalPriceUSD();
+    const totals = [
+      totalUZS > 0 ? `${totalUZS.toLocaleString()} UZS` : '',
+      totalUSD > 0 ? `${totalUSD.toFixed(2)} $` : '',
+    ].filter(Boolean).join(' + ');
+    const text  = `Здравствуйте! Хочу заказать:\n${lines}\n\nИтого: ${totals}`;
     return `https://t.me/ggpoint_bot?text=${encodeURIComponent(text)}`;
   }
 }

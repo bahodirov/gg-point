@@ -11,6 +11,7 @@ interface Product {
   description: { ru: string; uz: string };
   price: number;
   oldPrice?: number;
+  currency?: string;
   category: string;
   images: string[];
   inStock: boolean;
@@ -167,7 +168,7 @@ interface Product {
                       </span>
                     </td>
                     <td class="px-4 py-3">
-                      <p class="text-white font-medium">{{ formatPrice(product.price) }}</p>
+                      <p class="text-white font-medium">{{ formatPrice(product.price, product.currency) }}</p>
                       @if (product.oldPrice) {
                         <p class="text-gray-500 text-xs line-through">{{ formatPrice(product.oldPrice) }}</p>
                       }
@@ -441,11 +442,11 @@ export class ProductListComponent implements OnInit {
     return Math.min(a, b);
   }
 
-  formatPrice(price: number): string {
+  formatPrice(price: number, currency: string = 'UZS'): string {
     return new Intl.NumberFormat('uz-UZ', {
       style: 'currency',
-      currency: 'UZS',
-      maximumFractionDigits: 0
+      currency,
+      maximumFractionDigits: currency === 'USD' ? 2 : 0
     }).format(price);
   }
 }

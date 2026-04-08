@@ -25,8 +25,8 @@ export function validateRequest(req: Request, res: Response, next: NextFunction)
  */
 export const passwordValidation = [
   body('password')
-    .isLength({ min: 12 })
-    .withMessage('Password must be at least 12 characters long')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long')
     .matches(/[A-Z]/)
     .withMessage('Password must contain at least one uppercase letter')
     .matches(/[a-z]/)
@@ -60,8 +60,8 @@ export const changePasswordValidation = [
     .notEmpty()
     .withMessage('Current password is required'),
   body('newPassword')
-    .isLength({ min: 12 })
-    .withMessage('New password must be at least 12 characters long')
+    .isLength({ min: 6 })
+    .withMessage('New password must be at least 6 characters long')
     .matches(/[A-Z]/)
     .withMessage('New password must contain at least one uppercase letter')
     .matches(/[a-z]/)

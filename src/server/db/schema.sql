@@ -139,3 +139,6 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
 DROP TRIGGER IF EXISTS update_products_updated_at ON products;
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Add currency column to products (migration)
+ALTER TABLE products ADD COLUMN IF NOT EXISTS currency VARCHAR(3) NOT NULL DEFAULT 'UZS';

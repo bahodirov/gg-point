@@ -10,7 +10,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule, TranslateModule],
   template: `
-    <a [href]="getTelegramLink()" 
+    <a [href]="getTelegramLink()"
        target="_blank"
        rel="noopener noreferrer"
        class="telegram-fab"
@@ -20,7 +20,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
        [class.z-50]="floating"
        [matTooltip]="'product.orderViaTelegram' | translate"
        matTooltipPosition="left">
-      <button mat-fab 
+      <button mat-fab
               [color]="floating ? 'primary' : 'accent'"
               class="telegram-button">
         <mat-icon>{{ floating ? 'send' : 'telegram' }}</mat-icon>
@@ -74,16 +74,16 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 })
 export class TelegramButtonComponent {
   private translateService = inject(TranslateService);
-  
+
   @Input() floating: boolean = false;
   @Input() productName?: string;
   @Input() productId?: string;
   @Input() message?: string;
 
   getTelegramLink(): string {
-    const botUsername = 'Dma12r'; // Admin contact
+    const botUsername = 'GGPointUZ'; // Admin contact
     let text: string = this.message || '';
-    
+
     if (!text && this.productName) {
       const greeting = this.translateService.instant('contact.getInTouch');
       text = `${greeting} ${this.productName}`;
@@ -91,7 +91,7 @@ export class TelegramButtonComponent {
         text += ` (ID: ${this.productId})`;
       }
     }
-    
+
     if (!text) {
       text = this.translateService.instant('contact.getInTouch') || 'Hello';
     }

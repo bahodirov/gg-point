@@ -29,7 +29,7 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
             </div>
             <div>
               <p class="text-sm font-semibold text-white">Security Settings</p>
-              <p class="text-xs text-gray-500">Choose a strong password with at least 8 characters</p>
+              <p class="text-xs text-gray-500">Choose a strong password with at least 6 characters</p>
             </div>
           </div>
         </div>
@@ -42,7 +42,7 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
                 <svg class="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <p class="text-sm text-red-400">{{ errorMessage() }}</p>
+                <p class="text-sm text-red-400 whitespace-pre-line">{{ errorMessage() }}</p>
               </div>
             }
 
@@ -102,9 +102,9 @@ const PASSWORD_CHANGE_REDIRECT_DELAY_MS = 2000;
                   }
                 </button>
               </div>
-              <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+              <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
               @if (form.get('newPassword')?.hasError('minlength') && form.get('newPassword')?.touched) {
-                <p class="text-xs text-red-400 mt-1">Password must be at least 8 characters</p>
+                <p class="text-xs text-red-400 mt-1">Password must be at least 6 characters</p>
               }
             </div>
 
@@ -175,7 +175,7 @@ export class ChangePasswordComponent implements OnDestroy {
   constructor() {
     this.form = this.fb.group({
       currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     });
   }
@@ -212,7 +212,12 @@ export class ChangePasswordComponent implements OnDestroy {
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.errorMessage.set(error.error?.error || 'Failed to change password');
+        const details = error.error?.details;
+        if (details && details.length > 0) {
+          this.errorMessage.set(details.map((d: any) => d.msg).join('\n'));
+        } else {
+          this.errorMessage.set(error.error?.error || 'Failed to change password');
+        }
       }
     });
   }

@@ -5,6 +5,7 @@ export interface CartItem {
   productId: string;
   name: string;
   price: number;
+  currency: string;
   thumbnail: string;
   quantity: number;
 }
@@ -18,7 +19,8 @@ export class CartService {
 
   items = this.itemsSignal.asReadonly();
   totalCount = computed(() => this.itemsSignal().reduce((sum, i) => sum + i.quantity, 0));
-  totalPrice = computed(() => this.itemsSignal().reduce((sum, i) => sum + i.price * i.quantity, 0));
+  totalPriceUZS = computed(() => this.itemsSignal().filter(i => i.currency === 'UZS').reduce((sum, i) => sum + i.price * i.quantity, 0));
+  totalPriceUSD = computed(() => this.itemsSignal().filter(i => i.currency === 'USD').reduce((sum, i) => sum + i.price * i.quantity, 0));
 
   private loadFromStorage(): CartItem[] {
     if (!isPlatformBrowser(this.platformId)) return [];
@@ -35,13 +37,13 @@ export class CartService {
     try { localStorage.setItem(CART_KEY, JSON.stringify(items)); } catch {}
   }
 
-  addToCart(product: { id: string; name: string; price: number; thumbnail: string }): void {
+  addToCart(product: { id: string; name: string; price: number; currency: string; thumbnail: string }): void {
     const items = [...this.itemsSignal()];
     const existing = items.find(i => i.productId === product.id);
     if (existing) {
       existing.quantity++;
     } else {
-      items.push({ productId: product.id, name: product.name, price: product.price, thumbnail: product.thumbnail, quantity: 1 });
+      items.push({ productId: product.id, name: product.name, price: product.price, currency: product.currency, thumbnail: product.thumbnail, quantity: 1 });
     }
     this.itemsSignal.set(items);
     this.save(items);

@@ -5,6 +5,8 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, take } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
 
+const ADMIN_SUBDOMAIN = 'admin.ggpoint.uz';
+
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -13,6 +15,15 @@ export const authGuard: CanActivateFn = (route, state) => {
   // Allow access during SSR
   if (!isPlatformBrowser(platformId)) {
     return true;
+  }
+
+  // In production: block admin access when not on admin subdomain
+  const hostname = window.location.hostname;
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+  const isAdminSubdomain = hostname === ADMIN_SUBDOMAIN;
+  if (!isLocalhost && !isAdminSubdomain) {
+    window.location.href = `https://${ADMIN_SUBDOMAIN}/admin`;
+    return false;
   }
 
   // Already loaded — check immediately

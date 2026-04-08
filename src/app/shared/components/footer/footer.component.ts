@@ -66,10 +66,6 @@ import { TranslateModule } from '@ngx-translate/core';
               <li><mat-icon>location_on</mat-icon><span>Tashkent, Uzbekistan</span></li>
               <li><mat-icon>schedule</mat-icon><span>09:00 – 20:00</span></li>
             </ul>
-            <a routerLink="/login" class="admin-link">
-              <mat-icon>admin_panel_settings</mat-icon>
-              Admin Panel
-            </a>
           </div>
         </div>
 

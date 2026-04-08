@@ -7,7 +7,7 @@ export interface Product {
   brand?: string;
   price: number;
   originalPrice?: number;
-  currency: string;
+  currency: 'UZS' | 'USD';
   description: string;
   descriptionUz?: string;
   features?: string[];
@@ -54,5 +54,6 @@ export interface ServerProduct {
   featured?: boolean;
   isNew?: boolean;
   relatedProducts?: string[];
+  currency?: string;
   createdAt?: string;
 }

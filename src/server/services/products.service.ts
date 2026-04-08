@@ -18,6 +18,7 @@ export interface ProductRow {
   featured: number;
   is_new: number;
   related_products: string | null; // JSON array
+  currency: string;
   created_at: string;
   updated_at: string;
 }
@@ -37,6 +38,7 @@ export interface CreateProductDto {
   featured?: boolean;
   is_new?: boolean;
   related_products?: string[];
+  currency?: string;
 }
 
 export interface UpdateProductDto extends Partial<CreateProductDto> {}
@@ -61,6 +63,7 @@ export interface Product {
   featured: boolean;
   isNew: boolean;
   relatedProducts: string[];
+  currency: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -126,6 +129,7 @@ function rowToProduct(row: ProductRow): Product {
     featured: row.featured === 1,
     isNew: row.is_new === 1,
     relatedProducts: safeJsonParse(row.related_products, [], isStringArray, 'related_products'),
+    currency: row.currency || 'UZS',
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -209,6 +213,7 @@ export class ProductsService {
       featured: data.featured ? 1 : 0,
       is_new: data.is_new ? 1 : 0,
       related_products: JSON.stringify(data.related_products || []),
+      currency: data.currency || 'UZS',
       created_at: now,
       updated_at: now,
     };
@@ -246,6 +251,7 @@ export class ProductsService {
     if (data.featured !== undefined) updates.featured = data.featured ? 1 : 0;
     if (data.is_new !== undefined) updates.is_new = data.is_new ? 1 : 0;
     if (data.related_products !== undefined) updates.related_products = JSON.stringify(data.related_products);
+    if (data.currency !== undefined) updates.currency = data.currency || 'UZS';
 
     await db.products.update(id, updates);
     return await this.getProductById(id);

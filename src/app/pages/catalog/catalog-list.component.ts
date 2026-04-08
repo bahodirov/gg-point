@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, computed, HostListener, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, AfterViewInit, signal, inject, computed, HostListener, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { MatSelect } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +18,7 @@ import { ProductService } from '../../shared/services/product.service';
 import { RecentlyViewedService } from '../../shared/services/recently-viewed.service';
 import { SeoService } from '../../shared/services/seo.service';
 import { Product, ProductCategory } from '../../shared/models/product.model';
+import { CurrencySymbolPipe } from '../../shared/pipes/currency-symbol.pipe';
 
 const PAGE_SIZE = 12;
 
@@ -38,7 +39,8 @@ const PAGE_SIZE = 12;
     MatTooltipModule,
     TranslateModule,
     ProductCardComponent,
-    TelegramButtonComponent
+    TelegramButtonComponent,
+    CurrencySymbolPipe
   ],
   template: `
     <div class="catalog-page">
@@ -118,13 +120,13 @@ const PAGE_SIZE = 12;
                   <span class="price-sep">—</span>
                   <input class="price-input" type="number" [(ngModel)]="maxPriceInput" (blur)="applyFilters()" placeholder="Max">
                 </div>
-                <button mat-stroked-button class="w-full text-sm" (click)="applyFilters()">
+                <button mat-stroked-button class="w-full text-sm mt-3" (click)="applyFilters()">
                   {{ 'catalog.applyPrice' | translate }}
                 </button>
               </div>
 
               <!-- Checkboxes -->
-              <div class="space-y-3 mb-5">
+              <div class="space-y-1 mb-5">
                 <mat-checkbox [(ngModel)]="inStockOnly" (change)="applyFilters()" class="text-gray-700 dark:text-gray-300 block">
                   {{ 'catalog.inStock' | translate }}
                 </mat-checkbox>
@@ -145,7 +147,7 @@ const PAGE_SIZE = 12;
           <main class="lg:col-span-3">
             <!-- Sort + View Toggle Bar -->
             <div class="sort-bar">
-              <span class="text-gray-700 dark:text-gray-300 font-medium text-sm">
+              <span class="text-gray-700 dark:text-gray-300 font-medium text-sm" style="margin-right: auto">
                 {{ 'catalog.found' | translate }}: <strong>{{ filteredProducts().length }}</strong>
               </span>
               <div class="flex items-center gap-3">
@@ -195,9 +197,9 @@ const PAGE_SIZE = 12;
                         <div class="list-footer">
                           <div>
                             @if (product.originalPrice && product.originalPrice > product.price) {
-                              <span class="list-price-old">{{ product.originalPrice | number:'1.0-0' }} UZS</span>
+                              <span class="list-price-old">{{ product.currency === 'USD' ? (product.originalPrice | number:'1.0-2') : (product.originalPrice | number:'1.0-0') }} {{ product.currency | currencySymbol }}</span>
                             }
-                            <span class="list-price">{{ product.price | number:'1.0-0' }} UZS</span>
+                            <span class="list-price">{{ product.currency === 'USD' ? (product.price | number:'1.0-2') : (product.price | number:'1.0-0') }} {{ product.currency | currencySymbol }}</span>
                           </div>
                           <a [routerLink]="['/product', product.id]" class="list-view-btn">
                             {{ 'common.viewMore' | translate }}
@@ -298,14 +300,14 @@ const PAGE_SIZE = 12;
     .sort-bar {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       margin-bottom: 20px;
       background: #0d1426;
       border: 1px solid rgba(59,130,246,0.12);
       border-radius: 12px;
       padding: 12px 16px;
-      gap: 12px;
+      gap: 10px;
     }
     .sort-bar span { font-size: 13px; color: #7c8db5; }
     .sort-bar strong { color: #e2e8f0; }
@@ -407,7 +409,7 @@ const PAGE_SIZE = 12;
     .section-subtitle { font-size: 1.1rem; font-weight: 700; color: #e2e8f0; margin-bottom: 16px; }
   `]
 })
-export class CatalogListComponent implements OnInit {
+export class CatalogListComponent implements OnInit, AfterViewInit {
   @ViewChildren(MatSelect) matSelects!: QueryList<MatSelect>;
 
   @HostListener('document:mousedown', ['$event'])
@@ -418,6 +420,7 @@ export class CatalogListComponent implements OnInit {
     }
   }
 
+  private cdr = inject(ChangeDetectorRef);
   private productService = inject(ProductService);
   private recentlyViewedService = inject(RecentlyViewedService);
   private seoService = inject(SeoService);
@@ -474,6 +477,13 @@ export class CatalogListComponent implements OnInit {
     if (this.maxPriceInput) tags.push({ key: 'maxPrice', label: `≤ ${this.maxPriceInput.toLocaleString()} UZS` });
     return tags;
   });
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+      this.cdr.detectChanges();
+    });
+  }
 
   ngOnInit(): void {
     this.loadData();
